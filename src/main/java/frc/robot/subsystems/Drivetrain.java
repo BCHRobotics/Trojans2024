@@ -75,8 +75,8 @@ public class Drivetrain extends SubsystemBase {
 
   /** Creates a new DriveSubsystem. */
   public Drivetrain() {
-    // TODO: Test auto
-    this.initializeAuto();
+    // TODO: Re-enable when auto testing
+    //this.initializeAuto();
 
   }
 
