@@ -243,6 +243,13 @@ public class Drivetrain extends SubsystemBase {
     m_rearRight.resetEncoders();
   }
 
+  public void setIdleStates(int mode) {
+    m_frontLeft.setIdle(mode);
+    m_rearLeft.setIdle(mode);
+    m_frontRight.setIdle(mode);
+    m_rearRight.setIdle(mode);
+  }
+
   /** Zeroes the heading of the robot. */
   public void zeroHeading() {
     m_gyro.reset();

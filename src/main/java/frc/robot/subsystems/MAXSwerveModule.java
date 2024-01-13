@@ -12,6 +12,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkAbsoluteEncoder.Type; // SparkMaxAbsoluteEncoder
 import com.revrobotics.SparkPIDController; //SparkPIDController
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 
@@ -160,5 +161,16 @@ public class MAXSwerveModule {
   /** Zeroes all the SwerveModule encoders. */
   public void resetEncoders() {
     m_drivingEncoder.setPosition(0);
+  }
+
+  public void setIdle(int mode) {
+    if (mode == 0) {
+      m_drivingSparkMax.setIdleMode(IdleMode.kCoast);
+      m_turningSparkMax.setIdleMode(IdleMode.kCoast);
+    }
+    else {
+      m_drivingSparkMax.setIdleMode(IdleMode.kBrake);
+      m_turningSparkMax.setIdleMode(IdleMode.kBrake);
+    }
   }
 }
