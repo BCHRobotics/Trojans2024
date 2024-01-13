@@ -9,6 +9,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
+import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -76,7 +77,7 @@ public class Drivetrain extends SubsystemBase {
   /** Creates a new DriveSubsystem. */
   public Drivetrain() {
     // TODO: Re-enable when auto testing
-    //this.initializeAuto();
+    this.initializeAuto();
 
   }
 
@@ -277,8 +278,8 @@ public class Drivetrain extends SubsystemBase {
           new HolonomicPathFollowerConfig( 
                   new PIDConstants(AutoConstants.kPXController, 0.0, 0.0), // Translation PID constants
                   new PIDConstants(AutoConstants.kPThetaController, 0.0, 0.0), // Rotation PID constants
-                  4.8,
-                  0.44, // Distance from robot center to furthest module. // TODO: Measure this value.
+                  AutoConstants.kMaxSpeedMetersPerSecond,
+                  AutoConstants.kDriveBase, // Distance from robot center to furthest module
                   new ReplanningConfig() 
           ),
           () -> {
@@ -288,7 +289,7 @@ public class Drivetrain extends SubsystemBase {
               }
               return false;
           },
-          this 
+          this   // Reference to this subsystem to set requirements
         );
   }
   

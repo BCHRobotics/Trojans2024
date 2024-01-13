@@ -57,9 +57,9 @@ public class RobotContainer {
                 m_robotDrive));
 
         // Build an auto chooser. This will use Commands.none() as the default option.
-       // Commands.none();
-        autoChooser = null;
-       // SmartDashboard.putData("Auto Chooser", autoChooser);
+        //autoChooser = null;
+        autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
   /**
@@ -92,5 +92,9 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         // return Autos.getBasicAuto(m_robotDrive);
         return autoChooser.getSelected();
+    }
+
+    public void eStop() {
+        m_robotDrive.setX();
     }
 }
