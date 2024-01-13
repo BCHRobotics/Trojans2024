@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.663059280534515,
-      "y": 5.87046553010485
+      "x": 0.42,
+      "y": 7.02
     },
     "rotation": 0.0
   },
@@ -14,7 +14,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Devesh Path"
+            "pathName": "StartToNote"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NoteToAmp"
           }
         }
       ]
