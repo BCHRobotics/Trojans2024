@@ -95,6 +95,6 @@ public class RobotContainer {
     }
 
     public void eStop() {
-        m_robotDrive.setX();
+        m_robotDrive.setIdleStates(1);
     }
 }
