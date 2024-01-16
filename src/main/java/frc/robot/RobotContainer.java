@@ -88,13 +88,13 @@ public class RobotContainer {
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *
      * @return the command to run in autonomous
-     */
+     */ 
     public Command getAutonomousCommand() {
         // return Autos.getBasicAuto(m_robotDrive);
         return autoChooser.getSelected();
     }
 
-    //this function is called when the robot enters disabled mode, it sets the motors to brake mode
+    // This function is called when the robot enters disabled mode, it sets the motors to brake mode.
     public void eStop() {
         m_robotDrive.setIdleStates(1);
     }

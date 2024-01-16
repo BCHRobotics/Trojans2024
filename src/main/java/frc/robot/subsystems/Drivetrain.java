@@ -244,7 +244,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   /**
-   * Sets the idle states of the sparkMAX motors.
+   * Sets the idle states of the SparkMAX motors.
    *
    * @param mode the mode to set the states to (0 is coast, 1 is brake)
    */
