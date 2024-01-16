@@ -98,7 +98,7 @@ public class RobotContainer {
         m_robotDrive.setX();
     }
 
-    //sets the speed percentage to use based on the slider on the joystick
+    // Sets the speed percentage to use based on the slider on the joystick
     public void setSpeedPercent() {
         m_robotDrive.m_maxSpeed = 1 - ((m_driverController.getThrottle() + 1) / 2);
     }
