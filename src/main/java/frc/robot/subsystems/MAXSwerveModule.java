@@ -163,6 +163,7 @@ public class MAXSwerveModule {
     m_drivingEncoder.setPosition(0);
   }
 
+  //this function sets the idle mode of all the sparkmax motors to either brake or coast
   public void setIdle(int mode) {
     if (mode == 0) {
       m_drivingSparkMax.setIdleMode(IdleMode.kCoast);

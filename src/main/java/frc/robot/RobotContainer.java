@@ -49,7 +49,7 @@ public class RobotContainer {
             // The left stick controls translation of the robot.
             // Turning is controlled by the X axis of the right stick.
             new RunCommand(
-                () -> m_robotDrive.drive( //use m_driverController.getThrottle() for the thing at the bottom
+                () -> m_robotDrive.drive(
                     -MathUtil.applyDeadband(m_driverController.getY(), OIConstants.kDriveDeadband),
                     -MathUtil.applyDeadband(m_driverController.getX(), OIConstants.kDriveDeadband),
                     -MathUtil.applyDeadband(m_driverController.getTwist(), OIConstants.kTwistDeadband),
@@ -94,6 +94,7 @@ public class RobotContainer {
         return autoChooser.getSelected();
     }
 
+    //this function is called when the robot enters disabled mode, it sets the motors to brake mode
     public void eStop() {
         m_robotDrive.setIdleStates(1);
     }

@@ -53,6 +53,7 @@ public class Robot extends TimedRobot {
     m_robotContainer.eStop();
   }
 
+  /** This function is called periodically during Disabled mode. */
   @Override
   public void disabledPeriodic() {}
 
