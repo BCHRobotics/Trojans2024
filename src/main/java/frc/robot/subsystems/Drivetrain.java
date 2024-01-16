@@ -57,6 +57,8 @@ public class Drivetrain extends SubsystemBase {
   private double m_currentTranslationDir = 0.0;
   private double m_currentTranslationMag = 0.0;
 
+  public double m_maxSpeed = 0.0;
+
   private SlewRateLimiter m_magLimiter = new SlewRateLimiter(DriveConstants.kMagnitudeSlewRate);
   private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
   private double m_prevTime = WPIUtilJNI.now() * 1e-6;
@@ -133,7 +135,7 @@ public class Drivetrain extends SubsystemBase {
    *                      field.
    * @param rateLimit     Whether to enable rate limiting for smoother control.
    */
-  public void drive(double xSpeed, double ySpeed, double maxSpeed, double rot, boolean fieldRelative, boolean rateLimit) {
+  public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {
 
     double xSpeedCommanded;
     double ySpeedCommanded;
@@ -186,7 +188,7 @@ public class Drivetrain extends SubsystemBase {
 
     // Convert the commanded speeds into the correct units for the drivetrain,
 
-    double lerpSpeed = DriveConstants.kMinSpeedMetersPerSecond + (DriveConstants.kMaxSpeedMetersPerSecond - DriveConstants.kMinSpeedMetersPerSecond) * maxSpeed;
+    double lerpSpeed = DriveConstants.kMinSpeedMetersPerSecond + (DriveConstants.kMaxSpeedMetersPerSecond - DriveConstants.kMinSpeedMetersPerSecond) * m_maxSpeed;
 
     double xSpeedDelivered = xSpeedCommanded * lerpSpeed;
     double ySpeedDelivered = ySpeedCommanded * lerpSpeed;
@@ -319,6 +321,7 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Vertical Speed", this.getChassisSpeeds().vyMetersPerSecond);
     SmartDashboard.putNumber("Horizontal Speed", this.getChassisSpeeds().vxMetersPerSecond);
     SmartDashboard.putNumber("Turn Speed", this.getChassisSpeeds().omegaRadiansPerSecond);
+    SmartDashboard.putNumber("Current Speed Percentage", m_maxSpeed);
 
     // Position
     SmartDashboard.putNumber("X Position", this.getPose().getX());

@@ -53,7 +53,6 @@ public class RobotContainer {
                     -MathUtil.applyDeadband(m_driverController.getY(), OIConstants.kDriveDeadband),
                     -MathUtil.applyDeadband(m_driverController.getX(), OIConstants.kDriveDeadband),
                     -MathUtil.applyDeadband(m_driverController.getTwist(), OIConstants.kTwistDeadband),
-                    (m_driverController.getThrottle() + 1) / 2,
                     OIConstants.kFieldRelative, OIConstants.kRateLimited),
                 m_robotDrive));
 
@@ -97,5 +96,10 @@ public class RobotContainer {
 
     public void eStop() {
         m_robotDrive.setX();
+    }
+
+    //sets the speed percentage to use based on the slider on the joystick
+    public void setSpeedPercent() {
+        m_robotDrive.m_maxSpeed = 1 - ((m_driverController.getThrottle() + 1) / 2);
     }
 }
