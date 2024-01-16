@@ -57,6 +57,7 @@ public class Drivetrain extends SubsystemBase {
   private double m_currentTranslationDir = 0.0;
   private double m_currentTranslationMag = 0.0;
 
+  // A percentage value (0-1) for the linear speed of the robot
   public double m_maxSpeed = 0.0;
 
   private SlewRateLimiter m_magLimiter = new SlewRateLimiter(DriveConstants.kMagnitudeSlewRate);
@@ -186,10 +187,12 @@ public class Drivetrain extends SubsystemBase {
       m_currentRotation = rot;
     }
 
+    // Creates an interpolated value based on the min and max speed constants and the position of the slider (m_maxSpeed)
+    double lerpSpeed = DriveConstants.kMinSpeedMetersPerSecond + (DriveConstants.kMaxSpeedMetersPerSecond
+                     - DriveConstants.kMinSpeedMetersPerSecond) * m_maxSpeed;
+
     // Convert the commanded speeds into the correct units for the drivetrain,
-
-    double lerpSpeed = DriveConstants.kMinSpeedMetersPerSecond + (DriveConstants.kMaxSpeedMetersPerSecond - DriveConstants.kMinSpeedMetersPerSecond) * m_maxSpeed;
-
+    // using the interpolated speed
     double xSpeedDelivered = xSpeedCommanded * lerpSpeed;
     double ySpeedDelivered = ySpeedCommanded * lerpSpeed;
     double rotDelivered = m_currentRotation * DriveConstants.kMaxAngularSpeed;
