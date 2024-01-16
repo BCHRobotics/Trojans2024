@@ -53,7 +53,7 @@ public class RobotContainer {
                     -MathUtil.applyDeadband(m_driverController.getY(), OIConstants.kDriveDeadband),
                     -MathUtil.applyDeadband(m_driverController.getX(), OIConstants.kDriveDeadband),
                     -MathUtil.applyDeadband(m_driverController.getTwist(), OIConstants.kTwistDeadband),
-                    -m_driverController.getThrottle(),
+                    m_driverController.getThrottle() / 100,
                     OIConstants.kFieldRelative, OIConstants.kRateLimited),
                 m_robotDrive));
 
