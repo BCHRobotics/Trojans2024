@@ -93,4 +93,9 @@ public class RobotContainer {
     public void eStop() {
         m_robotDrive.setIdleStates(1);
     }
+
+    // Sets the speed percentage to use based on the slider on the joystick
+    public void setSpeedPercent() {
+        m_robotDrive.setSpeedPercent(1 - ((m_driverController.getThrottle() + 1) / 2));
+    }
 }

@@ -56,6 +56,9 @@ public class Drivetrain extends SubsystemBase {
   private double m_currentTranslationDir = 0.0;
   private double m_currentTranslationMag = 0.0;
 
+  // A percentage value (0-1) for the linear speed of the robot
+  private double m_maxSpeed = 0.0;
+
   private SlewRateLimiter m_magLimiter = new SlewRateLimiter(DriveConstants.kMagnitudeSlewRate);
   private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
   private double m_prevTime = WPIUtilJNI.now() * 1e-6;
@@ -124,6 +127,7 @@ public class Drivetrain extends SubsystemBase {
    *
    * @param xSpeed        Speed of the robot in the x direction (forward).
    * @param ySpeed        Speed of the robot in the y direction (sideways).
+   * @param maxSpeed      A 0-1 multiplier for the x and y speed of the robot.
    * @param rot           Angular rate of the robot.
    * @param fieldRelative Whether the provided x and y speeds are relative to the
    *                      field.
@@ -180,12 +184,17 @@ public class Drivetrain extends SubsystemBase {
       m_currentRotation = rot;
     }
 
-    // Convert the commanded speeds into the correct units for the drivetrain
-    double xSpeedDelivered = xSpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
-    double ySpeedDelivered = ySpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
+    // Creates an interpolated value based on the min and max speed constants and the position of the slider (m_maxSpeed)
+    double lerpSpeed = DriveConstants.kMinSpeedMetersPerSecond + (DriveConstants.kMaxSpeedMetersPerSecond
+                     - DriveConstants.kMinSpeedMetersPerSecond) * m_maxSpeed;
+
+    // Convert the commanded speeds into the correct units for the drivetrain,
+    // using the interpolated speed
+    double xSpeedDelivered = xSpeedCommanded * lerpSpeed;
+    double ySpeedDelivered = ySpeedCommanded * lerpSpeed;
     double rotDelivered = m_currentRotation * DriveConstants.kMaxAngularSpeed;
 
-    var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
+    SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
         fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
                 Rotation2d.fromDegrees(m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)))
@@ -270,6 +279,10 @@ public class Drivetrain extends SubsystemBase {
     this.m_slowMode = mode;
   }
 
+  public void setSpeedPercent(double percent) {
+      m_maxSpeed = percent;
+  }
+
   /**
    * Initializes the auto using PathPlannerLib.
    */
@@ -319,6 +332,7 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Vertical Speed", this.getChassisSpeeds().vyMetersPerSecond);
     SmartDashboard.putNumber("Horizontal Speed", this.getChassisSpeeds().vxMetersPerSecond);
     SmartDashboard.putNumber("Turn Speed", this.getChassisSpeeds().omegaRadiansPerSecond);
+    SmartDashboard.putNumber("Current Speed Percentage", m_maxSpeed);
 
     // Position
     SmartDashboard.putNumber("X Position", this.getPose().getX());
