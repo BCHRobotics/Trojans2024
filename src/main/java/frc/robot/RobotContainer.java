@@ -13,13 +13,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-// import frc.robot.commands.Autos;
-
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -57,7 +54,6 @@ public class RobotContainer {
                 m_robotDrive));
 
         // Build an auto chooser. This will use Commands.none() as the default option.
-        //autoChooser = null;
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
     }
@@ -75,7 +71,7 @@ public class RobotContainer {
         // Break Command (Button 2)
         m_driverController.button(2).whileTrue(new RunCommand(() -> m_robotDrive.setX(), m_robotDrive));
 
-        //Zero heading (Button 5)
+        // Zero heading (Button 5)
         m_driverController.button(5).whileTrue(new RunCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
         
         // Slow Command (Button 1)
