@@ -58,7 +58,7 @@ public class Drivetrain extends SubsystemBase {
   private double m_currentTranslationMag = 0.0;
 
   // A percentage value (0-1) for the linear speed of the robot
-  public double m_maxSpeed = 0.0;
+  private double m_maxSpeed = 0.0;
 
   private SlewRateLimiter m_magLimiter = new SlewRateLimiter(DriveConstants.kMagnitudeSlewRate);
   private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
@@ -197,7 +197,7 @@ public class Drivetrain extends SubsystemBase {
     double ySpeedDelivered = ySpeedCommanded * lerpSpeed;
     double rotDelivered = m_currentRotation * DriveConstants.kMaxAngularSpeed;
 
-    var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
+    SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
         fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
                 Rotation2d.fromDegrees(m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)))
@@ -273,6 +273,10 @@ public class Drivetrain extends SubsystemBase {
    */
   public void setSlowMode(boolean mode) {
     this.m_slowMode = mode;
+  }
+
+  public void setSpeedPercent(double percent) {
+      m_maxSpeed = percent;
   }
 
   /**
