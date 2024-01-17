@@ -42,7 +42,7 @@ public class Autos {
         new Pose2d(2, 0, new Rotation2d(0)),
         config);
 
-    var thetaController = new ProfiledPIDController(
+    ProfiledPIDController thetaController = new ProfiledPIDController(
         AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
