@@ -249,6 +249,11 @@ public class Drivetrain extends SubsystemBase {
     m_rearRight.resetEncoders();
   }
 
+  /**
+   * Sets the idle states of the SparkMAX motors.
+   *
+   * @param mode the mode to set the states to (0 is coast, 1 is brake)
+   */
   public void setIdleStates(int mode) {
     m_frontLeft.setIdle(mode);
     m_rearLeft.setIdle(mode);
