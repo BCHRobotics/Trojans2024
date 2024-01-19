@@ -5,11 +5,14 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -17,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -33,6 +37,11 @@ public class RobotContainer {
 
     // The auto chooser
     private final SendableChooser<Command> autoChooser;
+
+    public static final CANSparkMax frontLeftMotor = new CANSparkMax(DriveConstants.kFrontLeftDrivingCanId, MotorType.kBrushless);
+    public static final CANSparkMax frontRightMotor = new CANSparkMax(DriveConstants.kFrontRightDrivingCanId, MotorType.kBrushless);
+    public static final CANSparkMax rearLeftMotor = new CANSparkMax(DriveConstants.kRearLeftDrivingCanId, MotorType.kBrushless);
+    public static final CANSparkMax rearRightMotor = new CANSparkMax(DriveConstants.kRearRightDrivingCanId, MotorType.kBrushless);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -77,7 +86,12 @@ public class RobotContainer {
         // Slow Command (Button 1)
         m_driverController.button(1)
             .onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive))
-            .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));    
+            .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive)); 
+            
+        m_driverController.button(7).whileTrue(m_robotDrive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        m_driverController.button(8).whileTrue(m_robotDrive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        m_driverController.button(9).whileTrue(m_robotDrive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        m_driverController.button(10).whileTrue(m_robotDrive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     }
 
     /**
@@ -86,7 +100,6 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */ 
     public Command getAutonomousCommand() {
-        // return Autos.getBasicAuto(m_robotDrive);
         return autoChooser.getSelected();
     }
 

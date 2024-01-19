@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems;
 
+
+import static edu.wpi.first.units.Units.Volts;
+
 import java.util.Optional;
 
 import com.kauailabs.navx.frc.AHRS;
@@ -11,6 +14,9 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -20,36 +26,50 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.utils.SwerveUtils;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 public class Drivetrain extends SubsystemBase {
+  private CANSparkMax m_frontLeftMotor = RobotContainer.frontLeftMotor;
+  private CANSparkMax m_frontRightMotor = RobotContainer.frontRightMotor;
+  private CANSparkMax m_rearLeftMotor = RobotContainer.rearLeftMotor;
+  private CANSparkMax m_rearRightMotor = RobotContainer.rearRightMotor;
+
   // Create MAXSwerveModules
   private final MAXSwerveModule m_frontLeft = new MAXSwerveModule(
       DriveConstants.kFrontLeftDrivingCanId,
       DriveConstants.kFrontLeftTurningCanId,
-      DriveConstants.kFrontLeftChassisAngularOffset);
+      DriveConstants.kFrontLeftChassisAngularOffset,
+      m_frontLeftMotor);
 
   private final MAXSwerveModule m_frontRight = new MAXSwerveModule(
       DriveConstants.kFrontRightDrivingCanId,
       DriveConstants.kFrontRightTurningCanId,
-      DriveConstants.kFrontRightChassisAngularOffset);
+      DriveConstants.kFrontRightChassisAngularOffset,
+      m_frontRightMotor);
 
   private final MAXSwerveModule m_rearLeft = new MAXSwerveModule(
       DriveConstants.kRearLeftDrivingCanId,
       DriveConstants.kRearLeftTurningCanId,
-      DriveConstants.kBackLeftChassisAngularOffset);
+      DriveConstants.kBackLeftChassisAngularOffset,
+      m_rearLeftMotor);
 
   private final MAXSwerveModule m_rearRight = new MAXSwerveModule(
       DriveConstants.kRearRightDrivingCanId,
       DriveConstants.kRearRightTurningCanId,
-      DriveConstants.kBackRightChassisAngularOffset);
+      DriveConstants.kBackRightChassisAngularOffset,
+      m_rearRightMotor);
 
   // The gyro sensor
   private final AHRS m_gyro = new AHRS();
@@ -67,6 +87,20 @@ public class Drivetrain extends SubsystemBase {
   private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
   private boolean m_slowMode = false;
+
+SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
+  new SysIdRoutine.Config(),
+  new SysIdRoutine.Mechanism(
+    (Measure<Voltage> volts) -> {
+      m_frontLeftMotor.setVoltage(volts.in(Volts));
+      m_frontRightMotor.setVoltage(volts.in(Volts));
+      m_rearLeftMotor.setVoltage(volts.in(Volts));
+      m_rearRightMotor.setVoltage(volts.in(Volts));
+    },
+    null, // No log consumer, since data is recorded by URCL
+    this
+  )
+);
 
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
@@ -358,5 +392,15 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putString("Rear left Encoder", m_rearLeft.getState().toString());
     SmartDashboard.putString("Rear right Encoder", m_rearRight.getState().toString());
 
+  }
+
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    SmartDashboard.putBoolean("running Quasustatic: ", true);
+    return m_sysIdRoutine.quasistatic(direction);
+  }
+
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    SmartDashboard.putBoolean("running Dynamic: ", true);
+    return m_sysIdRoutine.dynamic(direction);
   }
 }
