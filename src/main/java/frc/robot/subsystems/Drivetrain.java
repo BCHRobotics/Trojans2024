@@ -15,8 +15,6 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -88,19 +86,14 @@ public class Drivetrain extends SubsystemBase {
 
   private boolean m_slowMode = false;
 
-SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
-  new SysIdRoutine.Config(),
-  new SysIdRoutine.Mechanism(
-    (Measure<Voltage> volts) -> {
-      m_frontLeftMotor.setVoltage(volts.in(Volts));
-      m_frontRightMotor.setVoltage(volts.in(Volts));
-      m_rearLeftMotor.setVoltage(volts.in(Volts));
-      m_rearRightMotor.setVoltage(volts.in(Volts));
-    },
-    null, // No log consumer, since data is recorded by URCL
-    this
-  )
-);
+  SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
+    new SysIdRoutine.Config(),
+    new SysIdRoutine.Mechanism(
+      (voltage) -> this.runVolts(voltage),
+      null,
+      this
+    )
+  );
 
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
@@ -131,6 +124,14 @@ SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
         });
 
     this.printToDashboard();
+  }
+
+  public void runVolts(Measure<Voltage> volts) {
+    resetOdometry(getPose());  
+    m_frontLeftMotor.setVoltage(volts.in(Volts));
+    m_frontRightMotor.setVoltage(volts.in(Volts));
+    m_rearLeftMotor.setVoltage(volts.in(Volts));
+    m_rearRightMotor.setVoltage(volts.in(Volts));
   }
 
   /**
@@ -395,12 +396,11 @@ SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
   }
 
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    SmartDashboard.putBoolean("running Quasustatic: ", true);
     return m_sysIdRoutine.quasistatic(direction);
   }
 
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    SmartDashboard.putBoolean("running Dynamic: ", true);
+
     return m_sysIdRoutine.dynamic(direction);
   }
 }
