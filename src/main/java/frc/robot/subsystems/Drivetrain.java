@@ -54,6 +54,10 @@ public class Drivetrain extends SubsystemBase {
   // The gyro sensor
   private final AHRS m_gyro = new AHRS();
 
+  //heading correction
+  private boolean correctionEnabled = true;
+  private double lastHeadingRadians = 0;
+
   // Slew rate filter variables for controlling lateral acceleration
   private double m_currentRotation = 0.0;
   private double m_currentTranslationDir = 0.0;
@@ -140,7 +144,7 @@ public class Drivetrain extends SubsystemBase {
 
     double xSpeedCommanded;
     double ySpeedCommanded;
-
+      
     if (rateLimit) {
       // Convert XY to polar for rate limiting
       double inputTranslationDir = Math.atan2(ySpeed, xSpeed);
@@ -197,11 +201,23 @@ public class Drivetrain extends SubsystemBase {
     double ySpeedDelivered = ySpeedCommanded * lerpSpeed;
     double rotDelivered = m_currentRotation * DriveConstants.kMaxAngularSpeed;
 
-    SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
-        fieldRelative
-            ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
-                Rotation2d.fromDegrees(m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)))
-            : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
+    ChassisSpeeds velocity = fieldRelative
+        ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
+            Rotation2d.fromDegrees(m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)))
+        : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered);
+
+    SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(velocity);
+
+   /*  if (Math.abs(velocity.omegaRadiansPerSecond) < 0.01 && (Math.abs(velocity.vxMetersPerSecond) > 0.01 || Math.abs(velocity.vyMetersPerSecond) > 0.01)) {
+      if (!correctionEnabled) {
+          lastHeadingRadians = Math.toRadians(m_gyro.getAngle());
+          correctionEnabled = true;
+      }
+
+      velocity.omegaRadiansPerSecond = getSwerveController().headingCalculate(lastHeadingRadians, Math.toRadians(m_gyro.getAngle()));
+    } else {
+      correctionEnabled = false;
+    } */
  
     this.setModuleStates(swerveModuleStates);
   }
