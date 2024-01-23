@@ -80,6 +80,9 @@ public class RobotContainer {
         // Break Command (Button 2)
         m_driverController.button(2).whileTrue(new RunCommand(() -> m_robotDrive.setX(), m_robotDrive));
 
+        m_driverController.button(11).whileTrue(new RunCommand(() -> m_robotDrive.setI(), m_robotDrive));
+        m_driverController.button(12).whileTrue(new RunCommand(() -> m_robotDrive.setRevI(), m_robotDrive));
+
         // Zero heading (Button 5)
         m_driverController.button(5).whileTrue(new RunCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
         

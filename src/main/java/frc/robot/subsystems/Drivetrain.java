@@ -127,11 +127,10 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void runVolts(Measure<Voltage> volts) {
-    resetOdometry(getPose());  
     m_frontLeftMotor.setVoltage(volts.in(Volts));
-    m_frontRightMotor.setVoltage(volts.in(Volts));
-    m_rearLeftMotor.setVoltage(volts.in(Volts));
-    m_rearRightMotor.setVoltage(volts.in(Volts));
+    m_frontRightMotor.setVoltage(-volts.in(Volts));
+    m_rearLeftMotor.setVoltage(-volts.in(Volts));
+    m_rearRightMotor.setVoltage(-volts.in(Volts));
   }
 
   /**
@@ -249,6 +248,20 @@ public class Drivetrain extends SubsystemBase {
     m_frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
     m_rearLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
     m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
+  }
+
+  public void setI() {
+    m_frontLeft.setDesiredState(new SwerveModuleState(0.7, Rotation2d.fromDegrees(0)));
+    m_frontRight.setDesiredState(new SwerveModuleState(0.7, Rotation2d.fromDegrees(0)));
+    m_rearLeft.setDesiredState(new SwerveModuleState(0.7, Rotation2d.fromDegrees(0)));
+    m_rearRight.setDesiredState(new SwerveModuleState(0.7, Rotation2d.fromDegrees(0)));
+  }
+
+    public void setRevI() {
+    m_frontLeft.setDesiredState(new SwerveModuleState(-0.7, Rotation2d.fromDegrees(0)));
+    m_frontRight.setDesiredState(new SwerveModuleState(-0.7, Rotation2d.fromDegrees(0)));
+    m_rearLeft.setDesiredState(new SwerveModuleState(-0.7, Rotation2d.fromDegrees(0)));
+    m_rearRight.setDesiredState(new SwerveModuleState(-0.7, Rotation2d.fromDegrees(0)));
   }
 
   /**
