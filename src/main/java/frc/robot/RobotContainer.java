@@ -8,6 +8,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
@@ -31,6 +32,10 @@ public class RobotContainer {
     // The driver's controller
     CommandJoystick m_driverController = new CommandJoystick(OIConstants.kDriverControllerPort);
 
+    public static XboxController m_driveTestController = new XboxController(1);
+
+    private boolean controller = true;
+
     // The auto chooser
     private final SendableChooser<Command> autoChooser;
 
@@ -41,18 +46,33 @@ public class RobotContainer {
         // Configure the button bindings
         this.configureButtonBindings();
 
-        // Configure default commands
-        m_robotDrive.setDefaultCommand(
-            // The left stick controls translation of the robot.
-            // Turning is controlled by the X axis of the right stick.
-            new RunCommand(
-                () -> m_robotDrive.drive(
-                    -MathUtil.applyDeadband(m_driverController.getY(), OIConstants.kDriveDeadband),
-                    -MathUtil.applyDeadband(m_driverController.getX(), OIConstants.kDriveDeadband),
-                    -MathUtil.applyDeadband(m_driverController.getTwist(), OIConstants.kTwistDeadband),
-                    OIConstants.kFieldRelative, OIConstants.kRateLimited),
-                m_robotDrive));
 
+        if (!controller) {
+            // Configure default commands
+            m_robotDrive.setDefaultCommand(
+                // The left stick controls translation of the robot.
+                // Turning is controlled by the X axis of the right stick.
+                new RunCommand(
+                    () -> m_robotDrive.drive(
+                        -MathUtil.applyDeadband(m_driverController.getY(), OIConstants.kDriveDeadband),
+                        -MathUtil.applyDeadband(m_driverController.getX(), OIConstants.kDriveDeadband),
+                        -MathUtil.applyDeadband(m_driverController.getTwist(), OIConstants.kTwistDeadband),
+                        OIConstants.kFieldRelative, OIConstants.kRateLimited),
+                    m_robotDrive));
+        } else {
+            m_robotDrive.setDefaultCommand(
+                // The left stick controls translation of the robot.
+                // Turning is controlled by the X axis of the right stick.
+                new RunCommand(
+                        () -> m_robotDrive.drive(
+                                -MathUtil.applyDeadband(m_driveTestController.getLeftY(), OIConstants.kDriveDeadband),
+                                -MathUtil.applyDeadband(m_driveTestController.getLeftX(), OIConstants.kDriveDeadband),
+                                -MathUtil.applyDeadband(m_driveTestController.getRightX(), OIConstants.kDriveDeadband),
+                                OIConstants.kFieldRelative, OIConstants.kRateLimited),
+                        m_robotDrive));
+        }
+        
+        
         // Build an auto chooser. This will use Commands.none() as the default option.
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -81,7 +101,22 @@ public class RobotContainer {
         m_driverController.button(1)
             .onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive))
             .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));    
+
+        new JoystickButton(m_driveTestController, Button.kR1.value)
+        .whileTrue(new RunCommand(
+            () -> m_robotDrive.setX(),
+            m_robotDrive));
+
+        // Slow Command (LB)
+        // TODO: Test Slow Command later
+        new JoystickButton(m_driveTestController, Button.kL1.value)
+                .onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive))
+                .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
+
+        new JoystickButton(m_driveTestController, Button.kTriangle.value)
+                .onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
     }
+    
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.

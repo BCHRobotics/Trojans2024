@@ -12,9 +12,12 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -24,8 +27,13 @@ import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
+import frc.robot.Robot;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ModuleConstants;
+import frc.robot.Constants.OIConstants;
 import frc.utils.SwerveUtils;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -53,6 +61,8 @@ public class Drivetrain extends SubsystemBase {
 
   // The gyro sensor
   private final AHRS m_gyro = new AHRS();
+
+  PIDController pid = new PIDController(ModuleConstants.kTurningP, ModuleConstants.kTurningI, ModuleConstants.kTurningD);
 
   //heading correction
   private boolean correctionEnabled = true;
@@ -144,6 +154,10 @@ public class Drivetrain extends SubsystemBase {
 
     double xSpeedCommanded;
     double ySpeedCommanded;
+    
+    double xMovement = -MathUtil.applyDeadband(RobotContainer.m_driveTestController.getLeftY(), OIConstants.kDriveDeadband);
+    double yMovement = -MathUtil.applyDeadband(RobotContainer.m_driveTestController.getLeftX(), OIConstants.kDriveDeadband);
+    double rotation = -MathUtil.applyDeadband(RobotContainer.m_driveTestController.getRightX(), OIConstants.kDriveDeadband);
       
     if (rateLimit) {
       // Convert XY to polar for rate limiting
@@ -201,12 +215,22 @@ public class Drivetrain extends SubsystemBase {
     double ySpeedDelivered = ySpeedCommanded * lerpSpeed;
     double rotDelivered = m_currentRotation * DriveConstants.kMaxAngularSpeed;
 
-    ChassisSpeeds velocity = fieldRelative
+    
+    SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(fieldRelative
         ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
+            Rotation2d.fromDegrees(m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)))
+        : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
+
+
+
+    Translation2d translation = new Translation2d(xMovement, yMovement);
+
+    ChassisSpeeds velocity = fieldRelative
+        ? ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation,
             Rotation2d.fromDegrees(m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)))
         : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered);
 
-    SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(velocity);
+    SmartDashboard.putString("Chassis Speed", velocity.toString());
 
      if (Math.abs(velocity.omegaRadiansPerSecond) < 0.01 && (Math.abs(velocity.vxMetersPerSecond) > 0.01 || Math.abs(velocity.vyMetersPerSecond) > 0.01)) {
       if (!correctionEnabled) {
@@ -223,7 +247,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   private double headingCalculate(double currHeading, double targetHeading) {
-    return (currHeading - targetHeading) * DriveConstants.kMaxAngularSpeed;
+    return pid.calculate(currHeading, targetHeading) * DriveConstants.kMaxAngularSpeed;
   }
 
   /**
