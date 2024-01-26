@@ -17,10 +17,8 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
@@ -29,7 +27,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.utils.Limelight;
@@ -75,19 +72,10 @@ public class Drivetrain extends SubsystemBase {
 
   private boolean m_slowMode = false;
 
-  // Odometry class for tracking robot pose
-  SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
-      DriveConstants.kDriveKinematics,
-      Rotation2d.fromDegrees(m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)),
-      new SwerveModulePosition[] {
-          m_frontLeft.getPosition(),
-          m_frontRight.getPosition(),
-          m_rearLeft.getPosition(),
-          m_rearRight.getPosition()
-      });
+  private boolean useVisionOdometry = true;
 
-  private final SwerveDrivePoseEstimator m_poseEstimator =
-    new SwerveDrivePoseEstimator(
+  // Odometry class for tracking robot pose
+  private final SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
         DriveConstants.kDriveKinematics,
         Rotation2d.fromDegrees(m_gyro.getAngle()),
         new SwerveModulePosition[] {
@@ -108,14 +96,7 @@ public class Drivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     // Update the odometry in the periodic block
-    m_odometry.update(
-        Rotation2d.fromDegrees(m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)),
-        new SwerveModulePosition[] {
-            m_frontLeft.getPosition(),
-            m_frontRight.getPosition(),
-            m_rearLeft.getPosition(),
-            m_rearRight.getPosition()
-        });
+    this.updateOdometry();
 
     this.printToDashboard();
   }
@@ -126,7 +107,7 @@ public class Drivetrain extends SubsystemBase {
    * @return The pose.
    */
   public Pose2d getPose() {
-    return m_odometry.getPoseMeters();
+    return m_poseEstimator.getEstimatedPosition();
   }
 
   /**
@@ -135,7 +116,7 @@ public class Drivetrain extends SubsystemBase {
    * @param pose The pose to which to set the odometry.
    */
   public void resetOdometry(Pose2d pose) {
-    m_odometry.resetPosition(
+    m_poseEstimator.resetPosition(
         Rotation2d.fromDegrees(m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
@@ -148,7 +129,7 @@ public class Drivetrain extends SubsystemBase {
 
   public void updateOdometry() {
     m_poseEstimator.update(
-        m_gyro.getRotation2d(),
+        Rotation2d.fromDegrees(m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)),
         new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
           m_frontRight.getPosition(),
@@ -156,10 +137,16 @@ public class Drivetrain extends SubsystemBase {
           m_rearRight.getPosition()
         });
 
+    if (useVisionOdometry){
+      visionOdometry();
+    }
+  }
+
+  public void visionOdometry() {
     m_poseEstimator.addVisionMeasurement(
-        Limelight.getEstimatedGlobalPose(
-            m_poseEstimator.getEstimatedPosition()),
-        Timer.getFPGATimestamp() - 0.3);
+    Limelight.getEstimatedGlobalPose(
+        m_poseEstimator.getEstimatedPosition()),
+    Timer.getFPGATimestamp() - 0.3);
   }
 
 
@@ -176,11 +163,44 @@ public class Drivetrain extends SubsystemBase {
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {
 
-    double xSpeedCommanded;
-    double ySpeedCommanded;
+    double xSpeedCommanded = 0;
+    double ySpeedCommanded = 0;
 
     if (rateLimit) {
-      // Convert XY to polar for rate limiting
+      double[] slewRateAdjustedValues = slewRateCalculations(ySpeed, xSpeed, rot, xSpeedCommanded, ySpeedCommanded);
+      xSpeedCommanded = slewRateAdjustedValues[0];
+      ySpeedCommanded = slewRateAdjustedValues[1];
+      m_currentRotation = slewRateAdjustedValues[2];
+
+    } else {
+      xSpeedCommanded = xSpeed;
+      ySpeedCommanded = ySpeed;
+      m_currentRotation = rot;
+    }
+
+    // Creates an interpolated value based on the min and max speed constants and the position of the slider (m_maxSpeed)
+    double lerpSpeed = DriveConstants.kMinSpeedMetersPerSecond + (DriveConstants.kMaxSpeedMetersPerSecond
+                     - DriveConstants.kMinSpeedMetersPerSecond) * m_maxSpeed;
+
+    // Convert the commanded speeds into the correct units for the drivetrain,
+    // using the interpolated speed
+    double xSpeedDelivered = xSpeedCommanded * lerpSpeed;
+    double ySpeedDelivered = ySpeedCommanded * lerpSpeed;
+    double rotDelivered = m_currentRotation * DriveConstants.kMaxAngularSpeed;
+
+      SwerveModuleState[] swerveModuleStates =
+        DriveConstants.kDriveKinematics.toSwerveModuleStates(ChassisSpeeds.discretize(
+          fieldRelative
+              ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, 
+                m_poseEstimator.getEstimatedPosition().getRotation()) //TODO: is gyro reversed needed?
+                    : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered),
+                0.02));
+
+    this.setModuleStates(swerveModuleStates);
+  }
+
+  private double[] slewRateCalculations(double ySpeed, double xSpeed, double rot, double xSpeedCommanded, double ySpeedCommanded){
+          // Convert XY to polar for rate limiting
       double inputTranslationDir = Math.atan2(ySpeed, xSpeed);
       double inputTranslationMag = Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(ySpeed, 2));
 
@@ -219,29 +239,7 @@ public class Drivetrain extends SubsystemBase {
       ySpeedCommanded = m_currentTranslationMag * Math.sin(m_currentTranslationDir);
       m_currentRotation = m_rotLimiter.calculate(rot);
 
-    } else {
-      xSpeedCommanded = xSpeed;
-      ySpeedCommanded = ySpeed;
-      m_currentRotation = rot;
-    }
-
-    // Creates an interpolated value based on the min and max speed constants and the position of the slider (m_maxSpeed)
-    double lerpSpeed = DriveConstants.kMinSpeedMetersPerSecond + (DriveConstants.kMaxSpeedMetersPerSecond
-                     - DriveConstants.kMinSpeedMetersPerSecond) * m_maxSpeed;
-
-    // Convert the commanded speeds into the correct units for the drivetrain,
-    // using the interpolated speed
-    double xSpeedDelivered = xSpeedCommanded * lerpSpeed;
-    double ySpeedDelivered = ySpeedCommanded * lerpSpeed;
-    double rotDelivered = m_currentRotation * DriveConstants.kMaxAngularSpeed;
-
-    SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
-        fieldRelative
-            ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
-                Rotation2d.fromDegrees(m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)))
-            : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
- 
-    this.setModuleStates(swerveModuleStates);
+      return new double[] {xSpeedCommanded, ySpeedCommanded, m_currentRotation};
   }
 
   /**
@@ -313,7 +311,7 @@ public class Drivetrain extends SubsystemBase {
    * @return the robot's heading in degrees, from -180 to 180
    */
   public double getHeading() {
-    return Rotation2d.fromDegrees(m_gyro.getAngle()).getDegrees();
+    return getPose().getRotation().getDegrees();
   }
 
   /**
