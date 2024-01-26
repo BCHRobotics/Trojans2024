@@ -99,4 +99,8 @@ public class RobotContainer {
     public void setSpeedPercent() {
         m_robotDrive.setSpeedPercent(1 - ((m_driverController.getThrottle() + 1) / 2));
     }
+
+    public void updateOdometry() {
+        m_robotDrive.updateOdometry();
+    }
 }
