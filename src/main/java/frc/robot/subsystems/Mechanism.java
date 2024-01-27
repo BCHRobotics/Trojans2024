@@ -17,7 +17,7 @@ public class Mechanism extends SubsystemBase{
     private final CANSparkMax m_topBeltMotor = new CANSparkMax(20, MotorType.kBrushless);
     private final CANSparkMax m_bottomBeltMotor = new CANSparkMax(21, MotorType.kBrushless);
     private final CANSparkMax m_sourceMotor = new CANSparkMax(22, MotorType.kBrushless);
-    private final CANSparkMax m_ampMotor = new CANSparkMax(22, MotorType.kBrushless);
+    private final CANSparkMax m_ampMotor = new CANSparkMax(23, MotorType.kBrushed);
 
     /** Creates a new Mechanism. */
     public Mechanism() {
@@ -58,7 +58,7 @@ public class Mechanism extends SubsystemBase{
      */
     private void setBeltSpeed(double speed) {
         this.m_topBeltMotor.set(speed);
-        this.m_bottomBeltMotor.set(speed);
+        //this.m_bottomBeltMotor.set(speed);
     }
 
     /**
