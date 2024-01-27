@@ -9,8 +9,14 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+import static edu.wpi.first.wpilibj2.command.Commands.run;
 
+import java.io.Console;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Mechanism extends SubsystemBase{
@@ -65,6 +71,7 @@ public class Mechanism extends SubsystemBase{
      * Sets source intake speed in percent output [-1 --> 1]
      */
     private void setSourceSpeed(double speed) {
+        System.out.println("in set speed");
         this.m_sourceMotor.set(speed);
     }
     
@@ -75,13 +82,22 @@ public class Mechanism extends SubsystemBase{
         this.m_ampMotor.set(speed);
     }
 
-    public Command groundIntake() {
-        return parallel(
-            run(() -> this.setBeltSpeed(0.5)),
-            run(() -> this.setSourceSpeed(0.5)),
-            run(() -> this.setAmpSpeed(0.5)));
+    private void runGroundIntake(double speed) {
+        this.setBeltSpeed(speed);
+        this.setSourceSpeed(speed);
+        this.setAmpSpeed(speed);
+        System.out.println("Ground intake running");
     }
 
+    public Command groundIntake() {
+        System.out.println("in ground intake command");
+        return Commands.run(() -> this.runGroundIntake(0.5), this);
+    }
+/* 
+    public static Command runEnd(runGroundIntake(0.5), runGroundIntake(0.0)){
+        return run
+    }
+*/
     public Command sourceIntake() {
         return parallel(
             run(() -> this.setBeltSpeed(0.5)),
