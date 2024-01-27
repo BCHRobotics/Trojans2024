@@ -82,6 +82,13 @@ public class Mechanism extends SubsystemBase{
             run(() -> this.setAmpSpeed(0.5)));
     }
 
+    public Command sourceIntake() {
+        return parallel(
+            run(() -> this.setBeltSpeed(0.5)),
+            run(() -> this.setSourceSpeed(0.5)),
+            run(() -> this.setAmpSpeed(0.5)));
+    }
+
     public void stopMechanism() {
         this.setBeltSpeed(0);
         this.setSourceSpeed(0);

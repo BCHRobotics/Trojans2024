@@ -82,6 +82,7 @@ public class RobotContainer {
             .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));    
 
         m_driverController.button(3).whileTrue(new RunCommand(() -> m_mechanism.groundIntake(), m_mechanism));
+        m_driverController.button(5).whileTrue(new RunCommand(() -> m_mechanism.sourceIntake(), m_mechanism));
     }
 
     /**
