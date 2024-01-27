@@ -127,6 +127,7 @@ public final class Constants {
     public static final double kTwistDeadband = 0.5;
     public static final boolean kFieldRelative = true;
     public static final boolean kRateLimited = true;
+    public static final boolean kJoyStickDrive = false;
   }
 
   public static final class AutoConstants {
