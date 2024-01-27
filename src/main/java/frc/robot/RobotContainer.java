@@ -8,6 +8,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
@@ -32,6 +33,8 @@ public class RobotContainer {
 
     // The driver's controller
     CommandJoystick m_driverController = new CommandJoystick(OIConstants.kDriverControllerPort);
+
+    XboxController mXboxController = new XboxController(0);
 
     // The auto chooser
     private final SendableChooser<Command> autoChooser;
@@ -81,9 +84,20 @@ public class RobotContainer {
             .onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive))
             .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));    
 
-        m_driverController.button(3).onTrue(new RunCommand(() -> m_mechanism.groundIntake(), m_mechanism));
+        m_driverController.button(3).onTrue(new RunCommand(() -> m_mechanism.groundIntake(0.5), m_mechanism));
        // m_driverController.button(5).whileTrue(new RunCommand(() -> m_mechanism.sourceIntake(), m_mechanism));
        // m_driverController.button(6).whileTrue(new RunCommand(() -> m_mechanism.scoreAmp(), m_mechanism));
+
+        new JoystickButton(mXboxController, Button.kSquare.value)
+        .whileTrue(this.m_mechanism.scoreAmp(0.5));
+
+        new JoystickButton(mXboxController, Button.kTriangle.value)
+        .whileTrue(this.m_mechanism.sourceIntake(0.5));
+
+
+        
+        new JoystickButton(mXboxController, Button.kCircle.value)
+        .whileTrue(this.m_mechanism.groundIntake(0.5));
     }
 
     /**

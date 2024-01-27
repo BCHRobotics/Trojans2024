@@ -21,39 +21,39 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Mechanism extends SubsystemBase{
     private final CANSparkMax m_topBeltMotor = new CANSparkMax(20, MotorType.kBrushless);
-    private final CANSparkMax m_bottomBeltMotor = new CANSparkMax(21, MotorType.kBrushless);
+    //private final CANSparkMax m_bottomBeltMotor = new CANSparkMax(21, MotorType.kBrushless);
     private final CANSparkMax m_sourceMotor = new CANSparkMax(22, MotorType.kBrushless);
     private final CANSparkMax m_ampMotor = new CANSparkMax(23, MotorType.kBrushed);
 
     /** Creates a new Mechanism. */
     public Mechanism() {
         this.m_topBeltMotor.restoreFactoryDefaults();
-        this.m_bottomBeltMotor.restoreFactoryDefaults();
+    //    this.m_bottomBeltMotor.restoreFactoryDefaults();
         this.m_sourceMotor.restoreFactoryDefaults();
         this.m_ampMotor.restoreFactoryDefaults();
 
         this.m_topBeltMotor.setIdleMode(IdleMode.kBrake);
-        this.m_bottomBeltMotor.setIdleMode(IdleMode.kBrake);
+    //    this.m_bottomBeltMotor.setIdleMode(IdleMode.kBrake);
         this.m_sourceMotor.setIdleMode(IdleMode.kBrake);
         this.m_ampMotor.setIdleMode(IdleMode.kBrake);
 
         this.m_topBeltMotor.setSmartCurrentLimit(60, 20);
-        this.m_bottomBeltMotor.setSmartCurrentLimit(60, 20);
+    //    this.m_bottomBeltMotor.setSmartCurrentLimit(60, 20);
         this.m_sourceMotor.setSmartCurrentLimit(60, 20);
         this.m_ampMotor.setSmartCurrentLimit(60, 20);
 
         this.m_topBeltMotor.setInverted(false);
-        this.m_bottomBeltMotor.setInverted(true);
+    //    this.m_bottomBeltMotor.setInverted(true);
         this.m_sourceMotor.setInverted(true);
         this.m_ampMotor.setInverted(false);
 
         this.m_topBeltMotor.setOpenLoopRampRate(0.05);
-        this.m_bottomBeltMotor.setOpenLoopRampRate(0.05);
+    //    this.m_bottomBeltMotor.setOpenLoopRampRate(0.05);
         this.m_sourceMotor.setOpenLoopRampRate(0.05);
         this.m_ampMotor.setOpenLoopRampRate(0.05);
 
         this.m_topBeltMotor.enableVoltageCompensation(12);
-        this.m_bottomBeltMotor.enableVoltageCompensation(12);
+    //    this.m_bottomBeltMotor.enableVoltageCompensation(12);
         this.m_sourceMotor.enableVoltageCompensation(12);
         this.m_ampMotor.enableVoltageCompensation(12);
     }
@@ -71,7 +71,6 @@ public class Mechanism extends SubsystemBase{
      * Sets source intake speed in percent output [-1 --> 1]
      */
     private void setSourceSpeed(double speed) {
-        System.out.println("in set speed");
         this.m_sourceMotor.set(speed);
     }
     
@@ -85,32 +84,56 @@ public class Mechanism extends SubsystemBase{
     private void runGroundIntake(double speed) {
         this.setBeltSpeed(speed);
         this.setSourceSpeed(speed);
-        this.setAmpSpeed(speed);
-        System.out.println("Ground intake running");
+        //this.setAmpSpeed(speed);
     }
 
-    public Command groundIntake() {
-        System.out.println("in ground intake command");
-        return Commands.run(() -> this.runGroundIntake(0.5), this);
+    public Command scoreAmp(double speed) {
+        return parallel(
+            Commands.runOnce(() -> {this.setBeltSpeed(speed);}),
+            Commands.runOnce(() -> {this.setSourceSpeed(speed);}),
+            Commands.runOnce(() -> {this.setAmpSpeed(speed);})
+        );
     }
+
+    public Command sourceIntake(double speed) {
+        return parallel(
+            Commands.runOnce(() -> {this.setBeltSpeed(speed);}),
+            Commands.runOnce(() -> {this.setSourceSpeed(speed);}),
+            Commands.runOnce(() -> {this.setAmpSpeed(-speed);})
+        );
+    }
+
+    public Command groundIntake(double speed) {
+        return parallel(
+            Commands.runOnce(() -> {this.setBeltSpeed(-speed);}),
+            Commands.runOnce(() -> {this.setSourceSpeed(speed);}),
+            Commands.runOnce(() -> {this.setAmpSpeed(speed);})
+        );
+    }
+
+    // public Command groundIntake(double speed) {
+    //     return Commands.runOnce(() -> {
+    //         this.setAmpSpeed(-speed);
+    //     });
+    // }
 /* 
     public static Command runEnd(runGroundIntake(0.5), runGroundIntake(0.0)){
         return run
     }
 */
-    public Command sourceIntake() {
-        return parallel(
-            run(() -> this.setBeltSpeed(0.5)),
-            run(() -> this.setSourceSpeed(0.5)),
-            run(() -> this.setAmpSpeed(0.5)));
-    }
+    // public Command sourceIntake() {
+    //     return parallel(
+    //         run(() -> this.setBeltSpeed(0.5)),
+    //         run(() -> this.setSourceSpeed(0.5)),
+    //         run(() -> this.setAmpSpeed(0.5)));
+    // }
 
-    public Command scoreAmp() {
-        return parallel(
-            run(() -> this.setBeltSpeed(0.5)),
-            run(() -> this.setSourceSpeed(-0.5)),
-            run(() -> this.setAmpSpeed(-0.5)));
-    }
+    // public Command scoreAmp() {
+    //     return parallel(
+    //         run(() -> this.setBeltSpeed(0.5)),
+    //         run(() -> this.setSourceSpeed(-0.5)),
+    //         run(() -> this.setAmpSpeed(-0.5)));
+    // }
 
     public void stopMechanism() {
         this.setBeltSpeed(0);
