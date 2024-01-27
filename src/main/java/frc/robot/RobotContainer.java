@@ -83,6 +83,7 @@ public class RobotContainer {
 
         m_driverController.button(3).whileTrue(new RunCommand(() -> m_mechanism.groundIntake(), m_mechanism));
         m_driverController.button(5).whileTrue(new RunCommand(() -> m_mechanism.sourceIntake(), m_mechanism));
+        m_driverController.button(6).whileTrue(new RunCommand(() -> m_mechanism.scoreAmp(), m_mechanism));
     }
 
     /**
