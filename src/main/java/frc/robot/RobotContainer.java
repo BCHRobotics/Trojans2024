@@ -8,7 +8,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.PS4Controller.Button;
+import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
@@ -88,15 +88,13 @@ public class RobotContainer {
        // m_driverController.button(5).whileTrue(new RunCommand(() -> m_mechanism.sourceIntake(), m_mechanism));
        // m_driverController.button(6).whileTrue(new RunCommand(() -> m_mechanism.scoreAmp(), m_mechanism));
 
-        new JoystickButton(mXboxController, Button.kSquare.value)
+        new JoystickButton(mXboxController, Button.kB.value)
         .whileTrue(this.m_mechanism.scoreAmp(0.5));
 
-        new JoystickButton(mXboxController, Button.kTriangle.value)
+        new JoystickButton(mXboxController, Button.kX.value)
         .whileTrue(this.m_mechanism.sourceIntake(0.5));
 
-
-        
-        new JoystickButton(mXboxController, Button.kCircle.value)
+        new JoystickButton(mXboxController, Button.kA.value)
         .whileTrue(this.m_mechanism.groundIntake(0.5));
     }
 
