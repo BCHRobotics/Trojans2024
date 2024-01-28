@@ -9,51 +9,39 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
-import static edu.wpi.first.wpilibj2.command.Commands.run;
 
-import java.io.Console;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Mechanism extends SubsystemBase{
     private final CANSparkMax m_topBeltMotor = new CANSparkMax(20, MotorType.kBrushless);
-    //private final CANSparkMax m_bottomBeltMotor = new CANSparkMax(21, MotorType.kBrushless);
     private final CANSparkMax m_sourceMotor = new CANSparkMax(22, MotorType.kBrushless);
     private final CANSparkMax m_ampMotor = new CANSparkMax(23, MotorType.kBrushed);
 
     /** Creates a new Mechanism. */
     public Mechanism() {
         this.m_topBeltMotor.restoreFactoryDefaults();
-    //    this.m_bottomBeltMotor.restoreFactoryDefaults();
         this.m_sourceMotor.restoreFactoryDefaults();
         this.m_ampMotor.restoreFactoryDefaults();
 
         this.m_topBeltMotor.setIdleMode(IdleMode.kBrake);
-    //    this.m_bottomBeltMotor.setIdleMode(IdleMode.kBrake);
         this.m_sourceMotor.setIdleMode(IdleMode.kBrake);
         this.m_ampMotor.setIdleMode(IdleMode.kBrake);
 
         this.m_topBeltMotor.setSmartCurrentLimit(60, 20);
-    //    this.m_bottomBeltMotor.setSmartCurrentLimit(60, 20);
         this.m_sourceMotor.setSmartCurrentLimit(60, 20);
         this.m_ampMotor.setSmartCurrentLimit(60, 20);
 
         this.m_topBeltMotor.setInverted(false);
-    //    this.m_bottomBeltMotor.setInverted(true);
         this.m_sourceMotor.setInverted(true);
         this.m_ampMotor.setInverted(false);
 
         this.m_topBeltMotor.setOpenLoopRampRate(0.05);
-    //    this.m_bottomBeltMotor.setOpenLoopRampRate(0.05);
         this.m_sourceMotor.setOpenLoopRampRate(0.05);
         this.m_ampMotor.setOpenLoopRampRate(0.05);
 
         this.m_topBeltMotor.enableVoltageCompensation(12);
-    //    this.m_bottomBeltMotor.enableVoltageCompensation(12);
         this.m_sourceMotor.enableVoltageCompensation(12);
         this.m_ampMotor.enableVoltageCompensation(12);
     }
@@ -64,7 +52,6 @@ public class Mechanism extends SubsystemBase{
      */
     private void setBeltSpeed(double speed) {
         this.m_topBeltMotor.set(speed);
-        //this.m_bottomBeltMotor.set(speed);
     }
 
     /**
@@ -79,12 +66,6 @@ public class Mechanism extends SubsystemBase{
      */
     private void setAmpSpeed(double speed) {
         this.m_ampMotor.set(speed);
-    }
-
-    private void runGroundIntake(double speed) {
-        this.setBeltSpeed(speed);
-        this.setSourceSpeed(speed);
-        //this.setAmpSpeed(speed);
     }
 
     public Command scoreAmp(double speed) {
@@ -111,34 +92,12 @@ public class Mechanism extends SubsystemBase{
         );
     }
 
-    // public Command groundIntake(double speed) {
-    //     return Commands.runOnce(() -> {
-    //         this.setAmpSpeed(-speed);
-    //     });
-    // }
-/* 
-    public static Command runEnd(runGroundIntake(0.5), runGroundIntake(0.0)){
-        return run
-    }
-*/
-    // public Command sourceIntake() {
-    //     return parallel(
-    //         run(() -> this.setBeltSpeed(0.5)),
-    //         run(() -> this.setSourceSpeed(0.5)),
-    //         run(() -> this.setAmpSpeed(0.5)));
-    // }
-
-    // public Command scoreAmp() {
-    //     return parallel(
-    //         run(() -> this.setBeltSpeed(0.5)),
-    //         run(() -> this.setSourceSpeed(-0.5)),
-    //         run(() -> this.setAmpSpeed(-0.5)));
-    // }
-
-    public void stopMechanism() {
-        this.setBeltSpeed(0);
-        this.setSourceSpeed(0);
-        this.setAmpSpeed(0);
+    public Command stopMechanism() {
+        return parallel(
+            Commands.runOnce(() -> {this.setBeltSpeed(0);}),
+            Commands.runOnce(() -> {this.setSourceSpeed(0);}),
+            Commands.runOnce(() -> {this.setAmpSpeed(0);})
+        );
     }
 
     public void periodic() {}
