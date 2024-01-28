@@ -66,6 +66,16 @@ public final class Constants {
     public static final boolean kGyroReversed = true;
   }
 
+  public static final class MechanismConstants {
+    public static final int kBeltMotorCanId = 20;
+    public static final int kSourceMotorCanId = 22;
+    public static final int kAmpMotorCanId = 23;
+
+    public static final int kPickupSensorChannel = 0;
+    public static final int kLoadedSensorChannel = 1;
+    public static final int kShootSensorChannel = 2;
+  }
+
   public static final class ModuleConstants {
     // The MAXSwerve module can be configured with one of three pinion gears: 12T,
     // 13T, or 14T.

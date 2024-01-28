@@ -14,44 +14,60 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import frc.robot.Constants.MechanismConstants;
+import frc.utils.BeamBreak;
+import frc.utils.BeamBreak.Phase;
+
 public class Mechanism extends SubsystemBase{
-    private final CANSparkMax m_topBeltMotor = new CANSparkMax(20, MotorType.kBrushless);
-    private final CANSparkMax m_sourceMotor = new CANSparkMax(22, MotorType.kBrushless);
-    private final CANSparkMax m_ampMotor = new CANSparkMax(23, MotorType.kBrushed);
+    private final BeamBreak m_beamBreak = new BeamBreak(
+        MechanismConstants.kPickupSensorChannel, 
+        MechanismConstants.kLoadedSensorChannel, 
+        MechanismConstants.kShootSensorChannel
+    );
+
+    private Phase m_currentPhase = Phase.PICKUP;
+
+    private final CANSparkMax m_beltMotor = new CANSparkMax(MechanismConstants.kBeltMotorCanId, MotorType.kBrushless);
+    private final CANSparkMax m_sourceMotor = new CANSparkMax(MechanismConstants.kSourceMotorCanId, MotorType.kBrushless);
+    private final CANSparkMax m_ampMotor = new CANSparkMax(MechanismConstants.kAmpMotorCanId, MotorType.kBrushed);
 
     /** Creates a new Mechanism. */
     public Mechanism() {
-        this.m_topBeltMotor.restoreFactoryDefaults();
+        this.m_beltMotor.restoreFactoryDefaults();
         this.m_sourceMotor.restoreFactoryDefaults();
         this.m_ampMotor.restoreFactoryDefaults();
 
-        this.m_topBeltMotor.setIdleMode(IdleMode.kBrake);
+        this.m_beltMotor.setIdleMode(IdleMode.kBrake);
         this.m_sourceMotor.setIdleMode(IdleMode.kBrake);
         this.m_ampMotor.setIdleMode(IdleMode.kBrake);
 
-        this.m_topBeltMotor.setSmartCurrentLimit(60, 20);
+        this.m_beltMotor.setSmartCurrentLimit(60, 20);
         this.m_sourceMotor.setSmartCurrentLimit(60, 20);
         this.m_ampMotor.setSmartCurrentLimit(60, 20);
 
-        this.m_topBeltMotor.setInverted(false);
-        this.m_sourceMotor.setInverted(true);
+        this.m_beltMotor.setInverted(false);
+        this.m_sourceMotor.setInverted(false);
         this.m_ampMotor.setInverted(false);
 
-        this.m_topBeltMotor.setOpenLoopRampRate(0.05);
+        this.m_beltMotor.setOpenLoopRampRate(0.05);
         this.m_sourceMotor.setOpenLoopRampRate(0.05);
         this.m_ampMotor.setOpenLoopRampRate(0.05);
 
-        this.m_topBeltMotor.enableVoltageCompensation(12);
+        this.m_beltMotor.enableVoltageCompensation(12);
         this.m_sourceMotor.enableVoltageCompensation(12);
         this.m_ampMotor.enableVoltageCompensation(12);
     }
 
-    
+    private void updatePhase() {
+        this.m_beamBreak.updatePhase();
+        this.m_currentPhase = this.m_beamBreak.getPhase();
+    }
+
     /**
      * Sets belt speed in percent output [-1 --> 1]
      */
     private void setBeltSpeed(double speed) {
-        this.m_topBeltMotor.set(speed);
+        this.m_beltMotor.set(speed);
     }
 
     /**
@@ -92,6 +108,22 @@ public class Mechanism extends SubsystemBase{
         );
     }
 
+    public Command newGroundIntake(double speed) {
+        return Commands.runOnce(() -> {this.setBeltSpeed(-speed);})
+            .until(() -> m_currentPhase == Phase.PICKUP)
+            .andThen(Commands.runOnce(() -> {this.setBeltSpeed(0);
+        }));
+    }
+
+    public Command newerGroundIntake(double speed) {
+        return Commands.runOnce(() -> {this.setBeltSpeed(-speed);})
+            .until(() -> m_currentPhase == Phase.PICKUP)
+            .andThen(Commands.runOnce(() -> {this.setBeltSpeed(-speed * 0.75);}))
+            .until(() -> m_currentPhase == Phase.LOADED)
+            .andThen(Commands.runOnce(() -> {this.setBeltSpeed(0);})
+        );
+    }
+
     public Command stopMechanism() {
         return parallel(
             Commands.runOnce(() -> {this.setBeltSpeed(0);}),
@@ -100,5 +132,7 @@ public class Mechanism extends SubsystemBase{
         );
     }
 
-    public void periodic() {}
+    public void periodic() {
+        this.updatePhase();
+    }
 }
