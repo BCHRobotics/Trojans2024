@@ -11,6 +11,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -26,7 +27,7 @@ public class Mechanism extends SubsystemBase{
         MechanismConstants.kShootSensorChannel
     );
 
-    private Phase m_currentPhase = Phase.PICKUP;
+    private Phase m_currentPhase = Phase.NONE;
 
     private final CANSparkMax m_beltMotor = new CANSparkMax(MechanismConstants.kBeltMotorCanId, MotorType.kBrushless);
     private final CANSparkMax m_sourceMotor = new CANSparkMax(MechanismConstants.kSourceMotorCanId, MotorType.kBrushless);
@@ -108,16 +109,16 @@ public class Mechanism extends SubsystemBase{
 
     public Command scoreAmp(double speed) {
         return parallel(
-            Commands.runOnce(() -> {this.setBeltSpeed(speed);}),
+            Commands.runOnce(() -> {this.setBeltSpeed(-speed);}),
             Commands.runOnce(() -> {this.setSourceSpeed(speed);}),
-            Commands.runOnce(() -> {this.setAmpSpeed(speed);})
+            Commands.runOnce(() -> {this.setAmpSpeed(-speed);})
         );
     }
 
     public Command sourceIntake(double speed) {
         return parallel(
             Commands.runOnce(() -> {this.setBeltSpeed(speed);}),
-            Commands.runOnce(() -> {this.setSourceSpeed(speed);}),
+            Commands.runOnce(() -> {this.setSourceSpeed(-speed);}),
             Commands.runOnce(() -> {this.setAmpSpeed(-speed);})
         );
     }
@@ -131,10 +132,10 @@ public class Mechanism extends SubsystemBase{
     }
 
     public Command newGroundIntake(double speed) {
-        return Commands.runOnce(() -> {this.setBeltSpeed(speed);})
+        return Commands.runOnce(() -> {this.setBeltSpeed(-speed);})
             .until(() -> m_currentPhase == Phase.PICKUP)
             .andThen(
-                Commands.runOnce(() -> {this.setBeltSpeed(speed * 0.75);}))
+                Commands.runOnce(() -> {this.setBeltSpeed(-speed * 0.75);}))
                 .until(() -> m_currentPhase == Phase.LOADED)
                 .andThen(
                     Commands.runOnce(() -> {this.setBeltSpeed(0);})
@@ -152,10 +153,10 @@ public class Mechanism extends SubsystemBase{
                     Commands.runOnce(() -> {this.setSourceSpeed(0);})
                     .until(() -> this.getSourceSpeed() == 0)),
 
-            Commands.runOnce(() -> {this.setBeltSpeed(-speed);})
+            Commands.runOnce(() -> {this.setBeltSpeed(speed);})
             .until(() -> m_currentPhase == Phase.SHOOT)
             .andThen(
-                Commands.runOnce(() -> {this.setBeltSpeed(-speed * 0.75);}))
+                Commands.runOnce(() -> {this.setBeltSpeed(speed * 0.75);}))
                 .until(() -> m_currentPhase == Phase.LOADED)
                 .andThen(
                     Commands.runOnce(() -> {this.setBeltSpeed(0);})
@@ -166,7 +167,7 @@ public class Mechanism extends SubsystemBase{
     public Command newScoreAmp(double speed) {
         return parallel(
             Commands.runOnce(() -> {this.setAmpSpeed(-speed);}),
-            Commands.runOnce(() -> {this.setSourceSpeed(-speed);})
+            Commands.runOnce(() -> {this.setSourceSpeed(speed);})
         )
         .until(() -> this.getAmpSpeed() == -speed && this.getSourceSpeed() == -speed)
         .andThen(
@@ -196,5 +197,6 @@ public class Mechanism extends SubsystemBase{
 
     public void periodic() {
         this.updatePhase();
+        SmartDashboard.putString("Current Phase: ", this.m_currentPhase.name());
     }
 }
