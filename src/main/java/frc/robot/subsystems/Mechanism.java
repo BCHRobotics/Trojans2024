@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -71,10 +72,24 @@ public class Mechanism extends SubsystemBase{
     }
 
     /**
+     * Gets belt speed in percent output [-1 --> 1]
+     */
+    private double getBeltSpeed() {
+        return this.m_beltMotor.get();
+    }
+
+    /**
      * Sets source intake speed in percent output [-1 --> 1]
      */
     private void setSourceSpeed(double speed) {
         this.m_sourceMotor.set(speed);
+    }
+
+    /**
+     * Gets source intake speed in percent output [-1 --> 1]
+     */
+    private double getSourceSpeed() {
+        return this.m_sourceMotor.get();
     }
     
     /**
@@ -82,6 +97,13 @@ public class Mechanism extends SubsystemBase{
      */
     private void setAmpSpeed(double speed) {
         this.m_ampMotor.set(speed);
+    }
+
+    /**
+     * Gets amp motor speed in percent output [-1 --> 1]
+     */
+    private double getAmpSpeed() {
+        return this.m_ampMotor.get();
     }
 
     public Command scoreAmp(double speed) {
@@ -109,19 +131,58 @@ public class Mechanism extends SubsystemBase{
     }
 
     public Command newGroundIntake(double speed) {
-        return Commands.runOnce(() -> {this.setBeltSpeed(-speed);})
+        return Commands.runOnce(() -> {this.setBeltSpeed(speed);})
             .until(() -> m_currentPhase == Phase.PICKUP)
-            .andThen(Commands.runOnce(() -> {this.setBeltSpeed(0);
-        }));
+            .andThen(
+                Commands.runOnce(() -> {this.setBeltSpeed(speed * 0.75);}))
+                .until(() -> m_currentPhase == Phase.LOADED)
+                .andThen(
+                    Commands.runOnce(() -> {this.setBeltSpeed(0);})
+                    .until(() -> this.getBeltSpeed() == 0));
     }
 
-    public Command newerGroundIntake(double speed) {
-        return Commands.runOnce(() -> {this.setBeltSpeed(-speed);})
-            .until(() -> m_currentPhase == Phase.PICKUP)
-            .andThen(Commands.runOnce(() -> {this.setBeltSpeed(-speed * 0.75);}))
-            .until(() -> m_currentPhase == Phase.LOADED)
-            .andThen(Commands.runOnce(() -> {this.setBeltSpeed(0);})
+    public Command newSourceIntake(double speed) {
+        return parallel(
+            Commands.runOnce(() -> {this.setSourceSpeed(-speed);})
+            .until(() -> m_currentPhase == Phase.SHOOT)
+            .andThen(
+                Commands.runOnce(() -> {this.setSourceSpeed(-speed * 0.75);}))
+                .until(() -> m_currentPhase == Phase.LOADED)
+                .andThen(
+                    Commands.runOnce(() -> {this.setSourceSpeed(0);})
+                    .until(() -> this.getSourceSpeed() == 0)),
+
+            Commands.runOnce(() -> {this.setBeltSpeed(-speed);})
+            .until(() -> m_currentPhase == Phase.SHOOT)
+            .andThen(
+                Commands.runOnce(() -> {this.setBeltSpeed(-speed * 0.75);}))
+                .until(() -> m_currentPhase == Phase.LOADED)
+                .andThen(
+                    Commands.runOnce(() -> {this.setBeltSpeed(0);})
+                    .until(() -> this.getBeltSpeed() == 0))
         );
+    }
+
+    public Command newScoreAmp(double speed) {
+        return parallel(
+            Commands.runOnce(() -> {this.setAmpSpeed(-speed);}),
+            Commands.runOnce(() -> {this.setSourceSpeed(-speed);})
+        )
+        .until(() -> this.getAmpSpeed() == -speed && this.getSourceSpeed() == -speed)
+        .andThen(
+            Commands.runOnce(() -> {this.setBeltSpeed(speed);})
+            .until(() -> m_currentPhase == Phase.SHOOT))
+            .withTimeout(0.2)
+            .andThen(
+                parallel(
+                    Commands.runOnce(() -> {this.setBeltSpeed(0);})
+                    .until(() -> this.getBeltSpeed() == 0)),
+
+                    Commands.runOnce(() -> {this.setAmpSpeed(0);})
+                    .until(() -> this.getAmpSpeed() == 0),
+                    
+                    Commands.runOnce(() -> {this.setSourceSpeed(0);})
+                    .until(() -> this.getSourceSpeed() == 0));
     }
 
     public Command stopMechanism() {
@@ -129,7 +190,8 @@ public class Mechanism extends SubsystemBase{
             Commands.runOnce(() -> {this.setBeltSpeed(0);}),
             Commands.runOnce(() -> {this.setSourceSpeed(0);}),
             Commands.runOnce(() -> {this.setAmpSpeed(0);})
-        );
+        )
+        .until(() -> this.getBeltSpeed() == 0 && this.getSourceSpeed() == 0 && this.getAmpSpeed() == 0);
     }
 
     public void periodic() {
