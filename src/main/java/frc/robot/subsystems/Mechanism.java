@@ -132,14 +132,36 @@ public class Mechanism extends SubsystemBase{
     }
 
     public Command newGroundIntake(double speed) {
-        return Commands.runOnce(() -> {this.setBeltSpeed(-speed);})
-            .until(() -> m_currentPhase == Phase.PICKUP)
-            .andThen(
+        return Commands.runOnce(() -> {this.setBeltSpeed(-speed);})             //TODO: try removing the Commands.
+            .until(() -> checkState(Phase.PICKUP))                              //TODO: try checkState function
+            .andThen(                                                           //TODO: try removing {} from the lambda
                 Commands.runOnce(() -> {this.setBeltSpeed(-speed * 0.75);}))
                 .until(() -> m_currentPhase == Phase.LOADED)
                 .andThen(
                     Commands.runOnce(() -> {this.setBeltSpeed(0);})
                     .until(() -> this.getBeltSpeed() == 0));
+    }
+
+    public Command newerGroundIntake() {
+        return startEnd(() -> this.setBeltSpeed(0.5), () -> this.setBeltSpeed(0.0))
+            .until(() -> checkState(Phase.PICKUP))
+            .andThen(
+                () -> System.out.println("finished!"));
+    }
+
+    public Command evenNewerGroundIntake(double speed) {
+        return Commands.runOnce(() -> this.setBeltSpeed(-speed))
+            .until(() -> m_currentPhase == Phase.PICKUP)               
+            .andThen(
+                Commands.runOnce(() -> this.setBeltSpeed(-speed * 0.75)))
+                .until(() -> m_currentPhase == Phase.LOADED)
+                .andThen(
+                    Commands.runOnce(() -> this.setBeltSpeed(0))
+                    .until(() -> this.getBeltSpeed() == 0));
+    }
+
+    private boolean checkState(Phase phase) {
+        return m_currentPhase == phase;
     }
 
     public Command newSourceIntake(double speed) {
