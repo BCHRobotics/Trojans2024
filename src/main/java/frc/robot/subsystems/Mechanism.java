@@ -172,7 +172,7 @@ public class Mechanism extends SubsystemBase{
         .andThen(
             Commands.runOnce(() -> {this.setBeltSpeed(speed);})
             .until(() -> m_currentPhase == Phase.SHOOT))
-            .withTimeout(0.2)
+            .withTimeout(0.5)
             .andThen(
                 parallel(
                     Commands.runOnce(() -> {this.setBeltSpeed(0);})
