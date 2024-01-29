@@ -28,16 +28,20 @@ public class BeamBreak {
 
     // Method to update the phase based on sensor inputs
     public void updatePhase() {
-        if (m_loadedSensor.get() && m_pickupSensor.get() && m_shootSensor.get()){
-            m_currentPhase = Phase.NONE;
-        }
-        else if (!m_loadedSensor.get()) {
+        if (!m_loadedSensor.get()) {
             m_currentPhase = Phase.LOADED;
+
         } else if (!m_pickupSensor.get()) {
             m_currentPhase = Phase.PICKUP;
+
         } else if (!m_shootSensor.get()) {
             m_currentPhase = Phase.SHOOT;
-        } 
+
+        } else if (m_loadedSensor.get() 
+                && m_pickupSensor.get() 
+                && m_shootSensor.get()) {
+            m_currentPhase = Phase.NONE;
+        }
     }
 
     public Phase getPhase() {
