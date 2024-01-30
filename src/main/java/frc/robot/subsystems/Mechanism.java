@@ -14,6 +14,7 @@ import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -293,11 +294,11 @@ public class Mechanism extends SubsystemBase{
 
     public Command stopMechanism() {
         return parallel(
-            Commands.runOnce(() -> {this.setBeltSpeed(0);}),
-            Commands.runOnce(() -> {this.setSourceSpeed(0);}),
-            Commands.runOnce(() -> {this.setAmpSpeed(0);})
-        )
-        .until(() -> this.getBeltSpeed() == 0 && this.getSourceSpeed() == 0 && this.getAmpSpeed() == 0);
+            Commands.runOnce(() -> CommandScheduler.getInstance().cancelAll()),
+            Commands.runOnce(() -> this.setBeltSpeed(0)),
+            Commands.runOnce(() -> this.setSourceSpeed(0)),
+            Commands.runOnce(() -> this.setAmpSpeed(0))
+        );
     }
 
     public void periodic() {
