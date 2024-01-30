@@ -10,12 +10,14 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
+import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.MechanismConstants;
 import frc.utils.BeamBreak;
 import frc.utils.BeamBreak.Phase;
@@ -131,59 +133,138 @@ public class Mechanism extends SubsystemBase{
         );
     }
 
-    public Command newGroundIntake(double speed) {
-        return Commands.runOnce(() -> {this.setBeltSpeed(-speed);})             //TODO: try removing the Commands.
-            .until(() -> checkState(Phase.PICKUP))                              //TODO: try checkState function
-            .andThen(                                                           //TODO: try removing {} from the lambda
-                Commands.runOnce(() -> {this.setBeltSpeed(-speed * 0.75);}))
-                .until(() -> m_currentPhase == Phase.LOADED)
-                .andThen(
-                    Commands.runOnce(() -> {this.setBeltSpeed(0);})
-                    .until(() -> this.getBeltSpeed() == 0));
+    // public Command newGroundIntake(double speed) {
+    //     return Commands.runOnce(() -> {this.setBeltSpeed(-speed);})             
+    //         .until(() -> checkState(Phase.PICKUP))                              
+    //         .andThen(                                                           
+    //             Commands.runOnce(() -> {this.setBeltSpeed(-speed * 0.75);}))
+    //             .until(() -> m_currentPhase == Phase.LOADED)
+    //             .andThen(
+    //                 Commands.runOnce(() -> {this.setBeltSpeed(0);}))
+    //                 .until(() -> this.getBeltSpeed() == 0);
+    // }
+
+    public Command newerGroundIntake(double speed) {
+        return 
+        parallel(
+            Commands.startEnd(() -> this.setBeltSpeed(-speed), () -> this.setBeltSpeed(-speed * 0.75)),
+            Commands.startEnd(() -> this.setSourceSpeed(speed), () -> this.setSourceSpeed(speed * 0.75)),
+            Commands.startEnd(() -> this.setAmpSpeed(speed), () -> this.setAmpSpeed(speed * 0.75))
+        )
+        .until(() -> checkState(Phase.PICKUP))
+        .andThen(() -> System.out.println("Pickup hit"))
+        .andThen(
+            parallel(
+            startEnd(() -> this.setBeltSpeed(-speed * 0.75), () -> this.setBeltSpeed(0.0))
+            .until(() -> checkState(Phase.LOADED)))
+            .andThen(() -> System.out.println("loaded hit")),
+
+            startEnd(() -> this.setSourceSpeed(-speed * 0.75), () -> this.setSourceSpeed(0.0))
+            .until(() -> checkState(Phase.LOADED)),
+
+            startEnd(() -> this.setAmpSpeed(-speed * 0.75), () -> this.setAmpSpeed(0.0))
+            .until(() -> checkState(Phase.LOADED)));
     }
 
-    public Command newerGroundIntake() {
-        return startEnd(() -> this.setBeltSpeed(0.5), () -> this.setBeltSpeed(0.0))
-            .until(() -> checkState(Phase.PICKUP))
-            .andThen(
-                () -> System.out.println("finished!"));
-    }
-
-    public Command evenNewerGroundIntake(double speed) {
-        return Commands.runOnce(() -> this.setBeltSpeed(-speed))
-            .until(() -> m_currentPhase == Phase.PICKUP)               
-            .andThen(
-                Commands.runOnce(() -> this.setBeltSpeed(-speed * 0.75)))
-                .until(() -> m_currentPhase == Phase.LOADED)
-                .andThen(
-                    Commands.runOnce(() -> this.setBeltSpeed(0))
-                    .until(() -> this.getBeltSpeed() == 0));
-    }
+    // public Command evenNewerGroundIntake(double speed) {
+    //     return run(() -> this.setBeltSpeed(-speed))
+    //         .until(() -> checkState(Phase.PICKUP))
+    //         .andThen(() -> System.out.println("done!")
+    //             /*run(() -> this.setBeltSpeed(-speed * 0.75)))
+    //             .until(() -> checkState(Phase.LOADED))
+    //             .andThen(
+    //                 run(() -> this.setBeltSpeed(0))
+    //                 .until(() -> this.getBeltSpeed() == 0)*/);
+    // }
 
     private boolean checkState(Phase phase) {
         return m_currentPhase == phase;
     }
 
-    public Command newSourceIntake(double speed) {
-        return parallel(
-            Commands.runOnce(() -> {this.setSourceSpeed(-speed);})
-            .until(() -> m_currentPhase == Phase.SHOOT)
-            .andThen(
-                Commands.runOnce(() -> {this.setSourceSpeed(-speed * 0.75);}))
-                .until(() -> m_currentPhase == Phase.LOADED)
-                .andThen(
-                    Commands.runOnce(() -> {this.setSourceSpeed(0);})
-                    .until(() -> this.getSourceSpeed() == 0)),
+    public Command newerSourceIntake(double speed) {
+        return parallel (
+            Commands.startEnd(() -> this.setSourceSpeed(-speed), () -> this.setSourceSpeed(-speed * 0.75)),
+            Commands.startEnd(() -> this.setAmpSpeed(-speed), () -> this.setAmpSpeed(-speed * 0.75)),
+            Commands.startEnd(() -> this.setBeltSpeed(speed), () -> this.setBeltSpeed(speed * 0.75))
+        )
+        .until(() -> checkState(Phase.SHOOT))
+        .andThen(
+            parallel(
+                Commands.startEnd(() -> this.setSourceSpeed(-speed * 0.75), () -> this.setSourceSpeed(0)),
+                Commands.startEnd(() -> this.setAmpSpeed(-speed * 0.75), () -> this.setAmpSpeed(0)),
+                Commands.startEnd(() -> this.setBeltSpeed(speed * 0.75), () -> this.setBeltSpeed(0))
+            )
+            .until(() -> checkState(Phase.LOADED)));
+    }
 
-            Commands.runOnce(() -> {this.setBeltSpeed(speed);})
-            .until(() -> m_currentPhase == Phase.SHOOT)
-            .andThen(
-                Commands.runOnce(() -> {this.setBeltSpeed(speed * 0.75);}))
-                .until(() -> m_currentPhase == Phase.LOADED)
-                .andThen(
-                    Commands.runOnce(() -> {this.setBeltSpeed(0);})
-                    .until(() -> this.getBeltSpeed() == 0))
-        );
+    // public Command newSourceIntake(double speed) {
+    //     return parallel(
+    //         Commands.runOnce(() -> {this.setSourceSpeed(-speed);})
+    //         .until(() -> m_currentPhase == Phase.SHOOT)
+    //         .andThen(
+    //             Commands.runOnce(() -> {this.setSourceSpeed(-speed * 0.75);}))
+    //             .until(() -> m_currentPhase == Phase.LOADED)
+    //             .andThen(
+    //                 Commands.runOnce(() -> {this.setSourceSpeed(0);})
+    //                 .until(() -> this.getSourceSpeed() == 0)),
+
+    //         Commands.runOnce(() -> {this.setBeltSpeed(speed);})
+    //         .until(() -> m_currentPhase == Phase.SHOOT)
+    //         .andThen(
+    //             Commands.runOnce(() -> {this.setBeltSpeed(speed * 0.75);}))
+    //             .until(() -> m_currentPhase == Phase.LOADED)
+    //             .andThen(
+    //                 Commands.runOnce(() -> {this.setBeltSpeed(0);})
+    //                 .until(() -> this.getBeltSpeed() == 0))
+    //     );
+    // }
+
+    public Command newerishScoreAmp(double speed) {
+        return parallel(
+            Commands.runOnce(() -> this.setAmpSpeed(-speed)),
+            Commands.runOnce(() -> this.setSourceSpeed(speed))
+        )
+        .until(() -> this.getAmpSpeed() == -speed && this.getSourceSpeed() == -speed)
+        .andThen(() -> runOnce(() -> this.setBeltSpeed(speed)))
+        .andThen(() -> System.out.println("belt at speed"))
+                // .until(() -> checkState(Phase.SHOOT))
+                // .andThen(() -> System.out.println("shot"))
+                // .withTimeout(0.5)
+                // .andThen(() -> System.out.println("waited"))
+        ;
+    }
+
+    public Command newerScoreAmp(double speed) {
+        return parallel(
+            Commands.startEnd(() -> this.setAmpSpeed(-speed), () -> this.setAmpSpeed(-speed))
+            .until(() -> checkState(Phase.SHOOT)),
+
+            Commands.startEnd(() -> this.setSourceSpeed(speed), () -> this.setSourceSpeed(speed))
+            .until(() -> checkState(Phase.SHOOT)),
+
+            Commands.startEnd(() -> this.setBeltSpeed(-speed), () -> this.setBeltSpeed(speed))
+            .until(() -> checkState(Phase.SHOOT))
+        )
+        .andThen(
+            parallel(
+                Commands.runOnce(() -> this.setAmpSpeed(0)),
+                Commands.runOnce(() -> this.setSourceSpeed(0)),
+                Commands.runOnce(() -> this.setBeltSpeed(0))
+                // Commands.startEnd(() -> this.setAmpSpeed(-speed), () -> this.setAmpSpeed(0))
+                // .until(() -> waitFor(500)),
+                // Commands.startEnd(() -> this.setSourceSpeed(speed), () -> this.setSourceSpeed(0)),
+                // Commands.startEnd(() -> this.setBeltSpeed(-speed), () -> this.setBeltSpeed(0))
+            ).beforeStarting(new WaitCommand(2)));
+    }
+
+    public static boolean waitFor(long waitTimeMillis) {
+        try {
+            Thread.sleep(waitTimeMillis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // restore interrupted status
+            return false; // or handle the interruption differently
+        }
+        return true;
     }
 
     public Command newScoreAmp(double speed) {
@@ -196,6 +277,8 @@ public class Mechanism extends SubsystemBase{
             Commands.runOnce(() -> {this.setBeltSpeed(speed);})
             .until(() -> m_currentPhase == Phase.SHOOT))
             .withTimeout(0.5)
+
+
             .andThen(
                 parallel(
                     Commands.runOnce(() -> {this.setBeltSpeed(0);})
