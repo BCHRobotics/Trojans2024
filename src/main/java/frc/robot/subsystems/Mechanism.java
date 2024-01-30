@@ -24,12 +24,15 @@ import frc.utils.BeamBreak;
 import frc.utils.BeamBreak.Phase;
 
 public class Mechanism extends SubsystemBase{
+
+    // The beam-break sensor that detects where a note is in the mechanism
     private final BeamBreak m_beamBreak = new BeamBreak(
         MechanismConstants.kPickupSensorChannel, 
         MechanismConstants.kLoadedSensorChannel, 
         MechanismConstants.kShootSensorChannel
     );
 
+    // The phase of the beam-break sensor
     private Phase m_currentPhase = Phase.NONE;
 
     private final CANSparkMax m_beltMotor = new CANSparkMax(MechanismConstants.kBeltMotorCanId, MotorType.kBrushless);
@@ -63,13 +66,15 @@ public class Mechanism extends SubsystemBase{
         this.m_ampMotor.enableVoltageCompensation(12);
     }
 
+    //update the phase of the beambreak sensor
     private void updatePhase() {
         this.m_beamBreak.updatePhase();
         this.m_currentPhase = this.m_beamBreak.getPhase();
     }
 
     /**
-     * Sets belt speed in percent output [-1 --> 1]
+     * Sets belt speed in percent output 
+     * @param speed the commanded belt speed [-1 --> 1]
      */
     private void setBeltSpeed(double speed) {
         this.m_beltMotor.set(speed);
@@ -83,7 +88,8 @@ public class Mechanism extends SubsystemBase{
     }
 
     /**
-     * Sets source intake speed in percent output [-1 --> 1]
+     * Sets source intake speed in percent output
+     * @param speed the commanded source intake speed [-1 --> 1]
      */
     private void setSourceSpeed(double speed) {
         this.m_sourceMotor.set(speed);
@@ -97,7 +103,8 @@ public class Mechanism extends SubsystemBase{
     }
     
     /**
-     * Sets amp motor speed in percent output [-1 --> 1]
+     * Sets amp motor speed in percent output
+     * @param speed the commanded amp motor speed [-1 --> 1]
      */
     private void setAmpSpeed(double speed) {
         this.m_ampMotor.set(speed);
@@ -110,6 +117,10 @@ public class Mechanism extends SubsystemBase{
         return this.m_ampMotor.get();
     }
 
+    /**
+     * A command for scoring a note in the amp
+     * @param speed the commanded percent speed [-1 --> 1]
+     */
     public Command scoreAmp(double speed) {
         return parallel(
             Commands.runOnce(() -> {this.setBeltSpeed(-speed);}),
@@ -118,6 +129,10 @@ public class Mechanism extends SubsystemBase{
         );
     }
 
+    /**
+     * A command for intaking a note using the source intake
+     * @param speed the commanded percent speed [-1 --> 1]
+     */
     public Command sourceIntake(double speed) {
         return parallel(
             Commands.runOnce(() -> {this.setBeltSpeed(speed);}),
@@ -126,6 +141,10 @@ public class Mechanism extends SubsystemBase{
         );
     }
 
+    /**
+     * A command for intaking a note using the ground intake
+     * @param speed the commanded percent speed [-1 --> 1]
+     */
     public Command groundIntake(double speed) {
         return parallel(
             Commands.runOnce(() -> {this.setBeltSpeed(-speed);}),
