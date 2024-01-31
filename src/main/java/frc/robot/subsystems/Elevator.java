@@ -86,6 +86,8 @@ public class Elevator extends ProfiledPIDSubsystem {
         setGoal(0);
     }
 
+    //TODO: choose between TOP or BOTTOM position for encoder reset
+    //TODO: choose what to do on default
     public Command moveToPosition(ElevatorConstants.ElevatorPositions position) {
         switch (position) {
             case TOP:
