@@ -84,16 +84,14 @@ public class RobotContainer {
             .onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive))
             .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));    
 
-        //m_driverController.button(3).onTrue(new RunCommand(() -> m_mechanism.groundIntake(0.5), m_mechanism));
-
         new JoystickButton(mXboxController, Button.kB.value)
-        .onTrue(this.m_mechanism.newerScoreAmp(0.5));
+        .onTrue(this.m_mechanism.scoreAmp(0.5));
 
         new JoystickButton(mXboxController, Button.kY.value)
-        .onTrue(this.m_mechanism.newerSourceIntake(0.5));
+        .onTrue(this.m_mechanism.sourceIntake(0.5));
 
         new JoystickButton(mXboxController, Button.kX.value)
-        .onTrue(this.m_mechanism.newerGroundIntake(0.5));
+        .onTrue(this.m_mechanism.groundIntake(0.5));
 
         new JoystickButton(mXboxController, Button.kA.value)
         .onTrue(this.m_mechanism.stopMechanism());

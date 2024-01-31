@@ -117,54 +117,15 @@ public class Mechanism extends SubsystemBase{
         return this.m_ampMotor.get();
     }
 
-    /**
-     * A command for scoring a note in the amp
-     * @param speed the commanded percent speed [-1 --> 1]
-     */
-    public Command scoreAmp(double speed) {
-        return parallel(
-            Commands.runOnce(() -> {this.setBeltSpeed(-speed);}),
-            Commands.runOnce(() -> {this.setSourceSpeed(speed);}),
-            Commands.runOnce(() -> {this.setAmpSpeed(-speed);})
-        );
+    private boolean checkState(Phase phase) {
+        return m_currentPhase == phase;
     }
 
     /**
-     * A command for intaking a note using the source intake
-     * @param speed the commanded percent speed [-1 --> 1]
-     */
-    public Command sourceIntake(double speed) {
-        return parallel(
-            Commands.runOnce(() -> {this.setBeltSpeed(speed);}),
-            Commands.runOnce(() -> {this.setSourceSpeed(-speed);}),
-            Commands.runOnce(() -> {this.setAmpSpeed(-speed);})
-        );
-    }
-
-    /**
-     * A command for intaking a note using the ground intake
-     * @param speed the commanded percent speed [-1 --> 1]
+     * A command for intaking from the ground
+     * @param speed the commanded speed percent [-1 --> 1]
      */
     public Command groundIntake(double speed) {
-        return parallel(
-            Commands.runOnce(() -> {this.setBeltSpeed(-speed);}),
-            Commands.runOnce(() -> {this.setSourceSpeed(speed);}),
-            Commands.runOnce(() -> {this.setAmpSpeed(speed);})
-        );
-    }
-
-    // public Command newGroundIntake(double speed) {
-    //     return Commands.runOnce(() -> {this.setBeltSpeed(-speed);})             
-    //         .until(() -> checkState(Phase.PICKUP))                              
-    //         .andThen(                                                           
-    //             Commands.runOnce(() -> {this.setBeltSpeed(-speed * 0.75);}))
-    //             .until(() -> m_currentPhase == Phase.LOADED)
-    //             .andThen(
-    //                 Commands.runOnce(() -> {this.setBeltSpeed(0);}))
-    //                 .until(() -> this.getBeltSpeed() == 0);
-    // }
-
-    public Command newerGroundIntake(double speed) {
         return 
         parallel(
             Commands.startEnd(() -> this.setBeltSpeed(-speed), () -> this.setBeltSpeed(-speed * 0.75)),
@@ -186,22 +147,24 @@ public class Mechanism extends SubsystemBase{
             .until(() -> checkState(Phase.LOADED)));
     }
 
-    // public Command evenNewerGroundIntake(double speed) {
-    //     return run(() -> this.setBeltSpeed(-speed))
-    //         .until(() -> checkState(Phase.PICKUP))
-    //         .andThen(() -> System.out.println("done!")
-    //             /*run(() -> this.setBeltSpeed(-speed * 0.75)))
-    //             .until(() -> checkState(Phase.LOADED))
-    //             .andThen(
-    //                 run(() -> this.setBeltSpeed(0))
-    //                 .until(() -> this.getBeltSpeed() == 0)*/);
-    // }
-
-    private boolean checkState(Phase phase) {
-        return m_currentPhase == phase;
+    /**
+     * A command for stopping the mechanism
+     * @param speed the commanded speed percent [-1 --> 1]
+     */
+    public Command stopMechanism() {
+        return parallel(
+            Commands.runOnce(() -> CommandScheduler.getInstance().cancelAll()),
+            Commands.runOnce(() -> this.setBeltSpeed(0)),
+            Commands.runOnce(() -> this.setSourceSpeed(0)),
+            Commands.runOnce(() -> this.setAmpSpeed(0))
+        );
     }
 
-    public Command newerSourceIntake(double speed) {
+    /**
+     * A command for intaking from the source
+     * @param speed the commanded speed percent [-1 --> 1]
+     */
+    public Command sourceIntake(double speed) {
         return parallel (
             Commands.startEnd(() -> this.setSourceSpeed(-speed), () -> this.setSourceSpeed(-speed * 0.75)),
             Commands.startEnd(() -> this.setAmpSpeed(-speed), () -> this.setAmpSpeed(-speed * 0.75)),
@@ -217,44 +180,11 @@ public class Mechanism extends SubsystemBase{
             .until(() -> checkState(Phase.LOADED)));
     }
 
-    // public Command newSourceIntake(double speed) {
-    //     return parallel(
-    //         Commands.runOnce(() -> {this.setSourceSpeed(-speed);})
-    //         .until(() -> m_currentPhase == Phase.SHOOT)
-    //         .andThen(
-    //             Commands.runOnce(() -> {this.setSourceSpeed(-speed * 0.75);}))
-    //             .until(() -> m_currentPhase == Phase.LOADED)
-    //             .andThen(
-    //                 Commands.runOnce(() -> {this.setSourceSpeed(0);})
-    //                 .until(() -> this.getSourceSpeed() == 0)),
-
-    //         Commands.runOnce(() -> {this.setBeltSpeed(speed);})
-    //         .until(() -> m_currentPhase == Phase.SHOOT)
-    //         .andThen(
-    //             Commands.runOnce(() -> {this.setBeltSpeed(speed * 0.75);}))
-    //             .until(() -> m_currentPhase == Phase.LOADED)
-    //             .andThen(
-    //                 Commands.runOnce(() -> {this.setBeltSpeed(0);})
-    //                 .until(() -> this.getBeltSpeed() == 0))
-    //     );
-    // }
-
-    public Command newerishScoreAmp(double speed) {
-        return parallel(
-            Commands.runOnce(() -> this.setAmpSpeed(-speed)),
-            Commands.runOnce(() -> this.setSourceSpeed(speed))
-        )
-        .until(() -> this.getAmpSpeed() == -speed && this.getSourceSpeed() == -speed)
-        .andThen(() -> runOnce(() -> this.setBeltSpeed(speed)))
-        .andThen(() -> System.out.println("belt at speed"))
-                // .until(() -> checkState(Phase.SHOOT))
-                // .andThen(() -> System.out.println("shot"))
-                // .withTimeout(0.5)
-                // .andThen(() -> System.out.println("waited"))
-        ;
-    }
-
-    public Command newerScoreAmp(double speed) {
+    /**
+     * A command for scoring into the amp
+     * @param speed the commanded speed percent [-1 --> 1]
+     */
+    public Command scoreAmp(double speed) {
         return parallel(
             Commands.startEnd(() -> this.setAmpSpeed(-speed), () -> this.setAmpSpeed(-speed))
             .until(() -> checkState(Phase.SHOOT)),
@@ -285,39 +215,6 @@ public class Mechanism extends SubsystemBase{
             return false; // or handle the interruption differently
         }
         return true;
-    }
-
-    public Command newScoreAmp(double speed) {
-        return parallel(
-            Commands.runOnce(() -> {this.setAmpSpeed(-speed);}),
-            Commands.runOnce(() -> {this.setSourceSpeed(speed);})
-        )
-        .until(() -> this.getAmpSpeed() == -speed && this.getSourceSpeed() == -speed)
-        .andThen(
-            Commands.runOnce(() -> {this.setBeltSpeed(speed);})
-            .until(() -> m_currentPhase == Phase.SHOOT))
-            .withTimeout(0.5)
-
-
-            .andThen(
-                parallel(
-                    Commands.runOnce(() -> {this.setBeltSpeed(0);})
-                    .until(() -> this.getBeltSpeed() == 0)),
-
-                    Commands.runOnce(() -> {this.setAmpSpeed(0);})
-                    .until(() -> this.getAmpSpeed() == 0),
-                    
-                    Commands.runOnce(() -> {this.setSourceSpeed(0);})
-                    .until(() -> this.getSourceSpeed() == 0));
-    }
-
-    public Command stopMechanism() {
-        return parallel(
-            Commands.runOnce(() -> CommandScheduler.getInstance().cancelAll()),
-            Commands.runOnce(() -> this.setBeltSpeed(0)),
-            Commands.runOnce(() -> this.setSourceSpeed(0)),
-            Commands.runOnce(() -> this.setAmpSpeed(0))
-        );
     }
 
     public void periodic() {
