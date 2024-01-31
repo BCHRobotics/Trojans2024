@@ -8,14 +8,18 @@ import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.ElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Elevator;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /*
@@ -27,9 +31,12 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public class RobotContainer {
     // The robot's subsystems
     private final Drivetrain m_robotDrive = new Drivetrain();
+    private final Elevator m_elevator = new Elevator();
 
     // The driver's controller
     CommandJoystick m_driverController = new CommandJoystick(OIConstants.kDriverControllerPort);
+
+    CommandXboxController mXboxController = new CommandXboxController(0);
 
     // The auto chooser
     private final SendableChooser<Command> autoChooser;
@@ -78,6 +85,11 @@ public class RobotContainer {
         m_driverController.button(1)
             .onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive))
             .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));    
+
+        this.mXboxController.povUp().onTrue(this.m_elevator.moveToPosition(ElevatorPositions.SOURCE));
+        this.mXboxController.povRight().onTrue(this.m_elevator.moveToPosition(ElevatorPositions.AMP));
+        this.mXboxController.povLeft().onTrue(this.m_elevator.moveToPosition(ElevatorPositions.TRAVEL));
+        this.mXboxController.povDown().onTrue(this.m_elevator.moveToPosition(ElevatorPositions.INTAKE));
     }
 
     /**
