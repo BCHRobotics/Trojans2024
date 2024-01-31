@@ -80,8 +80,7 @@ public final class Constants {
 
     public static final double kSVolts = 1;
     public static final double kGVolts = 1;
-    public static final double kVVoltSecondPerRad = 0.5;
-    public static final double kAVoltSecondSquaredPerRad = 0.1;
+    public static final double kVVolts = 0.5;
 
     public static final double kElevatorMotorReduction = 1;
     public static final double kElevatorWheelDiameterInches = 3;

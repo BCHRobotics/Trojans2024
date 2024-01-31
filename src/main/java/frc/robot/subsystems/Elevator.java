@@ -34,18 +34,20 @@ public class Elevator extends ProfiledPIDSubsystem {
     private final RelativeEncoder m_leftEncoder;
     private final RelativeEncoder m_rightEncoder;
 
+    private static final TrapezoidProfile.Constraints m_constraints = new TrapezoidProfile.Constraints(
+                ElevatorConstants.kMaxSpeedMetersPerSecond,
+                ElevatorConstants.kMaxAccelerationMetersPerSecondSquared);
+
     private static ProfiledPIDController m_PIDController = new ProfiledPIDController(
             ElevatorConstants.kPThetaController,
             0,
             0,
-            new TrapezoidProfile.Constraints(
-                ElevatorConstants.kMaxSpeedMetersPerSecond,
-                ElevatorConstants.kMaxAccelerationMetersPerSecondSquared));
+            m_constraints);
 
       private final ElevatorFeedforward m_feedforward =
       new ElevatorFeedforward(
           ElevatorConstants.kSVolts, ElevatorConstants.kGVolts,
-          ElevatorConstants.kVVoltSecondPerRad, ElevatorConstants.kAVoltSecondSquaredPerRad);
+          ElevatorConstants.kVVolts);
    
     /** Creates a new Mechanism. */
     public Elevator() {
@@ -122,6 +124,6 @@ public class Elevator extends ProfiledPIDSubsystem {
 
     @Override
     protected double getMeasurement() {
-        return m_leftEncoder.getPosition();
+        return (m_leftEncoder.getPosition() + m_rightEncoder.getPosition()) / 2.0;
     }
 }
