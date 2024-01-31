@@ -192,7 +192,7 @@ public class Mechanism extends SubsystemBase{
             Commands.startEnd(() -> this.setSourceSpeed(speed), () -> this.setSourceSpeed(speed))
             .until(() -> checkState(Phase.SHOOT)),
 
-            Commands.startEnd(() -> this.setBeltSpeed(-speed), () -> this.setBeltSpeed(speed))
+            Commands.startEnd(() -> this.setBeltSpeed(-speed), () -> this.setBeltSpeed(-speed))
             .until(() -> checkState(Phase.SHOOT))
         )
         .andThen(
