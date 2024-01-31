@@ -5,16 +5,20 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.ModuleConstants;
+import frc.robot.Constants.ElevatorConstants.ElevatorPositions;
 import frc.utils.ElevatorLimits;
 import frc.utils.ElevatorLimits.ElevatorLimit;
 
@@ -45,9 +49,8 @@ public class Elevator extends ProfiledPIDSubsystem {
             m_constraints);
 
       private final ElevatorFeedforward m_feedforward =
-      new ElevatorFeedforward(
-          ElevatorConstants.kSVolts, ElevatorConstants.kGVolts,
-          ElevatorConstants.kVVolts);
+        new ElevatorFeedforward(
+            ElevatorConstants.kSVolts, ElevatorConstants.kGVolts, ElevatorConstants.kVVolts);
    
     /** Creates a new Mechanism. */
     public Elevator() {
@@ -83,6 +86,31 @@ public class Elevator extends ProfiledPIDSubsystem {
         setGoal(0);
     }
 
+    public Command moveToPosition(ElevatorConstants.ElevatorPositions position) {
+        switch (position) {
+            case TOP:
+                return null;
+            case SOURCE:
+                return Commands.runOnce(() -> this.setGoal(8));
+            case AMP:
+                return Commands.runOnce(() -> this.setGoal(6));
+            case TRAVEL:
+                return Commands.runOnce(() -> this.setGoal(4));
+            case INTAKE:
+                return Commands.runOnce(() -> this.setGoal(2));
+            case BOTTOM:
+                return null;
+            default:
+                return null;
+        }
+    }
+
+    public Command stopElevatorCommand() {
+        return parallel (
+            Commands.runOnce(() -> this.cancelAllElevatorCommands()),
+            Commands.runOnce(() -> this.stopElevator()));
+    }
+
     private double getLeftMotorSpeed() {
         return this.m_leftMotor.get();
     }
@@ -92,11 +120,16 @@ public class Elevator extends ProfiledPIDSubsystem {
     }
 
     private void setLeftMotorSpeed(double speed) {
-        this.m_leftMotor.set(speed);
+        this.m_leftMotor.setVoltage(speed);
     }
 
     private void setRightMotorSpeed(double speed) {
-        this.m_rightMotor.set(speed);
+        this.m_rightMotor.setVoltage(speed);
+    }
+
+    private void stopElevator() {
+        this.setLeftMotorSpeed(0);
+        this.setRightMotorSpeed(0);
     }
 
     private void updateLimit() {
@@ -108,6 +141,15 @@ public class Elevator extends ProfiledPIDSubsystem {
         return this.m_currentLimitSwitch == limit;
     }
 
+    private void cancelAllElevatorCommands() {
+        CommandScheduler.getInstance().cancel(moveToPosition(ElevatorPositions.TOP));
+        CommandScheduler.getInstance().cancel(moveToPosition(ElevatorPositions.SOURCE));
+        CommandScheduler.getInstance().cancel(moveToPosition(ElevatorPositions.AMP));
+        CommandScheduler.getInstance().cancel(moveToPosition(ElevatorPositions.TRAVEL));
+        CommandScheduler.getInstance().cancel(moveToPosition(ElevatorPositions.INTAKE));
+        CommandScheduler.getInstance().cancel(moveToPosition(ElevatorPositions.BOTTOM));
+    }
+
     public void periodic() {
         this.updateLimit();
         SmartDashboard.putString("Elevator Limit: ", this.m_currentLimitSwitch.name());
@@ -117,9 +159,25 @@ public class Elevator extends ProfiledPIDSubsystem {
     protected void useOutput(double output, State setpoint) {
         double feedforward = m_feedforward.calculate(setpoint.position, setpoint.velocity);
 
-        // Add the feedforward to the PID output to get the motor output
-        m_leftMotor.setVoltage(output + feedforward);
-        m_rightMotor.setVoltage(output + feedforward);
+        if (this.checkLimit(ElevatorLimit.TOP) && output > 0) {
+            this.stopElevator();
+            cancelAllElevatorCommands();
+            m_leftEncoder.setPosition(10); //TODO: double check top measurements
+            m_rightEncoder.setPosition(10);
+            System.out.println("Top Limit Hit");
+
+        } else if (this.checkLimit(ElevatorLimit.BOTTOM) && output < 0) {
+            this.stopElevator();
+            cancelAllElevatorCommands();
+            m_leftEncoder.setPosition(0);
+            m_rightEncoder.setPosition(0);
+            System.out.println("Bottom Limit Hit");
+
+        } else {
+            // Add the feedforward to the PID output to get the motor output
+            this.setLeftMotorSpeed(output + feedforward);
+            this.setRightMotorSpeed(output + feedforward);
+        }
     }
 
     @Override
