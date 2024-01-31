@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.utils.devices.Camera;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -27,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public class RobotContainer {
     // The robot's subsystems
     private final Drivetrain m_robotDrive = new Drivetrain();
+    private final Camera m_Camera = new Camera();
 
     // The driver's controller
     CommandJoystick m_driverController = new CommandJoystick(OIConstants.kDriverControllerPort);
@@ -77,7 +79,10 @@ public class RobotContainer {
         // Slow Command (Button 1)
         m_driverController.button(1)
             .onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive))
-            .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));    
+            .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));  
+            
+        m_driverController.button(3)
+            .whileTrue(new RunCommand(() -> m_robotDrive.drive(0,0,m_Camera.getRotationSpeed(),true,false)));
     }
 
     /**

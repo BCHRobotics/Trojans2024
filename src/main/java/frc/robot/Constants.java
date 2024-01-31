@@ -66,6 +66,11 @@ public final class Constants {
     public static final boolean kGyroReversed = true;
   }
 
+  public static final class VisionConstants{
+    public static final double CAMERA_HEIGHT = 0.0;
+    
+  }
+
   public static final class ModuleConstants {
     // The MAXSwerve module can be configured with one of three pinion gears: 12T,
     // 13T, or 14T.
