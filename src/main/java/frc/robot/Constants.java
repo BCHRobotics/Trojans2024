@@ -90,6 +90,15 @@ public final class Constants {
         //TODO: Double check measurements
         //20:1 from gearbox to output 
         //18 tooth, 1.43in
+      
+    public enum ElevatorPositions {
+      TOP,
+      SOURCE,
+      AMP,
+      TRAVEL,
+      INTAKE,
+      BOTTOM
+    }
   }
 
   public static final class ModuleConstants {
