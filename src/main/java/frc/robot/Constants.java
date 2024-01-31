@@ -72,6 +72,25 @@ public final class Constants {
 
     public static final int kTopElevatorLimitSwitchPort = 5;
     public static final int kBottomElevatorLimitSwitchPort = 6;
+
+    public static final double kPThetaController = 1;
+
+    public static final double kMaxSpeedMetersPerSecond = 3.0;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 3.0;
+
+    public static final double kSVolts = 1;
+    public static final double kGVolts = 1;
+    public static final double kVVoltSecondPerRad = 0.5;
+    public static final double kAVoltSecondSquaredPerRad = 0.1;
+
+    public static final double kElevatorMotorReduction = 1;
+    public static final double kElevatorWheelDiameterInches = 3;
+
+    public static final double kElevatorPositionConversionFactor = (kElevatorWheelDiameterInches * Math.PI)
+        / kElevatorMotorReduction;
+        //TODO: Double check measurements
+        //20:1 from gearbox to output 
+        //18 tooth, 1.43in
   }
 
   public static final class ModuleConstants {
