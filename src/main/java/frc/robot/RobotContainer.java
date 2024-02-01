@@ -8,7 +8,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.PS4Controller.Button;
+import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
@@ -84,7 +84,7 @@ public class RobotContainer {
                         () -> m_robotDrive.drive(
                                 -MathUtil.applyDeadband(m_driveXboxController.getLeftY(), OIConstants.kDriveDeadband),
                                 -MathUtil.applyDeadband(m_driveXboxController.getLeftX(), OIConstants.kDriveDeadband),
-                                -MathUtil.applyDeadband(m_driveXboxController.getRightX(), OIConstants.kDriveDeadband),
+                                -MathUtil.applyDeadband(m_driveXboxController.getRightX(), OIConstants.kTurnDeadband),
                                 OIConstants.kFieldRelative, OIConstants.kRateLimited),
                         m_robotDrive));
         }
@@ -111,16 +111,16 @@ public class RobotContainer {
             .onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive))
             .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));    
 
-            new JoystickButton(m_driveXboxController, Button.kR1.value)
+            new JoystickButton(m_driveXboxController, Button.kRightBumper.value)
             .whileTrue(new RunCommand(
                 () -> m_robotDrive.setX(),
                 m_robotDrive));
     
-            new JoystickButton(m_driveXboxController, Button.kL1.value)
+            new JoystickButton(m_driveXboxController, Button.kLeftBumper.value)
                     .onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive))
                     .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
     
-            new JoystickButton(m_driveXboxController, Button.kTriangle.value)
+            new JoystickButton(m_driveXboxController, Button.kY.value)
                     .onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
     }
 
