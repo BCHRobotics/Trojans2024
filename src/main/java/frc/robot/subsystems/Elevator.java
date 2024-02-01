@@ -7,7 +7,6 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -36,7 +35,7 @@ public class Elevator extends ProfiledPIDSubsystem {
     private final CANSparkMax m_rightMotor;
 
     private final RelativeEncoder m_leftEncoder;
-    private final RelativeEncoder m_rightEncoder;
+    //private final RelativeEncoder m_rightEncoder;
 
     private static final TrapezoidProfile.Constraints m_constraints = new TrapezoidProfile.Constraints(
                 ElevatorConstants.kMaxSpeedMetersPerSecond,
@@ -60,7 +59,7 @@ public class Elevator extends ProfiledPIDSubsystem {
         m_rightMotor = new CANSparkMax(ElevatorConstants.kRightElevatorMotorCanId, MotorType.kBrushless);
 
         m_leftEncoder = m_leftMotor.getEncoder();
-        m_rightEncoder = m_rightMotor.getEncoder();
+        //m_rightEncoder = m_rightMotor.getEncoder();
 
         this.m_leftMotor.restoreFactoryDefaults();
         this.m_rightMotor.restoreFactoryDefaults();
@@ -70,6 +69,8 @@ public class Elevator extends ProfiledPIDSubsystem {
 
         this.m_leftMotor.setSmartCurrentLimit(60, 20);
         this.m_rightMotor.setSmartCurrentLimit(60, 20);
+
+        this.m_rightMotor.follow(m_leftMotor);
 
         this.m_leftMotor.setInverted(false);
         this.m_rightMotor.setInverted(false);
@@ -81,7 +82,7 @@ public class Elevator extends ProfiledPIDSubsystem {
         this.m_rightMotor.enableVoltageCompensation(12);
 
         this.m_leftEncoder.setPositionConversionFactor(ElevatorConstants.kElevatorPositionConversionFactor);
-        this.m_rightEncoder.setPositionConversionFactor(ElevatorConstants.kElevatorPositionConversionFactor);
+        //this.m_rightEncoder.setPositionConversionFactor(ElevatorConstants.kElevatorPositionConversionFactor);
 
         setGoal(0);
     }
@@ -117,21 +118,13 @@ public class Elevator extends ProfiledPIDSubsystem {
         return this.m_leftMotor.get();
     }
 
-    private double getRightMotorSpeed() {
-        return this.m_rightMotor.get();
-    }
-
     private void setLeftMotorSpeed(double speed) {
         this.m_leftMotor.setVoltage(speed);
     }
 
-    private void setRightMotorSpeed(double speed) {
-        this.m_rightMotor.setVoltage(speed);
-    }
-
     private void stopElevator() {
         this.setLeftMotorSpeed(0);
-        this.setRightMotorSpeed(0);
+  //      this.setRightMotorSpeed(0);
     }
 
     private void updateLimit() {
@@ -165,25 +158,25 @@ public class Elevator extends ProfiledPIDSubsystem {
             this.stopElevator();
             cancelAllElevatorCommands();
             m_leftEncoder.setPosition(10); //TODO: double check top measurements
-            m_rightEncoder.setPosition(10);
+      //      m_rightEncoder.setPosition(10);
             System.out.println("Top Limit Hit");
 
         } else if (this.checkLimit(ElevatorLimit.BOTTOM) && output < 0) {
             this.stopElevator();
             cancelAllElevatorCommands();
             m_leftEncoder.setPosition(0);
-            m_rightEncoder.setPosition(0);
+     //       m_rightEncoder.setPosition(0);
             System.out.println("Bottom Limit Hit");
 
         } else {
             // Add the feedforward to the PID output to get the motor output
             this.setLeftMotorSpeed(output + feedforward);
-            this.setRightMotorSpeed(output + feedforward);
+   //         this.setRightMotorSpeed(output + feedforward);
         }
     }
 
     @Override
     protected double getMeasurement() {
-        return (m_leftEncoder.getPosition() + m_rightEncoder.getPosition()) / 2.0;
+        return m_leftEncoder.getPosition();
     }
 }
