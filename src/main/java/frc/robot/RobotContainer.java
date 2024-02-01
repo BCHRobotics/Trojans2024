@@ -36,16 +36,35 @@ public class RobotContainer {
 
     // The auto chooser
     private final SendableChooser<Command> autoChooser;
+    // The input method chooser
+    private final SendableChooser<Boolean> inputChooser;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
+        inputChooser = new SendableChooser<>();
+        inputChooser.addOption("XBoxController", Boolean.FALSE);
+        inputChooser.addOption("Flightstick", Boolean.TRUE);
+
+        SmartDashboard.putData("Input Chooser", inputChooser);
+
+        inputChooser.setDefaultOption("Flightstick", Boolean.TRUE);
+
+        // Build an auto chooser. This will use Commands.none() as the default option.
+        autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("Auto Chooser", autoChooser);
+
         // Configure the button bindings
         this.configureButtonBindings();
+        // Configure the default commands for the input method chosen
+        this.configureDefaultCommands();
+    }
 
+    // Configures default commands
+    public void configureDefaultCommands() {
         // Configure default commands
-        if (OIConstants.kJoyStickDrive) {
+        if (inputChooser.getSelected().booleanValue() == true) {
             // Configure default commands
             m_robotDrive.setDefaultCommand(
                 // The left stick controls translation of the robot.
@@ -69,10 +88,6 @@ public class RobotContainer {
                                 OIConstants.kFieldRelative, OIConstants.kRateLimited),
                         m_robotDrive));
         }
-
-        // Build an auto chooser. This will use Commands.none() as the default option.
-        autoChooser = AutoBuilder.buildAutoChooser();
-        SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
   /**
