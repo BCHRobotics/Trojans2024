@@ -91,7 +91,6 @@ public class Drivetrain extends SubsystemBase {
   Velocity<Voltage> velocityValue = new Velocity<>(voltageValue);
   Measure<Velocity<Voltage>> m_quasistaticVoltage = new Measure<>(velocityValue);
 
-
   private Measure<Velocity<Voltage>> m_quasistaticVoltage = 1;
 
   SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
