@@ -6,6 +6,31 @@ package frc.robot.subsystems;
 
 
 import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.VoltsPerMeterPerSecond;
+import static edu.wpi.first.units.MutableMeasure.mutable;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Milliseconds;
+import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.*;
+
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Mult;
+import edu.wpi.first.units.MutableMeasure;
+import edu.wpi.first.units.Per;
+import edu.wpi.first.units.Time;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import java.util.function.DoubleSupplier;
 
 import java.util.Optional;
 
@@ -24,7 +49,9 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.units.Distance;
 import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.util.WPIUtilJNI;
@@ -87,14 +114,14 @@ public class Drivetrain extends SubsystemBase {
 
   private boolean m_slowMode = false;
 
-  Voltage voltageValue = 1; // Assuming 1 is a valid value for voltage
-  Velocity<Voltage> velocityValue = new Velocity<>(voltageValue);
-  Measure<Velocity<Voltage>> m_quasistaticVoltage = new Measure<>(velocityValue);
-
-  private Measure<Velocity<Voltage>> m_quasistaticVoltage = 1;
+  
+  private final Velocity<Voltage> voltsPerSecond = Volts.per(Second);
+  private final Measure<Velocity<Voltage>> m_quasistaticVoltage = voltsPerSecond.of(0.5);
+  private final Measure<Voltage> m_dynamicVoltage = Volts.of(4);
+  private final Measure<Time> m_timeout = Seconds.of(7);
 
   SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
-    new SysIdRoutine.Config(1, 4, 7),
+    new SysIdRoutine.Config(m_quasistaticVoltage, m_dynamicVoltage, m_timeout),
     new SysIdRoutine.Mechanism(
       (voltage) -> this.runVolts(voltage),
       null,
