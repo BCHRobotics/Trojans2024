@@ -12,12 +12,12 @@ public class Camera {
 
     public static PhotonCamera getInstance() {
         if (instance == null) { 
-            instance = new PhotonCamera("photonvision"); // replace with the name of the camera which is set in the UI
+            instance = new PhotonCamera("Camera_Module_v1"); // replace with the name of the camera which is set in the UI
         }
         return instance;
     }
 
-    PIDController turnController = new PIDController(0.3, 0, 0);
+    PIDController turnController = new PIDController(0, 0, 0);
 
     PhotonPipelineResult result = instance.getLatestResult();
     

@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.utils.SwerveUtils;
+import frc.utils.devices.Camera;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Drivetrain extends SubsystemBase {
@@ -68,6 +69,12 @@ public class Drivetrain extends SubsystemBase {
 
   private boolean m_slowMode = false;
 
+  private final Camera cameraObject = new Camera();
+  private boolean align = false;
+  private float desiredRotation;
+
+
+
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
       DriveConstants.kDriveKinematics,
@@ -97,6 +104,11 @@ public class Drivetrain extends SubsystemBase {
         });
 
     this.printToDashboard();
+  }
+
+  public void alignToNote() {
+    align = !align;
+    SmartDashboard.putBoolean("Align", align);
   }
 
   /**
@@ -137,6 +149,9 @@ public class Drivetrain extends SubsystemBase {
    * @param rateLimit     Whether to enable rate limiting for smoother control.
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {
+    if (align) {
+      rot += cameraObject.getRotationSpeed();
+    }
 
     double xSpeedCommanded;
     double ySpeedCommanded;

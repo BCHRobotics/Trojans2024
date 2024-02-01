@@ -28,7 +28,6 @@ import frc.utils.devices.Camera;
 public class RobotContainer {
     // The robot's subsystems
     private final Drivetrain m_robotDrive = new Drivetrain();
-    private final Camera m_Camera = new Camera();
 
     // The driver's controller
     CommandJoystick m_driverController = new CommandJoystick(OIConstants.kDriverControllerPort);
@@ -82,7 +81,7 @@ public class RobotContainer {
             .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));  
             
         m_driverController.button(3)
-            .whileTrue(new RunCommand(() -> m_robotDrive.drive(0,0,m_Camera.getRotationSpeed(),true,false)));
+            .onTrue(new InstantCommand(() -> m_robotDrive.alignToNote()));
     }
 
     /**
