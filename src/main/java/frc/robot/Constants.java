@@ -78,9 +78,9 @@ public final class Constants {
     public static final double kMaxSpeedMetersPerSecond = 3.0;
     public static final double kMaxAccelerationMetersPerSecondSquared = 3.0;
 
-    public static final double kSVolts = 0;
-    public static final double kGVolts = 0;
-    public static final double kVVolts = 0;
+    public static final double kSVolts = 1.1;
+    public static final double kGVolts = 1.2;
+    public static final double kVVolts = 1.3;
 
     public static final double kElevatorMotorReduction = 1;
     public static final double kElevatorWheelDiameterInches = 3;
