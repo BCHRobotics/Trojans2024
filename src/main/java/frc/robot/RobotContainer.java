@@ -5,6 +5,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
@@ -54,6 +55,8 @@ public class RobotContainer {
                     OIConstants.kFieldRelative, OIConstants.kRateLimited),
                 m_robotDrive));
 
+        NamedCommands.registerCommand("ALIGN", new InstantCommand(() -> m_robotDrive.alignToNote()));
+
         // Build an auto chooser. This will use Commands.none() as the default option.
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -82,6 +85,9 @@ public class RobotContainer {
             
         m_driverController.button(3)
             .onTrue(new InstantCommand(() -> m_robotDrive.alignToNote()));
+
+        m_driverController.button(4)
+            .onTrue(new InstantCommand(() -> m_robotDrive.toggleCameraPipeline()));
     }
 
     /**

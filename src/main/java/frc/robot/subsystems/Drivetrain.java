@@ -15,6 +15,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -149,7 +150,7 @@ public class Drivetrain extends SubsystemBase {
    * @param rateLimit     Whether to enable rate limiting for smoother control.
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {
-    if (align) {
+    if (align && cameraObject.getResult().hasTargets()) {
       rot += cameraObject.getRotationSpeed();
     }
 
@@ -306,6 +307,15 @@ public class Drivetrain extends SubsystemBase {
       m_maxSpeed = percent;
   }
 
+  public void toggleCameraPipeline() {
+    if (cameraObject.getCameraPipeline() == 0) {
+      cameraObject.setCameraPipeline(1);
+    }
+    else if (cameraObject.getCameraPipeline() == 1) {
+      cameraObject.setCameraPipeline(0);
+    }
+  }
+
   /**
    * Initializes the auto using PathPlannerLib.
    */
@@ -376,6 +386,13 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putBoolean("Has Target", cameraObject.getResult().hasTargets());
     if (cameraObject.getResult().hasTargets()) {
       SmartDashboard.putNumber("Camera Target Yaw", cameraObject.getResult().getBestTarget().getYaw());
+
+      if (cameraObject.getApriltagPose(getPose()) != null) {
+        // Apriltag position data  
+        SmartDashboard.putNumber("Transform X", cameraObject.getApriltagPose(getPose()).getX());
+        SmartDashboard.putNumber("Transform Y", cameraObject.getApriltagPose(getPose()).getY());
+        SmartDashboard.putNumber("Transform ROT", cameraObject.getApriltagPose(getPose()).getRotation().getDegrees());
+      }
     }
   }
 }
