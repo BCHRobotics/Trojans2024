@@ -73,8 +73,6 @@ public class Drivetrain extends SubsystemBase {
   private boolean align = false;
   private float desiredRotation;
 
-
-
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
       DriveConstants.kDriveKinematics,
@@ -94,6 +92,8 @@ public class Drivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     // Update the odometry in the periodic block
+    cameraObject.refreshResult();
+
     m_odometry.update(
         Rotation2d.fromDegrees(m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)),
         new SwerveModulePosition[] {
@@ -373,5 +373,9 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putString("Rear left Encoder", m_rearLeft.getState().toString());
     SmartDashboard.putString("Rear right Encoder", m_rearRight.getState().toString());
 
+    SmartDashboard.putBoolean("Has Target", cameraObject.getResult().hasTargets());
+    if (cameraObject.getResult().hasTargets()) {
+      SmartDashboard.putNumber("Camera Target Yaw", cameraObject.getResult().getBestTarget().getYaw());
+    }
   }
 }
