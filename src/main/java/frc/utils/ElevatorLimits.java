@@ -28,9 +28,11 @@ public class ElevatorLimits {
     public void updateLimit() {
         if (!m_topLimitSwitch.get()) {
             m_currentLimitSwitch = ElevatorLimit.TOP;
+            System.out.println("Top limit hit!");
 
         } else if (!m_bottomLimitSwitch.get()) {
             m_currentLimitSwitch = ElevatorLimit.BOTTOM;
+            System.out.println("Bottom limit hit!");
 
         } else if (m_bottomLimitSwitch.get() 
                 && m_topLimitSwitch.get()) {

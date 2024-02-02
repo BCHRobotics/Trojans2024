@@ -53,10 +53,10 @@ public final class Constants {
     public static final double kBackRightChassisAngularOffset = Math.PI / 2;
 
     // SPARK MAX CAN IDs
-    public static final int kFrontLeftDrivingCanId = 13;
+    public static final int kFrontLeftDrivingCanId = 40; //13
     public static final int kRearLeftDrivingCanId = 15;
     public static final int kFrontRightDrivingCanId = 17;
-    public static final int kRearRightDrivingCanId = 11;
+    public static final int kRearRightDrivingCanId = 41;  //11
 
     public static final int kFrontLeftTurningCanId = 12;
     public static final int kRearLeftTurningCanId = 14;
@@ -67,8 +67,8 @@ public final class Constants {
   }
 
   public static final class ElevatorConstants {
-    public static final int kLeftElevatorMotorCanId = 30;
-    public static final int kRightElevatorMotorCanId = 31;
+    public static final int kLeftElevatorMotorCanId = 11;  //30
+    public static final int kRightElevatorMotorCanId = 13;  //31
 
     public static final int kTopElevatorLimitSwitchPort = 5;
     public static final int kBottomElevatorLimitSwitchPort = 6;
@@ -78,9 +78,9 @@ public final class Constants {
     public static final double kMaxSpeedMetersPerSecond = 3.0;
     public static final double kMaxAccelerationMetersPerSecondSquared = 3.0;
 
-    public static final double kSVolts = 1;
-    public static final double kGVolts = 1;
-    public static final double kVVolts = 0.5;
+    public static final double kSVolts = 0;
+    public static final double kGVolts = 0;
+    public static final double kVVolts = 0;
 
     public static final double kElevatorMotorReduction = 1;
     public static final double kElevatorWheelDiameterInches = 3;

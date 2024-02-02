@@ -90,6 +90,8 @@ public class RobotContainer {
         this.mXboxController.povRight().onTrue(this.m_elevator.moveToPosition(ElevatorPositions.AMP));
         this.mXboxController.povLeft().onTrue(this.m_elevator.moveToPosition(ElevatorPositions.TRAVEL));
         this.mXboxController.povDown().onTrue(this.m_elevator.moveToPosition(ElevatorPositions.INTAKE));
+        this.mXboxController.a().onTrue(this.m_elevator.moveToPosition(ElevatorPositions.AMP));
+        this.mXboxController.b().onTrue(this.m_elevator.stopElevatorCommand());
     }
 
     /**
