@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -90,8 +91,12 @@ public class RobotContainer {
         this.mXboxController.povRight().onTrue(this.m_elevator.moveToPosition(ElevatorPositions.AMP));
         this.mXboxController.povLeft().onTrue(this.m_elevator.moveToPosition(ElevatorPositions.TRAVEL));
         this.mXboxController.povDown().onTrue(this.m_elevator.moveToPosition(ElevatorPositions.INTAKE));
-        this.mXboxController.a().onTrue(this.m_elevator.moveToPosition(ElevatorPositions.AMP));
-        this.mXboxController.b().onTrue(this.m_elevator.stopElevatorCommand());
+        this.mXboxController.leftBumper().onTrue(this.m_elevator.stopElevatorCommand());
+        this.mXboxController.b().onTrue(this.m_elevator.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        this.mXboxController.y().onTrue(this.m_elevator.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        this.mXboxController.x().onTrue(this.m_elevator.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        this.mXboxController.a().onTrue(this.m_elevator.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+
     }
 
     /**

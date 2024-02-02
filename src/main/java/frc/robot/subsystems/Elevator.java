@@ -6,15 +6,19 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorPositions;
 import frc.utils.ElevatorLimits;
@@ -53,6 +57,15 @@ public class Elevator extends SubsystemBase {
     // Test values
     double totalSpeed = 0;
 
+    SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
+    new SysIdRoutine.Config(),
+    new SysIdRoutine.Mechanism(
+      (voltage) -> this.runVolts(voltage),
+      null,
+      this
+    )
+  );
+
     /** Creates a new Mechanism. */
     public Elevator() {
         
@@ -86,8 +99,12 @@ public class Elevator extends SubsystemBase {
         this.m_leftEncoder.setPositionConversionFactor(ElevatorConstants.kElevatorPositionConversionFactor);
         //this.m_rightEncoder.setPositionConversionFactor(ElevatorConstants.kElevatorPositionConversionFactor);
 
-        m_controller.setTolerance(0.2);
-        m_controller.setGoal(0);
+        m_leftEncoder.setPosition(0);
+        //m_controller.setGoal(0);
+    }
+
+    public void runVolts(Measure<Voltage> volts) {
+        m_leftMotor.setVoltage(volts.in(Volts));
     }
 
     //TODO: choose between TOP or BOTTOM position for encoder reset
@@ -157,6 +174,7 @@ public class Elevator extends SubsystemBase {
         calculateSpeed();
         SmartDashboard.putString("Elevator Limit: ", this.m_currentLimitSwitch.name());
         SmartDashboard.putNumber("Motor Speed: ", totalSpeed);
+        SmartDashboard.putNumber("Encoder Position: ", m_leftEncoder.getPosition());
         SmartDashboard.putNumber("Position Tolerence: ", m_controller.getPositionTolerance());
         SmartDashboard.putNumber("Position Error: ", m_controller.getPositionError());
         SmartDashboard.putNumber("Velocity Tolerence: ", m_controller.getVelocityTolerance());
@@ -169,21 +187,29 @@ public class Elevator extends SubsystemBase {
         if (this.checkLimit(ElevatorLimit.TOP)) {
             this.stopElevator();
             cancelAllElevatorCommands();
-            m_leftEncoder.setPosition(10);
+            //m_leftEncoder.setPosition(10);
             System.out.println("Top Limit Hit in checklimit");
 
         } else if (this.checkLimit(ElevatorLimit.BOTTOM)) {
             this.stopElevator();
             cancelAllElevatorCommands();
-            m_leftEncoder.setPosition(0);
+            //m_leftEncoder.setPosition(0);
             System.out.println("Bottom Limit Hit in checklimit");
 
         } else {
             totalSpeed = m_controller.calculate(m_leftEncoder.getPosition()) 
                 + m_feedforward.calculate(m_controller.getSetpoint().velocity);
-            setLeftMotorSpeed(totalSpeed);
+            //setLeftMotorSpeed(totalSpeed);
         }
     }
+
+    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+        return m_sysIdRoutine.quasistatic(direction);
+      }
+    
+    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+        return m_sysIdRoutine.dynamic(direction);
+      }
 
 /*     protected void useOutput(double output, State setpoint) {
         double feedforward = m_feedforward.calculate(setpoint.position, setpoint.velocity);

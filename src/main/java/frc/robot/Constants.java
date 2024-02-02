@@ -85,8 +85,8 @@ public final class Constants {
     public static final double kElevatorMotorReduction = 1;
     public static final double kElevatorWheelDiameterInches = 3;
 
-    public static final double kElevatorPositionConversionFactor = (kElevatorWheelDiameterInches * Math.PI)
-        / kElevatorMotorReduction;
+    public static final double kElevatorPositionConversionFactor = 1;
+   // (kElevatorWheelDiameterInches * Math.PI) / kElevatorMotorReduction;
         //TODO: Double check measurements
         //20:1 from gearbox to output 
         //18 tooth, 1.43in
