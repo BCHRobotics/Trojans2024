@@ -173,11 +173,11 @@ public class Elevator extends SubsystemBase {
             System.out.println("Bottom Limit Hit in checklimit");
             m_controller.setGoal(2);
 
-        } else {
-            totalSpeed = m_controller.calculate(m_leftEncoder.getPosition()) 
-                + m_feedforward.calculate(m_controller.getSetpoint().velocity);
-            setLeftMotorSpeed(totalSpeed);
         }
+        totalSpeed = m_controller.calculate(m_leftEncoder.getPosition()) 
+            + m_feedforward.calculate(m_controller.getSetpoint().velocity);
+        
+        setLeftMotorSpeed(totalSpeed);
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
