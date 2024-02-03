@@ -184,12 +184,14 @@ public class Elevator extends SubsystemBase {
             this.stopElevator();
             cancelAllElevatorCommands();
             //m_leftEncoder.setPosition(10);
+            m_controller.setGoal(m_leftEncoder.getPosition());
             System.out.println("Top Limit Hit in checklimit");
 
         } else if (this.checkLimit(ElevatorLimit.BOTTOM)) {
             this.stopElevator();
             cancelAllElevatorCommands();
             //m_leftEncoder.setPosition(0);
+            m_controller.setGoal(m_leftEncoder.getPosition());
             System.out.println("Bottom Limit Hit in checklimit");
 
         } else {
