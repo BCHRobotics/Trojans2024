@@ -166,20 +166,24 @@ public class Elevator extends SubsystemBase {
         if (this.checkForwardLimit()) {
             cancelAllElevatorCommands();
             System.out.println("Top Limit Hit in checklimit");
-            m_controller.setGoal(8);
+            setLeftMotorSpeed(-0.2);
 
+            m_controller.setGoal(8);
+    
         } else if (this.checkReverseLimit()) {
             cancelAllElevatorCommands();
             System.out.println("Bottom Limit Hit in checklimit");
+            setLeftMotorSpeed(0.2);
+
             m_controller.setGoal(2);
-
+    
+        } else {
+            // If no limit switch is currently pressed, proceed with normal PID control
+            totalSpeed = m_controller.calculate(m_leftEncoder.getPosition()) 
+                + m_feedforward.calculate(m_controller.getSetpoint().velocity);
+            setLeftMotorSpeed(totalSpeed);
         }
-        totalSpeed = m_controller.calculate(m_leftEncoder.getPosition()) 
-            + m_feedforward.calculate(m_controller.getSetpoint().velocity);
-        
-        setLeftMotorSpeed(totalSpeed);
     }
-
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutine.quasistatic(direction);
     }
