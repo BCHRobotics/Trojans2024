@@ -73,7 +73,6 @@ public class Elevator extends SubsystemBase {
         m_rightMotor = new CANSparkMax(ElevatorConstants.kRightElevatorMotorCanId, MotorType.kBrushless);
 
         m_leftEncoder = m_leftMotor.getEncoder();
-        //m_rightEncoder = m_rightMotor.getEncoder();
 
         this.m_leftMotor.restoreFactoryDefaults();
         this.m_rightMotor.restoreFactoryDefaults();
@@ -97,7 +96,6 @@ public class Elevator extends SubsystemBase {
         this.m_rightMotor.enableVoltageCompensation(12);
 
         this.m_leftEncoder.setPositionConversionFactor(ElevatorConstants.kElevatorPositionConversionFactor);
-        //this.m_rightEncoder.setPositionConversionFactor(ElevatorConstants.kElevatorPositionConversionFactor);
 
         m_leftEncoder.setPosition(0);
         m_controller.setGoal(0);
@@ -115,10 +113,8 @@ public class Elevator extends SubsystemBase {
                 return null;
             case SOURCE:
                 return Commands.runOnce(() -> m_controller.setGoal(8));
-                
             case AMP:
-                return Commands.runOnce(() -> m_controller.setGoal(6))
-                .andThen(() -> System.out.println("Running AMP"));
+                return Commands.runOnce(() -> m_controller.setGoal(6));
             case TRAVEL:
                 return Commands.runOnce(() -> m_controller.setGoal(4));
             case INTAKE:
@@ -142,7 +138,6 @@ public class Elevator extends SubsystemBase {
 
     private void stopElevator() {
         this.setLeftMotorSpeed(0);
-  //      this.setRightMotorSpeed(0);
     }
 
     private void updateLimit() {
@@ -168,30 +163,21 @@ public class Elevator extends SubsystemBase {
         this.updateLimit();
         
         calculateSpeed();
-        SmartDashboard.putString("Elevator Limit: ", this.m_currentLimitSwitch.name());
-        SmartDashboard.putNumber("Motor Speed: ", totalSpeed);
-        SmartDashboard.putNumber("Encoder Position: ", m_leftEncoder.getPosition());
-        SmartDashboard.putNumber("Position Tolerence: ", m_controller.getPositionTolerance());
-        SmartDashboard.putNumber("Position Error: ", m_controller.getPositionError());
-        SmartDashboard.putNumber("Velocity Tolerence: ", m_controller.getVelocityTolerance());
-        SmartDashboard.putNumber("Velocity Error: ", m_controller.getVelocityError());
-        SmartDashboard.putBoolean("At goal: ", m_controller.atGoal());
-        SmartDashboard.putBoolean("At setpoint: ", m_controller.atSetpoint());
+
+        putToDashboard();
     }
 
     public void calculateSpeed() {
         if (this.checkLimit(ElevatorLimit.TOP)) {
             this.stopElevator();
             cancelAllElevatorCommands();
-            //m_leftEncoder.setPosition(10);
-            m_controller.setGoal(m_leftEncoder.getPosition());
+            m_controller.reset(m_controller.getSetpoint().position, m_controller.getSetpoint().velocity);
             System.out.println("Top Limit Hit in checklimit");
 
         } else if (this.checkLimit(ElevatorLimit.BOTTOM)) {
             this.stopElevator();
             cancelAllElevatorCommands();
-            //m_leftEncoder.setPosition(0);
-            m_controller.setGoal(m_leftEncoder.getPosition());
+            m_controller.reset(m_controller.getSetpoint().position, m_controller.getSetpoint().velocity);
             System.out.println("Bottom Limit Hit in checklimit");
 
         } else {
@@ -203,40 +189,21 @@ public class Elevator extends SubsystemBase {
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutine.quasistatic(direction);
-      }
+    }
     
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutine.dynamic(direction);
-      }
-
-/*     protected void useOutput(double output, State setpoint) {
-        double feedforward = m_feedforward.calculate(setpoint.position, setpoint.velocity);
-
-        if (this.checkLimit(ElevatorLimit.TOP) && output > 0) {
-            this.stopElevator();
-            cancelAllElevatorCommands();
-            m_leftEncoder.setPosition(10); //TODO: double check top measurements
-      //      m_rightEncoder.setPosition(10);
-            System.out.println("Top Limit Hit in checklimit");
-
-        } else if (this.checkLimit(ElevatorLimit.BOTTOM) && output < 0) {
-            this.stopElevator();
-            cancelAllElevatorCommands();
-            m_leftEncoder.setPosition(0);
-     //       m_rightEncoder.setPosition(0);
-            System.out.println("Bottom Limit Hit in checklimit");
-
-
-        } else {
-            // Add the feedforward to the PID output to get the motor output
-            totalSpeed = output + feedforward;
-            this.setLeftMotorSpeed(totalSpeed);
-   //         this.setRightMotorSpeed(output + feedforward);
-        }
     }
 
-    protected double getMeasurement() {
-        return m_leftEncoder.getPosition();
+    private void putToDashboard() {
+        SmartDashboard.putString("Elevator Limit: ", this.m_currentLimitSwitch.name());
+        SmartDashboard.putNumber("Motor Speed: ", totalSpeed);
+        SmartDashboard.putNumber("Encoder Position: ", m_leftEncoder.getPosition());
+        SmartDashboard.putNumber("Position Tolerence: ", m_controller.getPositionTolerance());
+        SmartDashboard.putNumber("Position Error: ", m_controller.getPositionError());
+        SmartDashboard.putNumber("Velocity Tolerence: ", m_controller.getVelocityTolerance());
+        SmartDashboard.putNumber("Velocity Error: ", m_controller.getVelocityError());
+        SmartDashboard.putBoolean("At goal: ", m_controller.atGoal());
+        SmartDashboard.putBoolean("At setpoint: ", m_controller.atSetpoint());
     }
-    */
 }
