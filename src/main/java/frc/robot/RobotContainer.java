@@ -44,12 +44,13 @@ public class RobotContainer {
      */
     public RobotContainer() {
         inputChooser = new SendableChooser<>();
+
+        // Assigning values to the input method chooser
         inputChooser.addOption("XBoxController", Boolean.FALSE);
         inputChooser.addOption("Flightstick", Boolean.TRUE);
+        inputChooser.setDefaultOption("Flightstick", Boolean.TRUE);
 
         SmartDashboard.putData("Input Chooser", inputChooser);
-
-        inputChooser.setDefaultOption("Flightstick", Boolean.TRUE);
 
         // Build an auto chooser. This will use Commands.none() as the default option.
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -65,10 +66,10 @@ public class RobotContainer {
     public void configureDefaultCommands() {
         // Configure default commands
         if (inputChooser.getSelected().booleanValue() == true) {
-            // Configure default commands
+            // Configure the drivetrain to use the flightstick
             m_robotDrive.setDefaultCommand(
-                // The left stick controls translation of the robot.
-                // Turning is controlled by the X axis of the right stick.
+                // Joystick movement controls robot movement (up, right, left, down).
+                // Turning is controlled by the twist axis of the flightstick.
                 new RunCommand(
                     () -> m_robotDrive.drive(
                         -MathUtil.applyDeadband(m_driverController.getY(), OIConstants.kDriveDeadband),
@@ -77,6 +78,7 @@ public class RobotContainer {
                         OIConstants.kFieldRelative, OIConstants.kRateLimited),
                     m_robotDrive));
         } else {
+             // Configure the drivetrain to use the XBox controller
             m_robotDrive.setDefaultCommand(
                 // The left stick controls translation of the robot.
                 // Turning is controlled by the X axis of the right stick.
@@ -111,17 +113,20 @@ public class RobotContainer {
             .onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive))
             .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));    
 
-            new JoystickButton(m_driveXboxController, Button.kRightBumper.value)
-            .whileTrue(new RunCommand(
-                () -> m_robotDrive.setX(),
-                m_robotDrive));
+        // Brake Command (Right Bumper)
+        new JoystickButton(m_driveXboxController, Button.kRightBumper.value)
+        .whileTrue(new RunCommand(
+            () -> m_robotDrive.setX(),
+            m_robotDrive));
     
-            new JoystickButton(m_driveXboxController, Button.kLeftBumper.value)
-                    .onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive))
-                    .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
+        // Slow Command (Left Bumper)
+        new JoystickButton(m_driveXboxController, Button.kLeftBumper.value)
+            .onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive))
+            .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
     
-            new JoystickButton(m_driveXboxController, Button.kY.value)
-                    .onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
+        // Zero heading (Button Y)
+        new JoystickButton(m_driveXboxController, Button.kY.value)
+            .onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
     }
 
     /**
