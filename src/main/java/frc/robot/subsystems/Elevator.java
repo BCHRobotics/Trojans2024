@@ -26,7 +26,6 @@ import frc.utils.ElevatorLimits.ElevatorLimit;
 
 public class Elevator extends SubsystemBase {
 
-    // The beam-break sensor that detects where a note is in the mechanism
     private final ElevatorLimits m_elevatorLimit = new ElevatorLimits(
         ElevatorConstants.kTopElevatorLimitSwitchPort, 
         ElevatorConstants.kBottomElevatorLimitSwitchPort
@@ -38,7 +37,6 @@ public class Elevator extends SubsystemBase {
     private final CANSparkMax m_rightMotor;
 
     private final RelativeEncoder m_leftEncoder;
-    //private final RelativeEncoder m_rightEncoder;
 
     private static final TrapezoidProfile.Constraints m_constraints = new TrapezoidProfile.Constraints(
                 ElevatorConstants.kMaxSpeedMetersPerSecond,
@@ -54,7 +52,6 @@ public class Elevator extends SubsystemBase {
         new ElevatorFeedforward(
             ElevatorConstants.kSVolts, ElevatorConstants.kGVolts, ElevatorConstants.kVVolts);
    
-    // Test values
     double totalSpeed = 0;
 
     SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
@@ -171,14 +168,15 @@ public class Elevator extends SubsystemBase {
         if (this.checkLimit(ElevatorLimit.TOP)) {
             this.stopElevator();
             cancelAllElevatorCommands();
-            m_controller.reset(m_controller.getSetpoint().position, m_controller.getSetpoint().velocity);
             System.out.println("Top Limit Hit in checklimit");
+            m_controller.setGoal(8);
 
         } else if (this.checkLimit(ElevatorLimit.BOTTOM)) {
             this.stopElevator();
             cancelAllElevatorCommands();
             m_controller.reset(m_controller.getSetpoint().position, m_controller.getSetpoint().velocity);
             System.out.println("Bottom Limit Hit in checklimit");
+            m_controller.setGoal(2);
 
         } else {
             totalSpeed = m_controller.calculate(m_leftEncoder.getPosition()) 
