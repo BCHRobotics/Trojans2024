@@ -6,6 +6,8 @@ package frc.robot.subsystems;
 
 import java.util.Optional;
 
+import javax.xml.crypto.dsig.Transform;
+
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -73,7 +75,8 @@ public class Drivetrain extends SubsystemBase {
 
   private final Camera cameraObject = new Camera();
   private boolean align = false;
-  private float desiredRotation;
+
+  private Pose2d targetPose;
 
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
@@ -109,6 +112,10 @@ public class Drivetrain extends SubsystemBase {
         });
 
     this.printToDashboard();
+
+    if (cameraObject.getResult().hasTargets()) {
+      targetPose = cameraObject.getApriltagPose(getPose());
+    }
   }
 
   // Toggles 'align mode' which when on forces the robot to align to a target
@@ -155,8 +162,14 @@ public class Drivetrain extends SubsystemBase {
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {
     // Rotates the robot towards a target during teleop by addding a number to the rotation input
-    if (align) {
-      rot += cameraObject.getRotationSpeed();
+    if (align && targetPose != null) {
+      //rot += cameraObject.getRotationSpeed();
+
+      Transform2d targetOffset = new Transform2d(getPose(), targetPose);
+
+      rot = 0;
+      xSpeed = targetOffset.getX() * 0.1;
+      ySpeed = targetOffset.getY() * 0.1;
     }
 
     double xSpeedCommanded;
@@ -368,15 +381,6 @@ public class Drivetrain extends SubsystemBase {
    * @param speed The new chassis speed.
    */
   public void setChassisSpeeds(ChassisSpeeds speed) {
-    // If the robot is trying to align during auto, add the commanded rotation to the chassis speeds
-    // TODO: TEST THIS
-    if (align) {
-      speed = new ChassisSpeeds(speed.vxMetersPerSecond, 
-      speed.vyMetersPerSecond, 
-      speed.omegaRadiansPerSecond
-       + cameraObject.getRotationSpeed() * (180 / Math.PI)); // Multiply the rotation speed by a constant to get a value in radians?
-    }
-
     this.setModuleStates(DriveConstants.kDriveKinematics.toSwerveModuleStates(speed));
   }
 
@@ -421,9 +425,9 @@ public class Drivetrain extends SubsystemBase {
 
       if (cameraObject.getApriltagPose(getPose()) != null) {
         // Apriltag position data  
-        SmartDashboard.putNumber("Transform X", cameraObject.getApriltagPose(getPose()).getX());
-        SmartDashboard.putNumber("Transform Y", cameraObject.getApriltagPose(getPose()).getY());
-        SmartDashboard.putNumber("Transform ROT", cameraObject.getApriltagPose(getPose()).getRotation().getDegrees());
+        SmartDashboard.putNumber("Transform X", cameraObject.getTargetTransform2d().getX());
+        SmartDashboard.putNumber("Transform Y", cameraObject.getTargetTransform2d().getY());
+        //SmartDashboard.putNumber("Transform ROT", cameraObject.getApriltagPose(getPose()).getRotation().getDegrees());
       }
     }
   }

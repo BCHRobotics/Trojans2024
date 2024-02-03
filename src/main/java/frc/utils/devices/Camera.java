@@ -54,10 +54,22 @@ public class Camera {
     }
 
     // Returns the pose of the target
-    public Transform3d getTargetPose() {
+    public Transform3d getTargetTransform() {
         // Only return the pose if there is actually a target
         if (result.hasTargets()) {
             return result.getBestTarget().getBestCameraToTarget();
+        }
+        else {
+            return null;
+        }
+    }
+
+    public Transform2d getTargetTransform2d() {
+        // Only return the pose if there is actually a target
+        if (result.hasTargets()) {
+            return new Transform2d(getTargetTransform().getX(), 
+            getTargetTransform().getY(), 
+            new Rotation2d(getTargetTransform().getRotation().getZ()));
         }
         else {
             return null;
@@ -68,9 +80,9 @@ public class Camera {
     public Pose2d getApriltagPose(Pose2d robotPose) {
         // Make sure the camera is currently tracking an apriltag before getting pose data
         if (instance.getPipelineIndex() == 1) {
-            Pose2d tagPose = robotPose.plus(new Transform2d(getTargetPose().getX(), 
-            getTargetPose().getY(), 
-            new Rotation2d(getTargetPose().getRotation().getZ())));
+            Pose2d tagPose = robotPose.plus(new Transform2d(getTargetTransform().getX(), 
+            getTargetTransform().getY(), 
+            new Rotation2d(getTargetTransform().getRotation().getZ())));
 
             return tagPose;
         }
