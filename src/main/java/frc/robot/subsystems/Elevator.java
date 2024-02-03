@@ -3,7 +3,9 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.SparkLimitSwitch;
 
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.units.Units.*;
@@ -26,17 +28,16 @@ import frc.utils.ElevatorLimits.ElevatorLimit;
 
 public class Elevator extends SubsystemBase {
 
-    private final ElevatorLimits m_elevatorLimit = new ElevatorLimits(
-        ElevatorConstants.kTopElevatorLimitSwitchPort, 
-        ElevatorConstants.kBottomElevatorLimitSwitchPort
-    );
-
-    private ElevatorLimit m_currentLimitSwitch = ElevatorLimit.TOP;
-
     private final CANSparkMax m_leftMotor;
     private final CANSparkMax m_rightMotor;
 
     private final RelativeEncoder m_leftEncoder;
+
+    private SparkLimitSwitch m_forwardLimit;
+    private SparkLimitSwitch m_reverseLimit;
+
+    public String kEnable;
+    public String kDisable;
 
     private static final TrapezoidProfile.Constraints m_constraints = new TrapezoidProfile.Constraints(
                 ElevatorConstants.kMaxSpeedMetersPerSecond,
@@ -80,6 +81,12 @@ public class Elevator extends SubsystemBase {
         this.m_leftMotor.setSmartCurrentLimit(60, 20);
         this.m_rightMotor.setSmartCurrentLimit(60, 20);
 
+        m_forwardLimit = m_leftMotor.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
+        m_reverseLimit = m_leftMotor.getReverseLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
+
+        m_forwardLimit.enableLimitSwitch(false);
+        m_reverseLimit.enableLimitSwitch(false);
+
         // TODO: Undo this when actually want the right motor to work Tim
         // this.m_rightMotor.follow(m_leftMotor);
 
@@ -96,6 +103,7 @@ public class Elevator extends SubsystemBase {
 
         m_leftEncoder.setPosition(0);
         m_controller.setGoal(0);
+        
     }
 
     public void runVolts(Measure<Voltage> volts) {
@@ -109,13 +117,13 @@ public class Elevator extends SubsystemBase {
             case TOP:
                 return null;
             case SOURCE:
-                return Commands.runOnce(() -> m_controller.setGoal(8));
+                return Commands.runOnce(() -> m_controller.setGoal(14));
             case AMP:
                 return Commands.runOnce(() -> m_controller.setGoal(6));
             case TRAVEL:
                 return Commands.runOnce(() -> m_controller.setGoal(4));
             case INTAKE:
-                return Commands.runOnce(() -> m_controller.setGoal(2));
+                return Commands.runOnce(() -> m_controller.setGoal(0));
             case BOTTOM:
                 return null;
             default:
@@ -124,26 +132,19 @@ public class Elevator extends SubsystemBase {
     }
 
     public Command stopElevatorCommand() {
-        return parallel (
-            Commands.runOnce(() -> this.cancelAllElevatorCommands()),
-            Commands.runOnce(() -> this.stopElevator()));
+        return Commands.runOnce(() -> this.cancelAllElevatorCommands());
     }
 
     private void setLeftMotorSpeed(double speed) {
         this.m_leftMotor.setVoltage(speed);
     }
 
-    private void stopElevator() {
-        this.setLeftMotorSpeed(0);
+    private boolean checkForwardLimit() {
+        return m_forwardLimit.isPressed();
     }
 
-    private void updateLimit() {
-        this.m_elevatorLimit.updateLimit();
-        this.m_currentLimitSwitch = this.m_elevatorLimit.getLimit();
-    }
-
-    private boolean checkLimit(ElevatorLimit limit) {
-        return this.m_currentLimitSwitch == limit;
+    private boolean checkReverseLimit() {
+        return m_reverseLimit.isPressed();
     }
 
     private void cancelAllElevatorCommands() {
@@ -157,24 +158,18 @@ public class Elevator extends SubsystemBase {
 
     @Override
     public void periodic() {
-        this.updateLimit();
-        
         calculateSpeed();
-
         putToDashboard();
     }
 
     public void calculateSpeed() {
-        if (this.checkLimit(ElevatorLimit.TOP)) {
-            this.stopElevator();
+        if (this.checkForwardLimit()) {
             cancelAllElevatorCommands();
             System.out.println("Top Limit Hit in checklimit");
             m_controller.setGoal(8);
 
-        } else if (this.checkLimit(ElevatorLimit.BOTTOM)) {
-            this.stopElevator();
+        } else if (this.checkReverseLimit()) {
             cancelAllElevatorCommands();
-            m_controller.reset(m_controller.getSetpoint().position, m_controller.getSetpoint().velocity);
             System.out.println("Bottom Limit Hit in checklimit");
             m_controller.setGoal(2);
 
@@ -194,7 +189,6 @@ public class Elevator extends SubsystemBase {
     }
 
     private void putToDashboard() {
-        SmartDashboard.putString("Elevator Limit: ", this.m_currentLimitSwitch.name());
         SmartDashboard.putNumber("Motor Speed: ", totalSpeed);
         SmartDashboard.putNumber("Encoder Position: ", m_leftEncoder.getPosition());
         SmartDashboard.putNumber("Position Tolerence: ", m_controller.getPositionTolerance());
@@ -203,5 +197,7 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putNumber("Velocity Error: ", m_controller.getVelocityError());
         SmartDashboard.putBoolean("At goal: ", m_controller.atGoal());
         SmartDashboard.putBoolean("At setpoint: ", m_controller.atSetpoint());
+        SmartDashboard.putBoolean("Top limit switch hit: ", m_forwardLimit.isPressed());
+        SmartDashboard.putBoolean("Bottom limit switch hit: ", m_reverseLimit.isPressed());
     }
 }
