@@ -23,8 +23,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorPositions;
-import frc.utils.ElevatorLimits;
-import frc.utils.ElevatorLimits.ElevatorLimit;
 
 public class Elevator extends SubsystemBase {
 
@@ -139,12 +137,8 @@ public class Elevator extends SubsystemBase {
         this.m_leftMotor.setVoltage(speed);
     }
 
-    private boolean checkForwardLimit() {
-        return m_forwardLimit.isPressed();
-    }
-
-    private boolean checkReverseLimit() {
-        return m_reverseLimit.isPressed();
+    private boolean checkLimit(SparkLimitSwitch limitSwitch) {
+        return limitSwitch.isPressed();
     }
 
     private void cancelAllElevatorCommands() {
@@ -162,28 +156,32 @@ public class Elevator extends SubsystemBase {
         putToDashboard();
     }
 
+    private Command resetLimit(SparkLimitSwitch limitSwitch, double goal, double motorSpeed) {
+        return Commands.runOnce(() -> this.setLeftMotorSpeed(0))
+                .andThen(() -> 
+                    Commands.runOnce(() -> this.setLeftMotorSpeed(motorSpeed)))
+                    .until(() -> this.checkLimit(limitSwitch))
+                    .andThen(() -> m_controller.setGoal(goal));
+    }
+
     public void calculateSpeed() {
-        if (this.checkForwardLimit()) {
+        if (this.checkLimit(m_forwardLimit)) {
+            System.out.println("Top Limit Hit");
             cancelAllElevatorCommands();
-            System.out.println("Top Limit Hit in checklimit");
-            setLeftMotorSpeed(-0.2);
-
-            m_controller.setGoal(8);
+            resetLimit(m_forwardLimit, 8, -0.2);
     
-        } else if (this.checkReverseLimit()) {
+        } else if (this.checkLimit(m_reverseLimit)) {
+            System.out.println("Bottom Limit Hit");
             cancelAllElevatorCommands();
-            System.out.println("Bottom Limit Hit in checklimit");
-            setLeftMotorSpeed(0.2);
+            resetLimit(m_reverseLimit, 2, 0.2);
 
-            m_controller.setGoal(2);
-    
         } else {
-            // If no limit switch is currently pressed, proceed with normal PID control
             totalSpeed = m_controller.calculate(m_leftEncoder.getPosition()) 
                 + m_feedforward.calculate(m_controller.getSetpoint().velocity);
             setLeftMotorSpeed(totalSpeed);
         }
     }
+
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutine.quasistatic(direction);
     }
