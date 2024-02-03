@@ -5,13 +5,7 @@
 package frc.robot.subsystems;
 
 
-import static edu.wpi.first.units.Units.Volts;
-import static edu.wpi.first.units.Units.VoltsPerMeterPerSecond;
 import static edu.wpi.first.units.MutableMeasure.mutable;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Milliseconds;
-import static edu.wpi.first.units.Units.Volts;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.units.Distance;
@@ -31,6 +25,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.function.DoubleSupplier;
+
+import org.littletonrobotics.junction.Logger;
 
 import java.util.Optional;
 
@@ -121,7 +117,8 @@ public class Drivetrain extends SubsystemBase {
   private final Measure<Time> m_timeout = Seconds.of(7);
 
   SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
-    new SysIdRoutine.Config(m_quasistaticVoltage, m_dynamicVoltage, m_timeout),
+    new SysIdRoutine.Config(m_quasistaticVoltage, m_dynamicVoltage, m_timeout, // Use default config
+    (state) -> Logger.recordOutput("SysIdTestState", state.toString())),
     new SysIdRoutine.Mechanism(
       (voltage) -> this.runVolts(voltage),
       null,
@@ -163,8 +160,8 @@ public class Drivetrain extends SubsystemBase {
   public void runVolts(Measure<Voltage> volts) {
     m_frontLeftMotor.setVoltage(volts.in(Volts));
     m_frontRightMotor.setVoltage(-volts.in(Volts));
-    m_rearLeftMotor.setVoltage(-volts.in(Volts));
-    m_rearRightMotor.setVoltage(-volts.in(Volts));
+    m_rearLeftMotor.setVoltage(volts.in(Volts));
+    m_rearRightMotor.setVoltage(volts.in(Volts));
   }
 
   /**
