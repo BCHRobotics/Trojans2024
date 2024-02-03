@@ -143,6 +143,6 @@ public class RobotContainer {
     // Sets the speed percentage to use based on the slider on the flightstick,
     // this only works on the flightstick.
     public void setSpeedPercent() {
-        m_robotDrive.setSpeedPercent(1 - ((m_driverController.getThrottle() + 1) / 2));
+        m_robotDrive.setSpeedPercent(1 - ((m_driverFlightstickController.getThrottle() + 1) / 2));
     }
 }
