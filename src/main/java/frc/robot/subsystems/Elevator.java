@@ -47,7 +47,7 @@ public class Elevator extends SubsystemBase {
     private static ProfiledPIDController m_controller = new ProfiledPIDController(
             ElevatorConstants.kPThetaController,
             0,
-            0,
+            ElevatorConstants.kDThetaController,
             m_constraints);
 
       private final ElevatorFeedforward m_feedforward =
@@ -100,7 +100,7 @@ public class Elevator extends SubsystemBase {
         //this.m_rightEncoder.setPositionConversionFactor(ElevatorConstants.kElevatorPositionConversionFactor);
 
         m_leftEncoder.setPosition(0);
-        //m_controller.setGoal(0);
+        m_controller.setGoal(0);
     }
 
     public void runVolts(Measure<Voltage> volts) {
@@ -197,7 +197,7 @@ public class Elevator extends SubsystemBase {
         } else {
             totalSpeed = m_controller.calculate(m_leftEncoder.getPosition()) 
                 + m_feedforward.calculate(m_controller.getSetpoint().velocity);
-            //setLeftMotorSpeed(totalSpeed);
+            setLeftMotorSpeed(totalSpeed);
         }
     }
 
