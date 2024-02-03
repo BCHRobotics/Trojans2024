@@ -73,14 +73,15 @@ public final class Constants {
     public static final int kTopElevatorLimitSwitchPort = 5;
     public static final int kBottomElevatorLimitSwitchPort = 6;
 
-    public static final double kPThetaController = 1;
+    public static final double kPThetaController = 0.62221;
+    public static final double kDThetaController = 0.010417;
 
     public static final double kMaxSpeedMetersPerSecond = 3.0;
     public static final double kMaxAccelerationMetersPerSecondSquared = 3.0;
 
-    public static final double kSVolts = 1.1;
-    public static final double kGVolts = 1.2;
-    public static final double kVVolts = 1.3;
+    public static final double kSVolts = 0.11211;
+    public static final double kGVolts = 0.0020415;
+    public static final double kVVolts = 0.0001107;
 
     public static final double kElevatorMotorReduction = 1;
     public static final double kElevatorWheelDiameterInches = 3;
