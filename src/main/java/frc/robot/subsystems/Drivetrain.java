@@ -161,7 +161,7 @@ public class Drivetrain extends SubsystemBase {
     m_frontLeftMotor.setVoltage(volts.in(Volts));
     m_frontRightMotor.setVoltage(-volts.in(Volts));
     m_rearLeftMotor.setVoltage(volts.in(Volts));
-    m_rearRightMotor.setVoltage(volts.in(Volts));
+    m_rearRightMotor.setVoltage(-volts.in(Volts));
   }
 
   /**
