@@ -124,6 +124,7 @@ public final class Constants {
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
     public static final double kDriveDeadband = 0.05;
+    public static final double kTurnDeadband = 0.15;
     public static final double kTwistDeadband = 0.5;
     public static final boolean kFieldRelative = true;
     public static final boolean kRateLimited = true;
