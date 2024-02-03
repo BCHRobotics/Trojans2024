@@ -30,10 +30,10 @@ public class RobotContainer {
     // The robot's subsystems
     private final Drivetrain m_robotDrive = new Drivetrain();
 
-    // The driver's controller
-    CommandJoystick m_driverController = new CommandJoystick(OIConstants.kDriverControllerPort);
-
-    CommandXboxController m_driveXboxController = new CommandXboxController(1);
+    // Flightstick controller
+    CommandJoystick m_driverFlightstickController = new CommandJoystick(OIConstants.kDriverControllerPort);
+    // XBox controller
+    CommandXboxController m_driverXboxController = new CommandXboxController(1);
 
     // The auto chooser
     private final SendableChooser<Command> autoChooser;
@@ -73,9 +73,9 @@ public class RobotContainer {
                 // Turning is controlled by the twist axis of the flightstick.
                 new RunCommand(
                     () -> m_robotDrive.drive(
-                        -MathUtil.applyDeadband(m_driverController.getY(), OIConstants.kDriveDeadband),
-                        -MathUtil.applyDeadband(m_driverController.getX(), OIConstants.kDriveDeadband),
-                        -MathUtil.applyDeadband(m_driverController.getTwist(), OIConstants.kTwistDeadband),
+                        -MathUtil.applyDeadband(m_driverFlightstickController.getY(), OIConstants.kDriveDeadband),
+                        -MathUtil.applyDeadband(m_driverFlightstickController.getX(), OIConstants.kDriveDeadband),
+                        -MathUtil.applyDeadband(m_driverFlightstickController.getTwist(), OIConstants.kTwistDeadband),
                         OIConstants.kFieldRelative, OIConstants.kRateLimited),
                     m_robotDrive));
         } else {
@@ -85,9 +85,9 @@ public class RobotContainer {
                 // Turning is controlled by the X axis of the right stick.
                 new RunCommand(
                         () -> m_robotDrive.drive(
-                                -MathUtil.applyDeadband(m_driveXboxController.getLeftY(), OIConstants.kDriveDeadband),
-                                -MathUtil.applyDeadband(m_driveXboxController.getLeftX(), OIConstants.kDriveDeadband),
-                                -MathUtil.applyDeadband(m_driveXboxController.getRightX(), OIConstants.kTurnDeadband),
+                                -MathUtil.applyDeadband(m_driverXboxController.getLeftY(), OIConstants.kDriveDeadband),
+                                -MathUtil.applyDeadband(m_driverXboxController.getLeftX(), OIConstants.kDriveDeadband),
+                                -MathUtil.applyDeadband(m_driverXboxController.getRightX(), OIConstants.kTurnDeadband),
                                 OIConstants.kFieldRelative, OIConstants.kRateLimited),
                         m_robotDrive));
         }
@@ -104,25 +104,25 @@ public class RobotContainer {
    */
     private void configureButtonBindings() {
         // Break Command (Button 2)
-        m_driverController.button(2).whileTrue(new RunCommand(() -> m_robotDrive.setX(), m_robotDrive));
+        m_driverFlightstickController.button(2).whileTrue(new RunCommand(() -> m_robotDrive.setX(), m_robotDrive));
 
         // Zero heading (Button 5)
-        m_driverController.button(5).whileTrue(new RunCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
+        m_driverFlightstickController.button(5).whileTrue(new RunCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
         
         // Slow Command (Button 1)
-        m_driverController.button(1)
+        m_driverFlightstickController.button(1)
             .onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive))
             .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));    
 
         // Zero heading command (Y Button)
-        this.m_driveXboxController.y().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
+        this.m_driverXboxController.y().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
 
         // Brake command (Right Bumper)
-        this.m_driveXboxController.rightBumper().whileTrue(new RunCommand(() -> m_robotDrive.setX(),m_robotDrive));
+        this.m_driverXboxController.rightBumper().whileTrue(new RunCommand(() -> m_robotDrive.setX(),m_robotDrive));
 
         // Slow mode command (Left Bumper)
-        this.m_driveXboxController.leftBumper().onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive));
-        this.m_driveXboxController.leftBumper().onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
+        this.m_driverXboxController.leftBumper().onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive));
+        this.m_driverXboxController.leftBumper().onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
     }
 
     /**
