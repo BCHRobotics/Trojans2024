@@ -6,6 +6,9 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+
+import org.littletonrobotics.junction.Logger;
+
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
@@ -58,7 +61,8 @@ public class Elevator extends SubsystemBase {
     double totalSpeed = 0;
 
     SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
-    new SysIdRoutine.Config(),
+    new SysIdRoutine.Config( null, null, null, // Use default config
+    (state) -> Logger.recordOutput("SysIdTestState", state.toString())),
     new SysIdRoutine.Mechanism(
       (voltage) -> this.runVolts(voltage),
       null,
