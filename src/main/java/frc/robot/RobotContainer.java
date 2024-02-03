@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /*
@@ -32,7 +33,7 @@ public class RobotContainer {
     // The driver's controller
     CommandJoystick m_driverController = new CommandJoystick(OIConstants.kDriverControllerPort);
 
-    XboxController m_driveXboxController = new XboxController(1);
+    CommandXboxController m_driveXboxController = new CommandXboxController(1);
 
     // The auto chooser
     private final SendableChooser<Command> autoChooser;
@@ -113,20 +114,15 @@ public class RobotContainer {
             .onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive))
             .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));    
 
-        // Brake Command (Right Bumper)
-        new JoystickButton(m_driveXboxController, Button.kRightBumper.value)
-        .whileTrue(new RunCommand(
-            () -> m_robotDrive.setX(),
-            m_robotDrive));
-    
-        // Slow Command (Left Bumper)
-        new JoystickButton(m_driveXboxController, Button.kLeftBumper.value)
-            .onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive))
-            .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
-    
-        // Zero heading (Button Y)
-        new JoystickButton(m_driveXboxController, Button.kY.value)
-            .onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
+        // Zero heading command (Y Button)
+        this.m_driveXboxController.y().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
+
+        // Brake command (Right Bumper)
+        this.m_driveXboxController.rightBumper().whileTrue(new RunCommand(() -> m_robotDrive.setX(),m_robotDrive));
+
+        // Slow mode command (Left Bumper)
+        this.m_driveXboxController.leftBumper().onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive));
+        this.m_driveXboxController.leftBumper().onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
     }
 
     /**
