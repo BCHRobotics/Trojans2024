@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.utils.SwerveUtils;
 import frc.utils.devices.Camera;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -88,6 +89,9 @@ public class Drivetrain extends SubsystemBase {
   /** Creates a new DriveSubsystem. */
   public Drivetrain() {
     this.initializeAuto();
+
+    // By default try and detect notes
+    setCameraPipeline(VisionConstants.NOTE_PIPELINE);
   }
 
   @Override
@@ -107,9 +111,9 @@ public class Drivetrain extends SubsystemBase {
     this.printToDashboard();
   }
 
+  // Toggles 'align mode' which when on forces the robot to align to a target
   public void alignToNote() {
     align = !align;
-    SmartDashboard.putBoolean("Align", align);
   }
 
   /**
@@ -150,7 +154,8 @@ public class Drivetrain extends SubsystemBase {
    * @param rateLimit     Whether to enable rate limiting for smoother control.
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {
-    if (align && cameraObject.getResult().hasTargets()) {
+    // Rotates the robot towards a target during teleop by addding a number to the rotation input
+    if (align) {
       rot += cameraObject.getRotationSpeed();
     }
 
@@ -303,16 +308,31 @@ public class Drivetrain extends SubsystemBase {
     this.m_slowMode = mode;
   }
 
+  /**
+   * Sets the speed of the robot to a percentage [0 --> 1]
+   *
+   * @param percent The desired speed percentage
+   */
   public void setSpeedPercent(double percent) {
       m_maxSpeed = percent;
   }
 
+  /**
+   * Sets the camera's pipeline via an index
+   *
+   * @param pipelineIndex The index of the desired pipeline
+   */
+  public void setCameraPipeline(int pipelineIndex) {
+    cameraObject.setCameraPipeline(pipelineIndex);
+  }
+
+  // Toggles the camera pipeline between note and apriltags
   public void toggleCameraPipeline() {
-    if (cameraObject.getCameraPipeline() == 0) {
-      cameraObject.setCameraPipeline(1);
+    if (cameraObject.getCameraPipeline() == VisionConstants.NOTE_PIPELINE) {
+      setCameraPipeline(VisionConstants.APRILTAG_PIPELINE);
     }
-    else if (cameraObject.getCameraPipeline() == 1) {
-      cameraObject.setCameraPipeline(0);
+    else if (cameraObject.getCameraPipeline() == VisionConstants.APRILTAG_PIPELINE) {
+      setCameraPipeline(VisionConstants.NOTE_PIPELINE);
     }
   }
 
@@ -348,6 +368,15 @@ public class Drivetrain extends SubsystemBase {
    * @param speed The new chassis speed.
    */
   public void setChassisSpeeds(ChassisSpeeds speed) {
+    // If the robot is trying to align during auto, add the commanded rotation to the chassis speeds
+    // TODO: TEST THIS
+    if (align) {
+      speed = new ChassisSpeeds(speed.vxMetersPerSecond, 
+      speed.vyMetersPerSecond, 
+      speed.omegaRadiansPerSecond
+       + cameraObject.getRotationSpeed() * (180 / Math.PI)); // Multiply the rotation speed by a constant to get a value in radians?
+    }
+
     this.setModuleStates(DriveConstants.kDriveKinematics.toSwerveModuleStates(speed));
   }
 
@@ -383,7 +412,10 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putString("Rear left Encoder", m_rearLeft.getState().toString());
     SmartDashboard.putString("Rear right Encoder", m_rearRight.getState().toString());
 
+    // Camera values
     SmartDashboard.putBoolean("Has Target", cameraObject.getResult().hasTargets());
+    SmartDashboard.putBoolean("Align", align);
+
     if (cameraObject.getResult().hasTargets()) {
       SmartDashboard.putNumber("Camera Target Yaw", cameraObject.getResult().getBestTarget().getYaw());
 

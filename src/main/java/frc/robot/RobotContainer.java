@@ -55,6 +55,7 @@ public class RobotContainer {
                     OIConstants.kFieldRelative, OIConstants.kRateLimited),
                 m_robotDrive));
 
+        // A command for aligning the robot to a target during auto
         NamedCommands.registerCommand("ALIGN", new InstantCommand(() -> m_robotDrive.alignToNote()));
 
         // Build an auto chooser. This will use Commands.none() as the default option.

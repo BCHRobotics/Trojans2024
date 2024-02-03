@@ -31,14 +31,15 @@ public class Camera {
     
     // Gets the desired rotation speed in order to align with the target
     public double getRotationSpeed(){
+        // Make sure the camera has a target, else it will return null
         if(result.hasTargets()){
             double currentYaw = result.getBestTarget().getYaw();
 
             rotationSpeed = turnController.calculate(currentYaw * 0.075, 0);
-
         } else{
             rotationSpeed = 0;
         }
+
         return rotationSpeed;
     }
 
