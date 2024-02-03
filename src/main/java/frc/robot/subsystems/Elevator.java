@@ -136,10 +136,6 @@ public class Elevator extends SubsystemBase {
             Commands.runOnce(() -> this.stopElevator()));
     }
 
-    private double getLeftMotorSpeed() {
-        return this.m_leftMotor.get();
-    }
-
     private void setLeftMotorSpeed(double speed) {
         this.m_leftMotor.setVoltage(speed);
     }

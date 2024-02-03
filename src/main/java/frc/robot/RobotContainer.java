@@ -92,10 +92,10 @@ public class RobotContainer {
         this.mXboxController.povLeft().onTrue(this.m_elevator.moveToPosition(ElevatorPositions.TRAVEL));
         this.mXboxController.povDown().onTrue(this.m_elevator.moveToPosition(ElevatorPositions.INTAKE));
         this.mXboxController.leftBumper().onTrue(this.m_elevator.stopElevatorCommand());
-        this.mXboxController.b().onTrue(this.m_elevator.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        this.mXboxController.y().onTrue(this.m_elevator.sysIdDynamic(SysIdRoutine.Direction.kForward));
-        this.mXboxController.x().onTrue(this.m_elevator.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-        this.mXboxController.a().onTrue(this.m_elevator.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        this.mXboxController.b().whileTrue(this.m_elevator.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        this.mXboxController.y().whileTrue(this.m_elevator.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        this.mXboxController.x().whileTrue(this.m_elevator.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        this.mXboxController.a().whileTrue(this.m_elevator.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
 
     }
 
