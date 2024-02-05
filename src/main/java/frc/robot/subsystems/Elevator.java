@@ -11,7 +11,6 @@ import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Voltage;
@@ -23,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorPositions;
+import frc.utils.NewProfiledPIDController;
 
 public class Elevator extends SubsystemBase {
 
@@ -41,7 +41,7 @@ public class Elevator extends SubsystemBase {
                 ElevatorConstants.kMaxSpeedMetersPerSecond,
                 ElevatorConstants.kMaxAccelerationMetersPerSecondSquared);
 
-    private static ProfiledPIDController m_controller = new ProfiledPIDController(
+    private static NewProfiledPIDController m_controller = new NewProfiledPIDController(
             ElevatorConstants.kPThetaController,
             0,
             ElevatorConstants.kDThetaController,
@@ -169,11 +169,13 @@ public class Elevator extends SubsystemBase {
             System.out.println("Top Limit Hit");
             cancelAllElevatorCommands();
             resetLimit(m_forwardLimit, 8, -0.2);
+            m_controller.forceAtGoal();
     
         } else if (this.checkLimit(m_reverseLimit)) {
             System.out.println("Bottom Limit Hit");
             cancelAllElevatorCommands();
             resetLimit(m_reverseLimit, 2, 0.2);
+            m_controller.forceAtGoal();
 
         } else {
             totalSpeed = m_controller.calculate(m_leftEncoder.getPosition()) 
