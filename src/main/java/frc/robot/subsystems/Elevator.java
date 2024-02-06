@@ -84,8 +84,8 @@ public class Elevator extends SubsystemBase {
         m_forwardLimit = m_leftMotor.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
         m_reverseLimit = m_leftMotor.getReverseLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
 
-        m_forwardLimit.enableLimitSwitch(false);
-        m_reverseLimit.enableLimitSwitch(false);
+        m_forwardLimit.enableLimitSwitch(true);
+        m_reverseLimit.enableLimitSwitch(true);
 
         // TODO: Undo this when actually want the right motor to work Tim
         // this.m_rightMotor.follow(m_leftMotor);
