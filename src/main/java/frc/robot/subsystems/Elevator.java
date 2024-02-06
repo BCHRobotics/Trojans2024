@@ -53,6 +53,8 @@ public class Elevator extends SubsystemBase {
    
     double totalSpeed = 0;
 
+    private boolean forcedGoal = false;
+
     SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
     new SysIdRoutine.Config(),
     new SysIdRoutine.Mechanism(
@@ -165,22 +167,25 @@ public class Elevator extends SubsystemBase {
     }
 
     public void calculateSpeed() {
-        if (this.checkLimit(m_forwardLimit)) {
+        if (this.checkLimit(m_forwardLimit) && !forcedGoal) {
             System.out.println("Top Limit Hit");
             cancelAllElevatorCommands();
-            resetLimit(m_forwardLimit, 8, -0.2);
+            //resetLimit(m_forwardLimit, 8, -0.2);
             m_controller.forceAtGoal();
+            forcedGoal = true;
     
-        } else if (this.checkLimit(m_reverseLimit)) {
+        } else if (this.checkLimit(m_reverseLimit) && !forcedGoal) {
             System.out.println("Bottom Limit Hit");
             cancelAllElevatorCommands();
-            resetLimit(m_reverseLimit, 2, 0.2);
+            //resetLimit(m_reverseLimit, 2, 0.2);
             m_controller.forceAtGoal();
+            forcedGoal = true;
 
         } else {
             totalSpeed = m_controller.calculate(m_leftEncoder.getPosition()) 
                 + m_feedforward.calculate(m_controller.getSetpoint().velocity);
             setLeftMotorSpeed(totalSpeed);
+            forcedGoal = false;
         }
     }
 
