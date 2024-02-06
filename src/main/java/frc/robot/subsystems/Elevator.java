@@ -170,14 +170,12 @@ public class Elevator extends SubsystemBase {
         if (this.checkLimit(m_forwardLimit) && !forcedGoal) {
             System.out.println("Top Limit Hit");
             cancelAllElevatorCommands();
-            //resetLimit(m_forwardLimit, 8, -0.2);
             m_controller.forceAtGoal();
             forcedGoal = true;
     
         } else if (this.checkLimit(m_reverseLimit) && !forcedGoal) {
             System.out.println("Bottom Limit Hit");
             cancelAllElevatorCommands();
-            //resetLimit(m_reverseLimit, 2, 0.2);
             m_controller.forceAtGoal();
             forcedGoal = true;
 
@@ -185,7 +183,7 @@ public class Elevator extends SubsystemBase {
             totalSpeed = m_controller.calculate(m_leftEncoder.getPosition()) 
                 + m_feedforward.calculate(m_controller.getSetpoint().velocity);
             setLeftMotorSpeed(totalSpeed);
-            forcedGoal = false;
+            if (!this.checkLimit(m_forwardLimit) && !this.checkLimit(m_reverseLimit)) forcedGoal = false;
         }
     }
 
