@@ -105,6 +105,8 @@ public class Camera {
      * A function that converts the supplied Transform2d in robot relative coordinates 
      * into a Transform2d in field relative coordinates using sin and cos.
      */
+
+    /* 
     public Transform2d robotToFieldTransform(Transform2d robotTransform, double robotHeading) {
         Transform2d fieldTransform = 
         new Transform2d(robotTransform.getX() * Math.cos(robotHeading * (Math.PI / 180))
@@ -112,6 +114,19 @@ public class Camera {
          robotTransform.getX() * Math.sin(robotHeading * (Math.PI / 180))
          + robotTransform.getY() * Math.cos(robotHeading * (Math.PI / 180)),
          robotTransform.getRotation());
+
+        return fieldTransform;
+    }
+    */
+    
+    public Transform2d robotToFieldTransform(Transform2d robotTransform, double robotHeading){
+        double cosHeading = Math.cos(robotHeading * (Math.PI / 180));
+        double sinHeading = Math.sin(robotHeading * (Math.PI / 180));
+
+        double fieldX = robotTransform.getX() * cosHeading + robotTransform.getY() * sinHeading;
+        double fieldY = robotTransform.getY() * sinHeading + robotTransform.getX() * cosHeading;
+
+        Transform2d fieldTransform = new Transform2d(fieldX, fieldY, robotTransform.getRotation());
 
         return fieldTransform;
     }
