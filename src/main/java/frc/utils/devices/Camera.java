@@ -81,7 +81,7 @@ public class Camera {
     // A function for getting the field position of a tracked apriltag
     public Pose2d getApriltagPose(Pose2d robotPose, double robotHeading) {
         // Make sure the camera is currently tracking an apriltag before getting pose data
-        if (instance.getPipelineIndex() == 1) {
+        if (instance.getPipelineIndex() == VisionConstants.APRILTAG_PIPELINE) {
             Pose2d tagPose = robotPose.plus(getTargetTransform2d(robotHeading));
 
             return tagPose;
@@ -109,8 +109,8 @@ public class Camera {
         Transform2d fieldTransform = 
         new Transform2d(robotTransform.getX() * Math.cos(robotHeading * (Math.PI / 180))
          + robotTransform.getY() * Math.sin(robotHeading * (Math.PI / 180)), 
-         robotTransform.getX() * Math.sin(robotHeading * (Math.PI / 180))
-         + robotTransform.getY() * Math.cos(robotHeading * (Math.PI / 180)),
+         robotTransform.getX() * -Math.sin(robotHeading * (Math.PI / 180))
+         + robotTransform.getY() * -Math.cos(robotHeading * (Math.PI / 180)),
          robotTransform.getRotation());
 
         return fieldTransform;
