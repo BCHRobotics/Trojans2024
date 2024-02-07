@@ -54,7 +54,7 @@ public class Camera {
     }
 
     // Returns the pose of the target
-    public Transform3d getTargetTransform() {
+    Transform3d getTargetTransform3d() {
         // Only return the pose if there is actually a target
         if (result.hasTargets()) {
             return result.getBestTarget().getBestCameraToTarget();
@@ -64,12 +64,14 @@ public class Camera {
         }
     }
 
-    public Transform2d getTargetTransform2d() {
+    public Transform2d getTargetTransform2d(double robotHeading) {
         // Only return the pose if there is actually a target
         if (result.hasTargets()) {
-            return new Transform2d(getTargetTransform().getX(), 
-            getTargetTransform().getY(), 
-            new Rotation2d(getTargetTransform().getRotation().getZ()));
+            Transform2d robotRelativeOffset = new Transform2d(getTargetTransform3d().getX(), 
+            getTargetTransform3d().getY(), 
+            new Rotation2d(getTargetTransform3d().getRotation().getZ()));
+
+            return robotToFieldTransform(robotRelativeOffset, robotHeading);
         }
         else {
             return null;
@@ -77,12 +79,10 @@ public class Camera {
     }
 
     // A function for getting the field position of a tracked apriltag
-    public Pose2d getApriltagPose(Pose2d robotPose) {
+    public Pose2d getApriltagPose(Pose2d robotPose, double robotHeading) {
         // Make sure the camera is currently tracking an apriltag before getting pose data
         if (instance.getPipelineIndex() == 1) {
-            Pose2d tagPose = robotPose.plus(new Transform2d(getTargetTransform().getX(), 
-            getTargetTransform().getY(), 
-            new Rotation2d(getTargetTransform().getRotation().getZ())));
+            Pose2d tagPose = robotPose.plus(getTargetTransform2d(robotHeading));
 
             return tagPose;
         }
@@ -91,7 +91,7 @@ public class Camera {
         }
     }
 
-    // A function for switching the pipeline of the camera
+    // A function for setting the pipeline of the camera
     public void setCameraPipeline(int pipelineIndex) {
         instance.setPipelineIndex(pipelineIndex);
     }
@@ -99,5 +99,20 @@ public class Camera {
     // A function for getting the pipeline of the camera
     public int getCameraPipeline() {
         return instance.getPipelineIndex();
+    }
+
+    /*
+     * A function that converts the supplied Transform2d in robot relative coordinates 
+     * into a Transform2d in field relative coordinates using sin and cos.
+     */
+    public Transform2d robotToFieldTransform(Transform2d robotTransform, double robotHeading) {
+        Transform2d fieldTransform = 
+        new Transform2d(robotTransform.getX() * Math.cos(robotHeading * (Math.PI / 180))
+         + robotTransform.getY() * Math.sin(robotHeading * (Math.PI / 180)), 
+         robotTransform.getX() * Math.sin(robotHeading * (Math.PI / 180))
+         + robotTransform.getY() * Math.cos(robotHeading * (Math.PI / 180)),
+         robotTransform.getRotation());
+
+        return fieldTransform;
     }
 }

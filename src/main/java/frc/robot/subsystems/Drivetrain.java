@@ -74,8 +74,7 @@ public class Drivetrain extends SubsystemBase {
   private boolean m_slowMode = false;
 
   private final Camera cameraObject = new Camera();
-  private boolean align = false;
-
+  private boolean m_alignWithTarget = false;
   private Pose2d targetPose;
 
   // Odometry class for tracking robot pose
@@ -93,8 +92,8 @@ public class Drivetrain extends SubsystemBase {
   public Drivetrain() {
     this.initializeAuto();
 
-    // By default try and detect notes
-    setCameraPipeline(VisionConstants.NOTE_PIPELINE);
+    // By default try and detect apriltags
+    setCameraPipeline(VisionConstants.APRILTAG_PIPELINE);
   }
 
   @Override
@@ -113,14 +112,20 @@ public class Drivetrain extends SubsystemBase {
 
     this.printToDashboard();
 
-    if (cameraObject.getResult().hasTargets()) {
-      targetPose = cameraObject.getApriltagPose(getPose());
+    // If the camera sees an apriltag, set the target pose to the pose of that apriltag
+    if (cameraObject.getResult().hasTargets() 
+    && cameraObject.getCameraPipeline() == VisionConstants.APRILTAG_PIPELINE) {
+      targetPose = cameraObject.getApriltagPose(getPose(), getHeading());
     }
   }
 
-  // Toggles 'align mode' which when on forces the robot to align to a target
+  /*
+   * Toggles 'align mode' which when on forces the robot to align to a target.
+   * It also resets the target pose so the robot doesn't get stuck on a target that doesn't exist.
+   */
   public void alignToNote() {
-    align = !align;
+    m_alignWithTarget = !m_alignWithTarget;
+    targetPose = null;
   }
 
   /**
@@ -161,15 +166,30 @@ public class Drivetrain extends SubsystemBase {
    * @param rateLimit     Whether to enable rate limiting for smoother control.
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {
-    // Rotates the robot towards a target during teleop by addding a number to the rotation input
-    if (align && targetPose != null) {
-      //rot += cameraObject.getRotationSpeed();
+    
+    // Target aligning logic
+    if (m_alignWithTarget && targetPose != null) {
+      if (targetPose != null && cameraObject.getCameraPipeline() == VisionConstants.APRILTAG_PIPELINE) {
+        Transform2d targetOffset = new Transform2d(getPose(), targetPose);
 
-      Transform2d targetOffset = new Transform2d(getPose(), targetPose);
+        xSpeed = targetOffset.getX() * -0.05; // lower the speed for testing, dont want the bot to crash
+        ySpeed = targetOffset.getY() * -0.05;
 
-      rot = 0;
-      xSpeed = targetOffset.getX() * 0.1;
-      ySpeed = targetOffset.getY() * 0.1;
+        double targetYaw = targetPose.getRotation().getDegrees();
+
+        if (targetYaw > 0) {
+          targetYaw -= 180;
+        }
+        else if (targetYaw < 0) {
+          targetYaw += 180;
+        }
+      
+        //rot = targetYaw * 0.002;
+        //TODO: better camera calibration
+      }
+      else if (cameraObject.getCameraPipeline() == VisionConstants.NOTE_PIPELINE) {
+        // note logic
+      }
     }
 
     double xSpeedCommanded;
@@ -418,17 +438,14 @@ public class Drivetrain extends SubsystemBase {
 
     // Camera values
     SmartDashboard.putBoolean("Has Target", cameraObject.getResult().hasTargets());
-    SmartDashboard.putBoolean("Align", align);
+    SmartDashboard.putBoolean("Align", m_alignWithTarget);
 
-    if (cameraObject.getResult().hasTargets()) {
-      SmartDashboard.putNumber("Camera Target Yaw", cameraObject.getResult().getBestTarget().getYaw());
+    if (targetPose != null) {
+      SmartDashboard.putNumber("Target X", targetPose.getX());
+      SmartDashboard.putNumber("Target Y", targetPose.getY());
 
-      if (cameraObject.getApriltagPose(getPose()) != null) {
-        // Apriltag position data  
-        SmartDashboard.putNumber("Transform X", cameraObject.getTargetTransform2d().getX());
-        SmartDashboard.putNumber("Transform Y", cameraObject.getTargetTransform2d().getY());
-        //SmartDashboard.putNumber("Transform ROT", cameraObject.getApriltagPose(getPose()).getRotation().getDegrees());
-      }
+      SmartDashboard.putNumber("Target Rotation", targetPose.getRotation().getDegrees());
+      //SmartDashboard.putNumber("Target Rotation Offset", cameraObject.getTargetTransform2d(getHeading()).getRotation().getDegrees());
     }
   }
 }
