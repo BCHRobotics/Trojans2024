@@ -109,8 +109,8 @@ public class Camera {
         Transform2d fieldTransform = 
         new Transform2d(robotTransform.getX() * Math.cos(robotHeading * (Math.PI / 180))
          + robotTransform.getY() * Math.sin(robotHeading * (Math.PI / 180)), 
-         robotTransform.getX() * -Math.sin(robotHeading * (Math.PI / 180))
-         + robotTransform.getY() * -Math.cos(robotHeading * (Math.PI / 180)),
+         robotTransform.getX() * Math.sin(robotHeading * (Math.PI / 180))
+         + robotTransform.getY() * Math.cos(robotHeading * (Math.PI / 180)),
          robotTransform.getRotation());
 
         return fieldTransform;

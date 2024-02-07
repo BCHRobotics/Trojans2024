@@ -172,8 +172,12 @@ public class Drivetrain extends SubsystemBase {
       if (targetPose != null && cameraObject.getCameraPipeline() == VisionConstants.APRILTAG_PIPELINE) {
         Transform2d targetOffset = new Transform2d(getPose(), targetPose);
 
-        xSpeed = targetOffset.getX() * 0.05; // lower the speed for testing, dont want the bot to crash
-        ySpeed = targetOffset.getY() * 0.05;
+        double dist = 1;
+        if (targetOffset.getX() > dist || targetOffset.getX() < -dist) {
+          xSpeed = targetOffset.getX() * -0.05;
+        }
+        
+        ySpeed = targetOffset.getY() * -0.05;
 
         double targetYaw = targetPose.getRotation().getDegrees();
 
