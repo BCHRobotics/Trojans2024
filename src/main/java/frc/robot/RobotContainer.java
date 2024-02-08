@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
-import frc.robot.Constants.ElevatorConstants.ElevatorPositions;
+import frc.robot.Constants.ElevatorConstants.kElevatorPositions;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Elevator;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -87,10 +87,10 @@ public class RobotContainer {
             .onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive))
             .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));    
 
-        this.mXboxController.povUp().onTrue(this.m_elevator.moveToPosition(ElevatorPositions.SOURCE));
-        this.mXboxController.povRight().onTrue(this.m_elevator.moveToPosition(ElevatorPositions.AMP));
-        this.mXboxController.povLeft().onTrue(this.m_elevator.moveToPosition(ElevatorPositions.TRAVEL));
-        this.mXboxController.povDown().onTrue(this.m_elevator.moveToPosition(ElevatorPositions.INTAKE));
+        this.mXboxController.povUp().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.SOURCE));
+        this.mXboxController.povRight().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.AMP));
+        this.mXboxController.povLeft().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.TRAVEL));
+        this.mXboxController.povDown().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE));
         this.mXboxController.leftBumper().onTrue(this.m_elevator.stopElevatorCommand());
     }
 

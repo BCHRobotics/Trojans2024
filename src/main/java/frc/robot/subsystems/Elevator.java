@@ -6,19 +6,15 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkLimitSwitch;
 
-import static edu.wpi.first.units.Units.*;
-
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.units.Measure;
-import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.ElevatorConstants.ElevatorPositions;
+import frc.robot.Constants.ElevatorConstants.kElevatorPositions;
 import frc.utils.BetterProfiledPIDController;
 
 public class Elevator extends SubsystemBase {
@@ -31,9 +27,6 @@ public class Elevator extends SubsystemBase {
     private SparkLimitSwitch m_forwardLimit;
     private SparkLimitSwitch m_reverseLimit;
 
-    public String kEnable;
-    public String kDisable;
-
     private static final TrapezoidProfile.Constraints m_constraints = new TrapezoidProfile.Constraints(
                 ElevatorConstants.kMaxSpeedMetersPerSecond,
                 ElevatorConstants.kMaxAccelerationMetersPerSecondSquared);
@@ -44,7 +37,7 @@ public class Elevator extends SubsystemBase {
             ElevatorConstants.kDThetaController,
             m_constraints);
 
-      private final ElevatorFeedforward m_feedforward =
+    private final ElevatorFeedforward m_feedforward =
         new ElevatorFeedforward(
             ElevatorConstants.kSVolts, ElevatorConstants.kGVolts, ElevatorConstants.kVVolts);
    
@@ -91,83 +84,94 @@ public class Elevator extends SubsystemBase {
 
         m_leftEncoder.setPosition(0);
         m_controller.setGoal(0);
-        
+    }
+    
+    private void setLeftMotorSpeed(double speed) {
+        this.m_leftMotor.setVoltage(speed);
     }
 
-    public void runVolts(Measure<Voltage> volts) {
-        m_leftMotor.setVoltage(volts.in(Volts));
+    private boolean checkLimitSwitchPress(SparkLimitSwitch limitSwitch) {
+        return limitSwitch.isPressed();
     }
 
-    //TODO: choose between TOP or BOTTOM position for encoder reset
-    //TODO: choose what to do on default
-    //TODO: Top and bottom are climb
-    public Command moveToPosition(ElevatorConstants.ElevatorPositions position) {
-        switch (position) {
-            case TOP:
-                return null;
-            case SOURCE:
-                return Commands.runOnce(() -> m_controller.setGoal(14));
-            case AMP:
-                return Commands.runOnce(() -> m_controller.setGoal(6));
-            case TRAVEL:
-                return Commands.runOnce(() -> m_controller.setGoal(4));
-            case INTAKE:
-                return Commands.runOnce(() -> m_controller.setGoal(0));
-            case BOTTOM:
-                return null;
-            default:
-                return null;
+    private void limitReached() {
+        cancelAllElevatorCommands();
+        m_controller.forceAtGoal();
+        forcedGoal = true;
+    }
+
+    private void calculateSpeed() {
+        totalSpeed = m_controller.calculate(m_leftEncoder.getPosition())
+                     + m_feedforward.calculate(m_controller.getSetpoint().velocity);
+        setLeftMotorSpeed(totalSpeed);
+    }
+
+    private void setProfiledSpeed() {
+        if (!forcedGoal && 
+           (checkLimitSwitchPress(m_forwardLimit) || 
+            checkLimitSwitchPress(m_reverseLimit))) {
+
+            System.out.println(checkLimitSwitchPress(m_forwardLimit) 
+                ? "Top Limit Hit" : "Bottom Limit Hit");
+
+            limitReached();
+        } else if (!checkLimitSwitchPress(m_forwardLimit) && 
+                   !checkLimitSwitchPress(m_reverseLimit)) {
+
+            forcedGoal = false;
+            calculateSpeed();
         }
+    }
+
+    private void cancelAllElevatorCommands() {
+        CommandScheduler.getInstance().cancel(moveToPositionCommand(kElevatorPositions.TOP));
+        CommandScheduler.getInstance().cancel(moveToPositionCommand(kElevatorPositions.SOURCE));
+        CommandScheduler.getInstance().cancel(moveToPositionCommand(kElevatorPositions.AMP));
+        CommandScheduler.getInstance().cancel(moveToPositionCommand(kElevatorPositions.TRAVEL));
+        CommandScheduler.getInstance().cancel(moveToPositionCommand(kElevatorPositions.INTAKE));
+        CommandScheduler.getInstance().cancel(moveToPositionCommand(kElevatorPositions.BOTTOM));
     }
 
     public Command stopElevatorCommand() {
         return Commands.runOnce(() -> this.cancelAllElevatorCommands());
     }
 
-    private void setLeftMotorSpeed(double speed) {
-        this.m_leftMotor.setVoltage(speed);
-    }
+    //TODO: choose between TOP or BOTTOM position for encoder reset
+    //TODO: choose what to do on default
+    //TODO: Top and bottom are climb
+    public Command moveToPositionCommand(ElevatorConstants.kElevatorPositions position) {
+        switch (position) {
+            case TOP:
+                return null;
+                
+            case SOURCE:
+                return Commands.runOnce(() -> m_controller.setGoal(
+                    ElevatorConstants.kElevatorGoals[
+                    ElevatorConstants.kElevatorPositions.SOURCE.ordinal()]));
 
-    private boolean checkLimit(SparkLimitSwitch limitSwitch) {
-        return limitSwitch.isPressed();
-    }
+            case AMP:
+                return Commands.runOnce(() -> m_controller.setGoal(
+                    ElevatorConstants.kElevatorGoals[
+                    ElevatorConstants.kElevatorPositions.AMP.ordinal()]));
 
-    private void cancelAllElevatorCommands() {
-        CommandScheduler.getInstance().cancel(moveToPosition(ElevatorPositions.TOP));
-        CommandScheduler.getInstance().cancel(moveToPosition(ElevatorPositions.SOURCE));
-        CommandScheduler.getInstance().cancel(moveToPosition(ElevatorPositions.AMP));
-        CommandScheduler.getInstance().cancel(moveToPosition(ElevatorPositions.TRAVEL));
-        CommandScheduler.getInstance().cancel(moveToPosition(ElevatorPositions.INTAKE));
-        CommandScheduler.getInstance().cancel(moveToPosition(ElevatorPositions.BOTTOM));
-    }
+            case TRAVEL:
+                return Commands.runOnce(() -> m_controller.setGoal(
+                    ElevatorConstants.kElevatorGoals[
+                    ElevatorConstants.kElevatorPositions.TRAVEL.ordinal()]));
 
-    @Override
-    public void periodic() {
-        calculateSpeed();
-        putToDashboard();
-    }
+            case INTAKE:
+                return Commands.runOnce(() -> m_controller.setGoal(
+                    ElevatorConstants.kElevatorGoals[
+                    ElevatorConstants.kElevatorPositions.INTAKE.ordinal()]));
 
-    public void calculateSpeed() {
-        if (this.checkLimit(m_forwardLimit) && !forcedGoal) {
-            System.out.println("Top Limit Hit");
-            cancelAllElevatorCommands();
-            m_controller.forceAtGoal();
-            forcedGoal = true;
-    
-        } else if (this.checkLimit(m_reverseLimit) && !forcedGoal) {
-            System.out.println("Bottom Limit Hit");
-            cancelAllElevatorCommands();
-            m_controller.forceAtGoal();
-            forcedGoal = true;
+            case BOTTOM:
+                return null;
 
-        } else {
-            totalSpeed = m_controller.calculate(m_leftEncoder.getPosition()) 
-                + m_feedforward.calculate(m_controller.getSetpoint().velocity);
-            setLeftMotorSpeed(totalSpeed);
-            if (!this.checkLimit(m_forwardLimit) && !this.checkLimit(m_reverseLimit)) forcedGoal = false;
+            default:
+                return null;
         }
     }
-
+    
     private void putToDashboard() {
         SmartDashboard.putNumber("Motor Speed: ", totalSpeed);
         SmartDashboard.putNumber("Encoder Position: ", m_leftEncoder.getPosition());
@@ -179,5 +183,11 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putBoolean("At setpoint: ", m_controller.atSetpoint());
         SmartDashboard.putBoolean("Top limit switch hit: ", m_forwardLimit.isPressed());
         SmartDashboard.putBoolean("Bottom limit switch hit: ", m_reverseLimit.isPressed());
+    }
+    
+    @Override
+    public void periodic() {
+        setProfiledSpeed();
+        putToDashboard();
     }
 }

@@ -92,7 +92,7 @@ public final class Constants {
         //20:1 from gearbox to output 
         //18 tooth, 1.43in
       
-    public enum ElevatorPositions {
+    public enum kElevatorPositions {
       TOP,
       SOURCE,
       AMP,
@@ -100,6 +100,15 @@ public final class Constants {
       INTAKE,
       BOTTOM
     }
+
+    public static int[] kElevatorGoals = new int[] {
+      20,
+      16,
+      12,
+      8,
+      4,
+      0
+    };
   }
 
   public static final class ModuleConstants {
