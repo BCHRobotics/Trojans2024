@@ -3,11 +3,9 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkLimitSwitch;
 
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
@@ -22,7 +20,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorPositions;
-import frc.utils.NewProfiledPIDController;
+import frc.utils.BetterProfiledPIDController;
 
 public class Elevator extends SubsystemBase {
 
@@ -41,7 +39,7 @@ public class Elevator extends SubsystemBase {
                 ElevatorConstants.kMaxSpeedMetersPerSecond,
                 ElevatorConstants.kMaxAccelerationMetersPerSecondSquared);
 
-    private static NewProfiledPIDController m_controller = new NewProfiledPIDController(
+    private static BetterProfiledPIDController m_controller = new BetterProfiledPIDController(
             ElevatorConstants.kPThetaController,
             0,
             ElevatorConstants.kDThetaController,
@@ -54,15 +52,6 @@ public class Elevator extends SubsystemBase {
     double totalSpeed = 0;
 
     private boolean forcedGoal = false;
-
-    SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
-    new SysIdRoutine.Config(),
-    new SysIdRoutine.Mechanism(
-      (voltage) -> this.runVolts(voltage),
-      null,
-      this
-    )
-  );
 
     /** Creates a new Mechanism. */
     public Elevator() {
@@ -186,15 +175,7 @@ public class Elevator extends SubsystemBase {
             if (!this.checkLimit(m_forwardLimit) && !this.checkLimit(m_reverseLimit)) forcedGoal = false;
         }
     }
-
-    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return m_sysIdRoutine.quasistatic(direction);
-    }
     
-    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return m_sysIdRoutine.dynamic(direction);
-    }
-
     private void putToDashboard() {
         SmartDashboard.putNumber("Motor Speed: ", totalSpeed);
         SmartDashboard.putNumber("Encoder Position: ", m_leftEncoder.getPosition());
