@@ -119,4 +119,16 @@ public class Camera {
 
         return fieldTransform;
     }
+    
+    public Transform2d robotToFieldTransform(Transform2d robotTransform, double robotHeading){
+        double cosHeading = Math.cos(robotHeading * (Math.PI / 180));
+        double sinHeading = Math.sin(robotHeading * (Math.PI / 180));
+
+        double fieldX = robotTransform.getX() * cosHeading + robotTransform.getY() * sinHeading;
+        double fieldY = robotTransform.getY() * sinHeading + robotTransform.getX() * cosHeading;
+
+        Transform2d fieldTransform = new Transform2d(fieldX, fieldY, robotTransform.getRotation());
+
+        return fieldTransform;
+    }
 }

@@ -179,6 +179,7 @@ public class Drivetrain extends SubsystemBase {
       else if (m_camera.getCameraPipeline() == VisionConstants.NOTE_PIPELINE) {
         // note logic
       }
+      getHeading();
     }
 
     double xSpeedCommanded;
