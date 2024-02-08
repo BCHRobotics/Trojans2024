@@ -95,9 +95,11 @@ public class Elevator extends SubsystemBase {
     }
 
     private void limitReached() {
+        System.out.println("in reached limit");
         cancelAllElevatorCommands();
         m_controller.forceAtGoal();
         forcedGoal = true;
+        System.out.println("forced goal");
     }
 
     private void calculateSpeed() {
@@ -115,11 +117,10 @@ public class Elevator extends SubsystemBase {
                 ? "Top Limit Hit" : "Bottom Limit Hit");
 
             limitReached();
-        } else if (!checkLimitSwitchPress(m_forwardLimit) && 
-                   !checkLimitSwitchPress(m_reverseLimit)) {
-
-            forcedGoal = false;
+        } else {
             calculateSpeed();
+            if (!this.checkLimitSwitchPress(m_forwardLimit) 
+             && !this.checkLimitSwitchPress(m_reverseLimit)) forcedGoal = false;
         }
     }
 
