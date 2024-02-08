@@ -53,25 +53,16 @@ public class Camera {
         result = getInstance().getLatestResult();
     }
 
-    // Returns the pose of the target
-    Transform3d getTargetTransform3d() {
+    public Transform2d getTargetTransform(double robotHeading) {
+        Transform3d rawOffset = result.getBestTarget().getBestCameraToTarget();
+
         // Only return the pose if there is actually a target
         if (result.hasTargets()) {
-            return result.getBestTarget().getBestCameraToTarget();
-        }
-        else {
-            return null;
-        }
-    }
+            Transform2d robotRelativeOffset = new Transform2d(rawOffset.getX(), 
+            -rawOffset.getY(), 
+            new Rotation2d(rawOffset.getRotation().getZ()));
 
-    public Transform2d getTargetTransform2d(double robotHeading) {
-        // Only return the pose if there is actually a target
-        if (result.hasTargets()) {
-            Transform2d robotRelativeOffset = new Transform2d(getTargetTransform3d().getX(), 
-            -getTargetTransform3d().getY(), 
-            new Rotation2d(getTargetTransform3d().getRotation().getZ()));
-
-            return robotToFieldTransform(robotRelativeOffset, robotHeading);
+            return toFieldTransform(robotRelativeOffset, robotHeading);
         }
         else {
             return null;
@@ -80,10 +71,21 @@ public class Camera {
 
     // A function for getting the field position of a tracked apriltag
     public Pose2d getApriltagPose(Pose2d robotPose, double robotHeading) {
+
         // Make sure the camera is currently tracking an apriltag before getting pose data
         if (instance.getPipelineIndex() == VisionConstants.APRILTAG_PIPELINE) {
-            Transform2d tagOffset = getTargetTransform2d(robotHeading);
-            Pose2d tagPose = new Pose2d(robotPose.getX() + tagOffset.getX(), robotPose.getY() + tagOffset.getY(), new Rotation2d(0));
+            Transform2d robotToTag = getTargetTransform(robotHeading);
+
+            // Addd the robot to tag offset to the robot pose to get the tag pose in field space
+            Pose2d tagPose = robotPose.plus(robotToTag);
+
+            // Define and add another offset so the robot stops just in front of the tag
+            // THIS MIGHT NOT WORK AS TAG ROTATION HASN'T BEEN TESTED
+            Transform2d desiredOffset = toFieldTransform(new Transform2d(1, 0, new Rotation2d(180)), tagPose.getRotation().getDegrees());
+            tagPose = tagPose.plus(desiredOffset);
+            
+            //manual pose addition (old code)
+            //Pose2d tagPose = new Pose2d(robotPose.getX() + robotToTag.getX(), robotPose.getY() + robotToTag.getY(), new Rotation2d(0));
 
             return tagPose;
         }
@@ -92,26 +94,27 @@ public class Camera {
         }
     }
 
-    // A function for setting the pipeline of the camera
+    // A function for setting the pipeline index of the camera
     public void setCameraPipeline(int pipelineIndex) {
         instance.setPipelineIndex(pipelineIndex);
     }
 
-    // A function for getting the pipeline of the camera
+    // A function for getting the pipeline index of the camera
     public int getCameraPipeline() {
         return instance.getPipelineIndex();
     }
 
     /*
-     * A function that converts the supplied Transform2d in robot relative coordinates 
-     * into a Transform2d in field relative coordinates using sin and cos.
+     * A function that converts the supplied Transform2d in object relative coordinates 
+     * (object as in a tag or robot or something else that points in a direction)
+     * into a Transform2d in field relative coordinates.
      */
-    public Transform2d robotToFieldTransform(Transform2d robotTransform, double robotHeading) {
+    public Transform2d toFieldTransform(Transform2d robotTransform, double heading) {
         Transform2d fieldTransform = 
-        new Transform2d(robotTransform.getX() * Math.cos(robotHeading * (Math.PI / 180))
-         + robotTransform.getY() * -Math.sin(robotHeading * (Math.PI / 180)), 
-         robotTransform.getX() * -Math.sin(robotHeading * (Math.PI / 180))
-         + robotTransform.getY() * Math.cos(robotHeading * (Math.PI / 180)),
+        new Transform2d(robotTransform.getX() * Math.cos(heading * (Math.PI / 180))
+         + robotTransform.getY() * -Math.sin(heading * (Math.PI / 180)), 
+         robotTransform.getX() * -Math.sin(heading * (Math.PI / 180))
+         + robotTransform.getY() * Math.cos(heading * (Math.PI / 180)),
          robotTransform.getRotation());
 
         return fieldTransform;

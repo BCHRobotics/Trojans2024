@@ -73,7 +73,7 @@ public class Drivetrain extends SubsystemBase {
 
   private boolean m_slowMode = false;
 
-  private final Camera cameraObject = new Camera();
+  private final Camera m_camera = new Camera();
   private boolean m_alignWithTarget = false;
   private Pose2d targetPose;
 
@@ -99,7 +99,7 @@ public class Drivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     // Update the odometry in the periodic block
-    cameraObject.refreshResult();
+    m_camera.refreshResult();
 
     m_odometry.update(
         Rotation2d.fromDegrees(m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)),
@@ -113,9 +113,9 @@ public class Drivetrain extends SubsystemBase {
     this.printToDashboard();
 
     // If the camera sees an apriltag, set the target pose to the pose of that apriltag
-    if (cameraObject.getResult().hasTargets() 
-    && cameraObject.getCameraPipeline() == VisionConstants.APRILTAG_PIPELINE) {
-      targetPose = cameraObject.getApriltagPose(getPose(), getHeading());
+    if (m_camera.getResult().hasTargets() 
+    && m_camera.getCameraPipeline() == VisionConstants.APRILTAG_PIPELINE) {
+      targetPose = m_camera.getApriltagPose(getPose(), getHeading());
     }
   }
 
@@ -169,11 +169,14 @@ public class Drivetrain extends SubsystemBase {
     
     // Target aligning logic
     if (m_alignWithTarget && targetPose != null) {
-      if (targetPose != null && cameraObject.getCameraPipeline() == VisionConstants.APRILTAG_PIPELINE) {
-        xSpeed = desiredTagAlignment().getX();
-        ySpeed = desiredTagAlignment().getY();
+      if (targetPose != null && m_camera.getCameraPipeline() == VisionConstants.APRILTAG_PIPELINE) {
+        // The tag's offset is gained from the robot position and the tag position, both in field space
+        Transform2d tagOffset = new Transform2d(targetPose, getPose());
+
+        xSpeed = tagOffset.getX();
+        ySpeed = tagOffset.getY();
       }
-      else if (cameraObject.getCameraPipeline() == VisionConstants.NOTE_PIPELINE) {
+      else if (m_camera.getCameraPipeline() == VisionConstants.NOTE_PIPELINE) {
         // note logic
       }
     }
@@ -343,34 +346,17 @@ public class Drivetrain extends SubsystemBase {
    * @param pipelineIndex The index of the desired pipeline
    */
   public void setCameraPipeline(int pipelineIndex) {
-    cameraObject.setCameraPipeline(pipelineIndex);
+    m_camera.setCameraPipeline(pipelineIndex);
   }
 
   // Toggles the camera pipeline between note and apriltags
   public void toggleCameraPipeline() {
-    if (cameraObject.getCameraPipeline() == VisionConstants.NOTE_PIPELINE) {
+    if (m_camera.getCameraPipeline() == VisionConstants.NOTE_PIPELINE) {
       setCameraPipeline(VisionConstants.APRILTAG_PIPELINE);
     }
-    else if (cameraObject.getCameraPipeline() == VisionConstants.APRILTAG_PIPELINE) {
+    else if (m_camera.getCameraPipeline() == VisionConstants.APRILTAG_PIPELINE) {
       setCameraPipeline(VisionConstants.NOTE_PIPELINE);
     }
-  }
-
-  public Transform2d desiredTagAlignment() {
-    Transform2d tagOffset = new Transform2d(targetPose, getPose());
-
-    double xSpeed = 0;
-    double ySpeed = 0;
-
-    double dist = 0.3;
-    if (tagOffset.getY() > dist || tagOffset.getY() < -dist) {
-      ySpeed = tagOffset.getY() * -0.1;
-    }
-        
-    xSpeed = tagOffset.getX() * -0.5;
-
-    return new Transform2d(xSpeed, ySpeed, new Rotation2d(0));
-    //this only works with one specific direction, do more math to make this work all the time
   }
 
   /**
@@ -442,7 +428,7 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putString("Rear right Encoder", m_rearRight.getState().toString());
 
     // Camera values
-    SmartDashboard.putBoolean("Has Target", cameraObject.getResult().hasTargets());
+    SmartDashboard.putBoolean("Has Target", m_camera.getResult().hasTargets());
     SmartDashboard.putBoolean("Align", m_alignWithTarget);
 
     if (targetPose != null) {
@@ -452,10 +438,10 @@ public class Drivetrain extends SubsystemBase {
       SmartDashboard.putNumber("Target Rotation", targetPose.getRotation().getDegrees());
     }
 
-    if (cameraObject.getResult().hasTargets()) {
-      SmartDashboard.putNumber("Target Rotation Offset", cameraObject.getTargetTransform2d(getHeading()).getRotation().getDegrees());
-      SmartDashboard.putNumber("Target X Offset", cameraObject.getTargetTransform2d(getHeading()).getX());
-      SmartDashboard.putNumber("Target Y Offset", cameraObject.getTargetTransform2d(getHeading()).getY());
+    if (m_camera.getResult().hasTargets()) {
+      SmartDashboard.putNumber("Target Rotation Offset", m_camera.getTargetTransform(getHeading()).getRotation().getDegrees());
+      SmartDashboard.putNumber("Target X Offset", m_camera.getTargetTransform(getHeading()).getX());
+      SmartDashboard.putNumber("Target Y Offset", m_camera.getTargetTransform(getHeading()).getY());
     }
   }
 }

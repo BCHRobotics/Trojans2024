@@ -69,7 +69,7 @@ public final class Constants {
   public static final class VisionConstants{
     public static final double CAMERA_HEIGHT = 0.0;
 
-    // Pipeline ids
+    // Camera pipeline indexes
     public static final int NOTE_PIPELINE = 0;
     public static final int APRILTAG_PIPELINE = 1;
   }
