@@ -17,7 +17,7 @@ import edu.wpi.first.util.sendable.SendableRegistry;
  * Implements a PID control loop whose setpoint is constrained by a trapezoid profile. Users should
  * call reset() when they first start running the controller to avoid unwanted behavior.
  */
-public class NewProfiledPIDController implements Sendable {
+public class BetterProfiledPIDController implements Sendable {
   private static int instances;
 
   private PIDController m_controller;
@@ -40,7 +40,7 @@ public class NewProfiledPIDController implements Sendable {
    * @throws IllegalArgumentException if ki &lt; 0
    * @throws IllegalArgumentException if kd &lt; 0
    */
-  public NewProfiledPIDController(
+  public BetterProfiledPIDController(
       double Kp, double Ki, double Kd, TrapezoidProfile.Constraints constraints) {
     this(Kp, Ki, Kd, constraints, 0.02);
   }
@@ -59,7 +59,7 @@ public class NewProfiledPIDController implements Sendable {
    * @throws IllegalArgumentException if period &lt;= 0
    */
   @SuppressWarnings("this-escape")
-  public NewProfiledPIDController(
+  public BetterProfiledPIDController(
       double Kp, double Ki, double Kd, TrapezoidProfile.Constraints constraints, double period) {
     m_controller = new PIDController(Kp, Ki, Kd, period);
     m_constraints = constraints;
