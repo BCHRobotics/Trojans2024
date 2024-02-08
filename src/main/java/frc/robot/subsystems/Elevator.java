@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorPositions;
 import frc.utils.BetterProfiledPIDController;
@@ -101,6 +100,7 @@ public class Elevator extends SubsystemBase {
 
     //TODO: choose between TOP or BOTTOM position for encoder reset
     //TODO: choose what to do on default
+    //TODO: Top and bottom are climb
     public Command moveToPosition(ElevatorConstants.ElevatorPositions position) {
         switch (position) {
             case TOP:
@@ -147,14 +147,6 @@ public class Elevator extends SubsystemBase {
         putToDashboard();
     }
 
-    private Command resetLimit(SparkLimitSwitch limitSwitch, double goal, double motorSpeed) {
-        return Commands.runOnce(() -> this.setLeftMotorSpeed(0))
-                .andThen(() -> 
-                    Commands.runOnce(() -> this.setLeftMotorSpeed(motorSpeed)))
-                    .until(() -> this.checkLimit(limitSwitch))
-                    .andThen(() -> m_controller.setGoal(goal));
-    }
-
     public void calculateSpeed() {
         if (this.checkLimit(m_forwardLimit) && !forcedGoal) {
             System.out.println("Top Limit Hit");
@@ -175,7 +167,7 @@ public class Elevator extends SubsystemBase {
             if (!this.checkLimit(m_forwardLimit) && !this.checkLimit(m_reverseLimit)) forcedGoal = false;
         }
     }
-    
+
     private void putToDashboard() {
         SmartDashboard.putNumber("Motor Speed: ", totalSpeed);
         SmartDashboard.putNumber("Encoder Position: ", m_leftEncoder.getPosition());
