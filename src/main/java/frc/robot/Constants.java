@@ -68,8 +68,8 @@ public final class Constants {
 
   public static final class MechanismConstants {
     public static final int kBeltMotorCanId = 20;
-    public static final int kSourceMotorCanId = 22;
-    public static final int kAmpMotorCanId = 23;
+    public static final int kSourceMotorCanId = 21;
+    public static final int kAmpMotorCanId = 22;
 
     public static final int kPickupSensorChannel = 0;
     public static final int kLoadedSensorChannel = 1;

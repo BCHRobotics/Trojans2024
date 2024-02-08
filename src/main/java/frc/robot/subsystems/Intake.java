@@ -200,10 +200,6 @@ public class Mechanism extends SubsystemBase{
                 Commands.runOnce(() -> this.setAmpSpeed(0)),
                 Commands.runOnce(() -> this.setSourceSpeed(0)),
                 Commands.runOnce(() -> this.setBeltSpeed(0))
-                // Commands.startEnd(() -> this.setAmpSpeed(-speed), () -> this.setAmpSpeed(0))
-                // .until(() -> waitFor(500)),
-                // Commands.startEnd(() -> this.setSourceSpeed(speed), () -> this.setSourceSpeed(0)),
-                // Commands.startEnd(() -> this.setBeltSpeed(-speed), () -> this.setBeltSpeed(0))
             ).beforeStarting(new WaitCommand(2)));
     }
 
