@@ -170,26 +170,8 @@ public class Drivetrain extends SubsystemBase {
     // Target aligning logic
     if (m_alignWithTarget && targetPose != null) {
       if (targetPose != null && cameraObject.getCameraPipeline() == VisionConstants.APRILTAG_PIPELINE) {
-        Transform2d targetOffset = new Transform2d(getPose(), targetPose);
-
-        double dist = 1;
-        if (targetOffset.getX() > dist || targetOffset.getX() < -dist) {
-          xSpeed = targetOffset.getX() * -0.05;
-        }
-        
-        ySpeed = targetOffset.getY() * -0.05;
-
-        double targetYaw = targetPose.getRotation().getDegrees();
-
-        if (targetYaw > 0) {
-          targetYaw -= 180;
-        }
-        else if (targetYaw < 0) {
-          targetYaw += 180;
-        }
-      
-        //rot = targetYaw * 0.002;
-        //TODO: better camera calibration
+        xSpeed = desiredTagAlignment().getX();
+        ySpeed = desiredTagAlignment().getY();
       }
       else if (cameraObject.getCameraPipeline() == VisionConstants.NOTE_PIPELINE) {
         // note logic
@@ -325,6 +307,7 @@ public class Drivetrain extends SubsystemBase {
   /** Zeroes the heading of the robot. */
   public void zeroHeading() {
     m_gyro.reset();
+    resetOdometry(new Pose2d());
   }
 
   /**
@@ -371,6 +354,23 @@ public class Drivetrain extends SubsystemBase {
     else if (cameraObject.getCameraPipeline() == VisionConstants.APRILTAG_PIPELINE) {
       setCameraPipeline(VisionConstants.NOTE_PIPELINE);
     }
+  }
+
+  public Transform2d desiredTagAlignment() {
+    Transform2d tagOffset = new Transform2d(targetPose, getPose());
+
+    double xSpeed = 0;
+    double ySpeed = 0;
+
+    double dist = 0.3;
+    if (tagOffset.getY() > dist || tagOffset.getY() < -dist) {
+      ySpeed = tagOffset.getY() * -0.1;
+    }
+        
+    xSpeed = tagOffset.getX() * -0.5;
+
+    return new Transform2d(xSpeed, ySpeed, new Rotation2d(0));
+    //this only works with one specific direction, do more math to make this work all the time
   }
 
   /**
@@ -428,6 +428,7 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("X Position", this.getPose().getX());
     SmartDashboard.putNumber("Y Position", this.getPose().getY());
     SmartDashboard.putNumber("Gyro Heading: ", this.getHeading());
+    SmartDashboard.putNumber("Odometry Heading: ", this.m_odometry.getPoseMeters().getRotation().getDegrees());
 
     // Slew rate filter variables
     SmartDashboard.putNumber("slewCurrentRotation: ", m_currentRotation);
@@ -449,7 +450,12 @@ public class Drivetrain extends SubsystemBase {
       SmartDashboard.putNumber("Target Y", targetPose.getY());
 
       SmartDashboard.putNumber("Target Rotation", targetPose.getRotation().getDegrees());
-      //SmartDashboard.putNumber("Target Rotation Offset", cameraObject.getTargetTransform2d(getHeading()).getRotation().getDegrees());
+    }
+
+    if (cameraObject.getResult().hasTargets()) {
+      SmartDashboard.putNumber("Target Rotation Offset", cameraObject.getTargetTransform2d(getHeading()).getRotation().getDegrees());
+      SmartDashboard.putNumber("Target X Offset", cameraObject.getTargetTransform2d(getHeading()).getX());
+      SmartDashboard.putNumber("Target Y Offset", cameraObject.getTargetTransform2d(getHeading()).getY());
     }
   }
 }

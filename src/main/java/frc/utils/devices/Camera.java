@@ -68,7 +68,7 @@ public class Camera {
         // Only return the pose if there is actually a target
         if (result.hasTargets()) {
             Transform2d robotRelativeOffset = new Transform2d(getTargetTransform3d().getX(), 
-            getTargetTransform3d().getY(), 
+            -getTargetTransform3d().getY(), 
             new Rotation2d(getTargetTransform3d().getRotation().getZ()));
 
             return robotToFieldTransform(robotRelativeOffset, robotHeading);
@@ -82,7 +82,8 @@ public class Camera {
     public Pose2d getApriltagPose(Pose2d robotPose, double robotHeading) {
         // Make sure the camera is currently tracking an apriltag before getting pose data
         if (instance.getPipelineIndex() == VisionConstants.APRILTAG_PIPELINE) {
-            Pose2d tagPose = robotPose.plus(getTargetTransform2d(robotHeading));
+            Transform2d tagOffset = getTargetTransform2d(robotHeading);
+            Pose2d tagPose = new Pose2d(robotPose.getX() + tagOffset.getX(), robotPose.getY() + tagOffset.getY(), new Rotation2d(0));
 
             return tagPose;
         }
@@ -108,8 +109,8 @@ public class Camera {
     public Transform2d robotToFieldTransform(Transform2d robotTransform, double robotHeading) {
         Transform2d fieldTransform = 
         new Transform2d(robotTransform.getX() * Math.cos(robotHeading * (Math.PI / 180))
-         + robotTransform.getY() * Math.sin(robotHeading * (Math.PI / 180)), 
-         robotTransform.getX() * Math.sin(robotHeading * (Math.PI / 180))
+         + robotTransform.getY() * -Math.sin(robotHeading * (Math.PI / 180)), 
+         robotTransform.getX() * -Math.sin(robotHeading * (Math.PI / 180))
          + robotTransform.getY() * Math.cos(robotHeading * (Math.PI / 180)),
          robotTransform.getRotation());
 
