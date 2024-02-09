@@ -9,14 +9,11 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
-import static edu.wpi.first.wpilibj2.command.Commands.sequence;
-import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.MechanismConstants;
@@ -77,14 +74,14 @@ public class Mechanism extends SubsystemBase{
      * @param speed the commanded belt speed [-1 --> 1]
      */
     private void setBeltSpeed(double speed) {
-        this.m_beltMotor.set(speed);
+        this.m_beltMotor.setVoltage(speed);
     }
 
     /**
      * Gets belt speed in percent output [-1 --> 1]
      */
     private double getBeltSpeed() {
-        return this.m_beltMotor.get();
+        return this.m_beltMotor.getBusVoltage();
     }
 
     /**
@@ -92,14 +89,14 @@ public class Mechanism extends SubsystemBase{
      * @param speed the commanded source intake speed [-1 --> 1]
      */
     private void setSourceSpeed(double speed) {
-        this.m_sourceMotor.set(speed);
+        this.m_sourceMotor.setVoltage(speed);
     }
 
     /**
      * Gets source intake speed in percent output [-1 --> 1]
      */
     private double getSourceSpeed() {
-        return this.m_sourceMotor.get();
+        return this.m_sourceMotor.getBusVoltage();
     }
     
     /**
@@ -107,18 +104,24 @@ public class Mechanism extends SubsystemBase{
      * @param speed the commanded amp motor speed [-1 --> 1]
      */
     private void setAmpSpeed(double speed) {
-        this.m_ampMotor.set(speed);
+        this.m_ampMotor.setVoltage(speed);
     }
 
     /**
      * Gets amp motor speed in percent output [-1 --> 1]
      */
     private double getAmpSpeed() {
-        return this.m_ampMotor.get();
+        return this.m_ampMotor.getBusVoltage();
     }
 
     private boolean checkState(Phase phase) {
         return m_currentPhase == phase;
+    }
+
+    private void cancelAllMechanismCommands() {
+        CommandScheduler.getInstance().cancel(groundIntake(getBeltSpeed()));
+        CommandScheduler.getInstance().cancel(scoreAmp(getAmpSpeed()));
+        CommandScheduler.getInstance().cancel(sourceIntake(getSourceSpeed()));
     }
 
     /**
@@ -146,20 +149,7 @@ public class Mechanism extends SubsystemBase{
             startEnd(() -> this.setAmpSpeed(-speed * 0.75), () -> this.setAmpSpeed(0.0))
             .until(() -> checkState(Phase.LOADED)));
     }
-
-    /**
-     * A command for stopping the mechanism
-     * @param speed the commanded speed percent [-1 --> 1]
-     */
-    public Command stopMechanism() {
-        return parallel(
-            Commands.runOnce(() -> CommandScheduler.getInstance().cancelAll()),
-            Commands.runOnce(() -> this.setBeltSpeed(0)),
-            Commands.runOnce(() -> this.setSourceSpeed(0)),
-            Commands.runOnce(() -> this.setAmpSpeed(0))
-        );
-    }
-
+ 
     /**
      * A command for intaking from the source
      * @param speed the commanded speed percent [-1 --> 1]
@@ -200,7 +190,20 @@ public class Mechanism extends SubsystemBase{
                 Commands.runOnce(() -> this.setAmpSpeed(0)),
                 Commands.runOnce(() -> this.setSourceSpeed(0)),
                 Commands.runOnce(() -> this.setBeltSpeed(0))
-            ).beforeStarting(new WaitCommand(2)));
+            ).beforeStarting(new WaitCommand(1)));
+    }
+ 
+    /**
+     * A command for stopping the mechanism
+     * @param speed the commanded speed percent [-1 --> 1]
+     */
+    public Command stopMechanism() {
+        return parallel(
+            Commands.runOnce(() -> this.cancelAllMechanismCommands()),
+            Commands.runOnce(() -> this.setBeltSpeed(0)),
+            Commands.runOnce(() -> this.setSourceSpeed(0)),
+            Commands.runOnce(() -> this.setAmpSpeed(0))
+        );
     }
 
     public static boolean waitFor(long waitTimeMillis) {
