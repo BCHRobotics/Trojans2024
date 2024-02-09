@@ -73,7 +73,7 @@ public class Drivetrain extends SubsystemBase {
 
   private boolean m_slowMode = false;
 
-  private final Camera m_camera = new Camera();
+  public final static Camera m_camera = new Camera();
   private boolean m_alignWithTarget = false;
   private Pose2d targetPose;
 
@@ -166,7 +166,7 @@ public class Drivetrain extends SubsystemBase {
    * @param rateLimit     Whether to enable rate limiting for smoother control.
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {
-    
+    /* 
     // Target aligning logic
     if (m_alignWithTarget && targetPose != null) {
       if (targetPose != null && m_camera.getCameraPipeline() == VisionConstants.APRILTAG_PIPELINE) {
@@ -180,10 +180,20 @@ public class Drivetrain extends SubsystemBase {
         // note logic
       }
     }
+    */
+
+    if (m_alignWithTarget) {
+      if(m_camera.getCameraPipeline() == VisionConstants.APRILTAG_PIPELINE){
+        rot = m_camera.getRotationSpeed();
+      }
+      
+    }
 
     double xSpeedCommanded;
     double ySpeedCommanded;
+    
 
+    
     if (rateLimit) {
       // Convert XY to polar for rate limiting
       double inputTranslationDir = Math.atan2(ySpeed, xSpeed);

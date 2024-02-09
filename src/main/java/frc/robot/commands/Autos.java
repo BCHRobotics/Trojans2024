@@ -11,10 +11,13 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.Drivetrain;
+// import com.pathplanner.lib.*;
+import com.pathplanner.lib.auto.NamedCommands;
 
 public class Autos {
    /**
@@ -22,6 +25,7 @@ public class Autos {
    *
    * @return Basic Auto Command
    */
+
   public static Command getBasicAuto(Drivetrain m_robotDrive) {
     // Create config for trajectory
     TrajectoryConfig config = new TrajectoryConfig(

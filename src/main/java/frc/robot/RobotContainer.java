@@ -39,7 +39,10 @@ public class RobotContainer {
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
-    public RobotContainer() {
+    public RobotContainer() {  
+        NamedCommands.registerCommand("ALIGN", new RunCommand(() -> m_robotDrive.drive(0,0,Drivetrain.m_camera.getRotationSpeed(),true,true))); 
+
+
         // Configure the button bindings
         this.configureButtonBindings();
 
@@ -84,7 +87,7 @@ public class RobotContainer {
             .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));  
             
         m_driverController.button(3)
-            .onTrue(new InstantCommand(() -> m_robotDrive.alignToNote()));
+            .onTrue(new RunCommand(() -> m_robotDrive.drive(0,0,Drivetrain.m_camera.getRotationSpeed(),true,true)));
 
         m_driverController.button(4)
             .onTrue(new InstantCommand(() -> m_robotDrive.toggleCameraPipeline()));
