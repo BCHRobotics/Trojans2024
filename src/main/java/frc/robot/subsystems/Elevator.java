@@ -56,6 +56,8 @@ public class Elevator extends SubsystemBase {
         this.m_leftMotor.restoreFactoryDefaults();
         this.m_rightMotor.restoreFactoryDefaults();
 
+        this.m_rightMotor.follow(m_leftMotor, true);
+
         this.m_leftMotor.setIdleMode(IdleMode.kBrake);
         this.m_rightMotor.setIdleMode(IdleMode.kBrake);
 
@@ -68,14 +70,9 @@ public class Elevator extends SubsystemBase {
         m_forwardLimit.enableLimitSwitch(true);
         m_reverseLimit.enableLimitSwitch(true);
 
-        // TODO: Undo this when actually want the right motor to work Tim
-        // this.m_rightMotor.follow(m_leftMotor);
-
         this.m_leftMotor.setInverted(false);
-        this.m_rightMotor.setInverted(false);
 
         this.m_leftMotor.setOpenLoopRampRate(0.05);
-        this.m_rightMotor.setOpenLoopRampRate(0.05);
 
         this.m_leftMotor.enableVoltageCompensation(12);
         this.m_rightMotor.enableVoltageCompensation(12);
