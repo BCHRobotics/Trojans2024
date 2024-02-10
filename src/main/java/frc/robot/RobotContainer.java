@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /*
@@ -34,7 +35,7 @@ public class RobotContainer {
     // The driver's controller
     CommandJoystick m_driverController = new CommandJoystick(OIConstants.kDriverControllerPort);
 
-    XboxController mXboxController = new XboxController(0);
+    CommandXboxController m_XboxController = new CommandXboxController(OIConstants.kDriverControllerPort);
 
     // The auto chooser
     private final SendableChooser<Command> autoChooser;
@@ -84,17 +85,10 @@ public class RobotContainer {
             .onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive))
             .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));    
 
-        new JoystickButton(mXboxController, Button.kB.value)
-        .onTrue(this.m_mechanism.scoreAmp(6));
-
-        new JoystickButton(mXboxController, Button.kY.value)
-        .onTrue(this.m_mechanism.sourceIntake(6));
-
-        new JoystickButton(mXboxController, Button.kX.value)
-        .onTrue(this.m_mechanism.groundIntake(6));
-
-        new JoystickButton(mXboxController, Button.kA.value)
-        .onTrue(this.m_mechanism.stopMechanism());
+        this.m_XboxController.b().onTrue(this.m_mechanism.scoreAmp(6));
+        this.m_XboxController.y().onTrue(this.m_mechanism.sourceIntake(6));
+        this.m_XboxController.x().onTrue(this.m_mechanism.groundIntake(6));
+        this.m_XboxController.a().onTrue(this.m_mechanism.stopMechanism());
     }
 
     /**
