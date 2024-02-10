@@ -124,7 +124,7 @@ public class Drivetrain extends SubsystemBase {
       double xSpeed = targetPose.getX() - robotPose.getX();
       double ySpeed = targetPose.getY() - robotPose.getY();
 
-      // Do not let the commanded speed above 0.05
+      // Do not let the commanded speed above a certain value
       xSpeed = Math.min(xSpeed, 0.75);
       ySpeed = Math.min(ySpeed, 0.75);
       drive(xSpeed, ySpeed, 0, true, true);

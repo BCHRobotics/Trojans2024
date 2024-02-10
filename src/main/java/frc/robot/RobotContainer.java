@@ -55,7 +55,7 @@ public class RobotContainer {
                     OIConstants.kFieldRelative, OIConstants.kRateLimited),
                 m_robotDrive));
 
-        NamedCommands.registerCommand("ALIGN", new RunCommand(() -> m_robotDrive.toggleAlignMode())); 
+        NamedCommands.registerCommand("ALIGN", new InstantCommand(() -> m_robotDrive.toggleAlignMode())); 
 
         // Build an auto chooser. This will use Commands.none() as the default option.
         autoChooser = AutoBuilder.buildAutoChooser();
