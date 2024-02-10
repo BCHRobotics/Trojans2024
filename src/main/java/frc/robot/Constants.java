@@ -109,7 +109,7 @@ public final class Constants {
       4,
       0
     };
-  
+  }
   public static final class MechanismConstants {
     public static final int kBeltMotorCanId = 20;
     public static final int kSourceMotorCanId = 21;
@@ -206,4 +206,5 @@ public final class Constants {
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
   }
+
 }
