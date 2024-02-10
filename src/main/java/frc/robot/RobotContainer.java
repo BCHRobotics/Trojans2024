@@ -12,9 +12,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ElevatorConstants.kElevatorPositions;
+import frc.robot.commands.ElevatorCommands;
+import frc.robot.commands.IntakeCommands;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.Mechanism;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -31,8 +31,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public class RobotContainer {
     // The robot's subsystems
     private final Drivetrain m_robotDrive = new Drivetrain();
-    private final Elevator m_elevator = new Elevator();
-    private final Mechanism m_mechanism = new Mechanism();
+    private final ElevatorCommands m_elevatorCommands = new ElevatorCommands();
+    private final IntakeCommands m_intakeCommands = new IntakeCommands();
 
     // The driver's controller
     CommandJoystick m_driverController = new CommandJoystick(OIConstants.kDriverControllerPort);
@@ -87,16 +87,16 @@ public class RobotContainer {
             .onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive))
             .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));    
 
-        this.m_XboxController.povUp().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.SOURCE));
-        this.m_XboxController.povRight().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.AMP));
-        this.m_XboxController.povLeft().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.TRAVEL));
-        this.m_XboxController.povDown().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE));
-        this.m_XboxController.leftBumper().onTrue(this.m_elevator.stopElevatorCommand());
+        this.m_XboxController.povUp().onTrue(this.m_elevatorCommands.moveToPositionCommand(kElevatorPositions.SOURCE));
+        this.m_XboxController.povRight().onTrue(this.m_elevatorCommands.moveToPositionCommand(kElevatorPositions.AMP));
+        this.m_XboxController.povLeft().onTrue(this.m_elevatorCommands.moveToPositionCommand(kElevatorPositions.TRAVEL));
+        this.m_XboxController.povDown().onTrue(this.m_elevatorCommands.moveToPositionCommand(kElevatorPositions.INTAKE));
+        this.m_XboxController.leftBumper().onTrue(this.m_elevatorCommands.stopElevatorCommand());
 
-        this.m_XboxController.b().onTrue(this.m_mechanism.scoreAmp(6));
-        this.m_XboxController.y().onTrue(this.m_mechanism.sourceIntake(6));
-        this.m_XboxController.x().onTrue(this.m_mechanism.groundIntake(6));
-        this.m_XboxController.a().onTrue(this.m_mechanism.stopMechanism());
+        this.m_XboxController.b().onTrue(this.m_intakeCommands.scoreAmp(6));
+        this.m_XboxController.y().onTrue(this.m_intakeCommands.sourceIntake(6));
+        this.m_XboxController.x().onTrue(this.m_intakeCommands.groundIntake(6));
+        this.m_XboxController.a().onTrue(this.m_intakeCommands.stopMechanism());
     }
 
     /**

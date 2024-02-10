@@ -9,15 +9,15 @@ import com.revrobotics.SparkLimitSwitch;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ElevatorConstants.kElevatorPositions;
+import frc.robot.commands.ElevatorCommands;
 import frc.utils.BetterProfiledPIDController;
 
 public class Elevator extends SubsystemBase {
+    private ElevatorCommands m_elevatorCommands;
 
     private final CANSparkMax m_leftMotor;
     private final CANSparkMax m_rightMotor;
@@ -31,7 +31,7 @@ public class Elevator extends SubsystemBase {
                 ElevatorConstants.kMaxSpeedMetersPerSecond,
                 ElevatorConstants.kMaxAccelerationMetersPerSecondSquared);
 
-    private static BetterProfiledPIDController m_controller = new BetterProfiledPIDController(
+    protected static BetterProfiledPIDController m_controller = new BetterProfiledPIDController(
             ElevatorConstants.kPThetaController,
             0,
             ElevatorConstants.kDThetaController,
@@ -46,7 +46,7 @@ public class Elevator extends SubsystemBase {
     private boolean forcedGoal = false;
 
     /** Creates a new Elevator. */
-    public Elevator() {
+    protected Elevator() {
         
         m_leftMotor = new CANSparkMax(ElevatorConstants.kLeftElevatorMotorCanId, MotorType.kBrushless);
         m_rightMotor = new CANSparkMax(ElevatorConstants.kRightElevatorMotorCanId, MotorType.kBrushless);
@@ -142,62 +142,13 @@ public class Elevator extends SubsystemBase {
     /**
      * Cancels all elevator commands
      */
-    private void cancelAllElevatorCommands() {
-        CommandScheduler.getInstance().cancel(moveToPositionCommand(kElevatorPositions.TOP));
-        CommandScheduler.getInstance().cancel(moveToPositionCommand(kElevatorPositions.SOURCE));
-        CommandScheduler.getInstance().cancel(moveToPositionCommand(kElevatorPositions.AMP));
-        CommandScheduler.getInstance().cancel(moveToPositionCommand(kElevatorPositions.TRAVEL));
-        CommandScheduler.getInstance().cancel(moveToPositionCommand(kElevatorPositions.INTAKE));
-        CommandScheduler.getInstance().cancel(moveToPositionCommand(kElevatorPositions.BOTTOM));
-    }
-
-    /**
-     * Stops the elevator
-     * @return the command for stopping the elevator
-     */
-    public Command stopElevatorCommand() {
-        return Commands.runOnce(() -> this.cancelAllElevatorCommands());
-    }
-
-    //TODO: choose between TOP or BOTTOM position for encoder reset
-    //TODO: choose what to do on default
-    //TODO: Top and bottom are climb
-    /**
-     * Sets the elevator positions
-     * @param position the position to be set
-     * @return the command to get to the position
-     */
-    public Command moveToPositionCommand(ElevatorConstants.kElevatorPositions position) {
-        switch (position) {
-            case TOP:
-                return null;
-                
-            case SOURCE:
-                return Commands.runOnce(() -> m_controller.setGoal(
-                    ElevatorConstants.kElevatorGoals[
-                    ElevatorConstants.kElevatorPositions.SOURCE.ordinal()]));
-
-            case AMP:
-                return Commands.runOnce(() -> m_controller.setGoal(
-                    ElevatorConstants.kElevatorGoals[
-                    ElevatorConstants.kElevatorPositions.AMP.ordinal()]));
-
-            case TRAVEL:
-                return Commands.runOnce(() -> m_controller.setGoal(
-                    ElevatorConstants.kElevatorGoals[
-                    ElevatorConstants.kElevatorPositions.TRAVEL.ordinal()]));
-
-            case INTAKE:
-                return Commands.runOnce(() -> m_controller.setGoal(
-                    ElevatorConstants.kElevatorGoals[
-                    ElevatorConstants.kElevatorPositions.INTAKE.ordinal()]));
-
-            case BOTTOM:
-                return null;
-
-            default:
-                return null;
-        }
+    protected void cancelAllElevatorCommands() {
+        CommandScheduler.getInstance().cancel(m_elevatorCommands.moveToPositionCommand(kElevatorPositions.TOP));
+        CommandScheduler.getInstance().cancel(m_elevatorCommands.moveToPositionCommand(kElevatorPositions.SOURCE));
+        CommandScheduler.getInstance().cancel(m_elevatorCommands.moveToPositionCommand(kElevatorPositions.AMP));
+        CommandScheduler.getInstance().cancel(m_elevatorCommands.moveToPositionCommand(kElevatorPositions.TRAVEL));
+        CommandScheduler.getInstance().cancel(m_elevatorCommands.moveToPositionCommand(kElevatorPositions.INTAKE));
+        CommandScheduler.getInstance().cancel(m_elevatorCommands.moveToPositionCommand(kElevatorPositions.BOTTOM));
     }
     
     private void putToDashboard() {

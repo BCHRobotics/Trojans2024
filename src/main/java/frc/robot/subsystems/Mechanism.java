@@ -8,19 +8,16 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.MechanismConstants;
+import frc.robot.commands.IntakeCommands;
 import frc.utils.BeamBreak;
 import frc.utils.BeamBreak.Phase;
 
 public class Mechanism extends SubsystemBase{
+    private IntakeCommands m_intakeCommands;
 
     // The beam-break sensor that detects where a note is in the mechanism
     private final BeamBreak m_beamBreak = new BeamBreak(
@@ -37,7 +34,7 @@ public class Mechanism extends SubsystemBase{
     private final CANSparkMax m_ampMotor = new CANSparkMax(MechanismConstants.kAmpMotorCanId, MotorType.kBrushed);
 
     /** Creates a new Mechanism. */
-    public Mechanism() {
+    protected Mechanism() {
         this.m_beltMotor.restoreFactoryDefaults();
         this.m_sourceMotor.restoreFactoryDefaults();
         this.m_ampMotor.restoreFactoryDefaults();
@@ -75,7 +72,7 @@ public class Mechanism extends SubsystemBase{
      * Sets the speed of the belt motor
      * @param speed the speed in volts [0 --> 12]
      */
-    private void setBeltSpeed(double speed) {
+    protected void setBeltSpeed(double speed) {
         this.m_beltMotor.setVoltage(speed);
     }
 
@@ -91,7 +88,7 @@ public class Mechanism extends SubsystemBase{
      * Sets the speed of the source motor
      * @param speed the speed in volts [0 --> 12]
      */
-    private void setSourceSpeed(double speed) {
+    protected void setSourceSpeed(double speed) {
         this.m_sourceMotor.setVoltage(speed);
     }
 
@@ -107,7 +104,7 @@ public class Mechanism extends SubsystemBase{
      * Sets the speed of the amp motor
      * @param speed the speed in volts [0 --> 12]
      */
-    private void setAmpSpeed(double speed) {
+    protected void setAmpSpeed(double speed) {
         this.m_ampMotor.setVoltage(speed);
     }
 
@@ -123,99 +120,17 @@ public class Mechanism extends SubsystemBase{
      * A method to check if the phase changed
      * @param phase the phase that is checked
      */
-    private boolean checkState(Phase phase) {
+    protected boolean checkState(Phase phase) {
         return m_currentPhase == phase;
     }
 
     /**
      * Cancels all mechanism commands
      */
-    private void cancelAllMechanismCommands() {
-        CommandScheduler.getInstance().cancel(groundIntake(getBeltSpeed()));
-        CommandScheduler.getInstance().cancel(scoreAmp(getAmpSpeed()));
-        CommandScheduler.getInstance().cancel(sourceIntake(getSourceSpeed()));
-    }
-
-    /**
-     * A command for intaking from the ground
-     * @param speed the commanded speed in voltage [0 --> 12]
-     */
-    public Command groundIntake(double speed) {
-        return 
-        parallel(
-            Commands.startEnd(() -> this.setBeltSpeed(-speed), () -> this.setBeltSpeed(-speed * 0.75)),
-            Commands.startEnd(() -> this.setSourceSpeed(speed), () -> this.setSourceSpeed(speed * 0.75)),
-            Commands.startEnd(() -> this.setAmpSpeed(speed), () -> this.setAmpSpeed(speed * 0.75))
-        )
-        .until(() -> checkState(Phase.PICKUP))
-        .andThen(() -> System.out.println("Pickup hit"))
-        .andThen(
-            parallel(
-            startEnd(() -> this.setBeltSpeed(-speed * 0.75), () -> this.setBeltSpeed(0.0))
-            .until(() -> checkState(Phase.LOADED)))
-            .andThen(() -> System.out.println("loaded hit")),
-
-            startEnd(() -> this.setSourceSpeed(-speed * 0.75), () -> this.setSourceSpeed(0.0))
-            .until(() -> checkState(Phase.LOADED)),
-
-            startEnd(() -> this.setAmpSpeed(-speed * 0.75), () -> this.setAmpSpeed(0.0))
-            .until(() -> checkState(Phase.LOADED)));
-    }
- 
-    /**
-     * A command for intaking from the source
-     * @param speed the commanded speed in voltage [0 --> 12]
-     */
-    public Command sourceIntake(double speed) {
-        return parallel (
-            Commands.startEnd(() -> this.setSourceSpeed(-speed), () -> this.setSourceSpeed(-speed * 0.75)),
-            Commands.startEnd(() -> this.setAmpSpeed(-speed), () -> this.setAmpSpeed(-speed * 0.75)),
-            Commands.startEnd(() -> this.setBeltSpeed(speed), () -> this.setBeltSpeed(speed * 0.75))
-        )
-        .until(() -> checkState(Phase.SHOOT))
-        .andThen(
-            parallel(
-                Commands.startEnd(() -> this.setSourceSpeed(-speed * 0.75), () -> this.setSourceSpeed(0)),
-                Commands.startEnd(() -> this.setAmpSpeed(-speed * 0.75), () -> this.setAmpSpeed(0)),
-                Commands.startEnd(() -> this.setBeltSpeed(speed * 0.75), () -> this.setBeltSpeed(0))
-            )
-            .until(() -> checkState(Phase.LOADED)));
-    }
-
-    /**
-     * A command for scoring in the amp
-     * @param speed the commanded speed in voltage [0 --> 12]
-     */
-    public Command scoreAmp(double speed) {
-        return parallel(
-            Commands.startEnd(() -> this.setAmpSpeed(-speed), () -> this.setAmpSpeed(-speed))
-            .until(() -> checkState(Phase.SHOOT)),
-
-            Commands.startEnd(() -> this.setSourceSpeed(speed), () -> this.setSourceSpeed(speed))
-            .until(() -> checkState(Phase.SHOOT)),
-
-            Commands.startEnd(() -> this.setBeltSpeed(-speed), () -> this.setBeltSpeed(-speed))
-            .until(() -> checkState(Phase.SHOOT))
-        )
-        .andThen(
-            parallel(
-                Commands.runOnce(() -> this.setAmpSpeed(0)),
-                Commands.runOnce(() -> this.setSourceSpeed(0)),
-                Commands.runOnce(() -> this.setBeltSpeed(0))
-            ).beforeStarting(new WaitCommand(1)));
-    }
- 
-    /**
-     * A command for stopping the mechanism
-     * @param speed the commanded speed in voltage [0 --> 12]
-     */
-    public Command stopMechanism() {
-        return parallel(
-            Commands.runOnce(() -> this.cancelAllMechanismCommands()),
-            Commands.runOnce(() -> this.setBeltSpeed(0)),
-            Commands.runOnce(() -> this.setSourceSpeed(0)),
-            Commands.runOnce(() -> this.setAmpSpeed(0))
-        );
+    protected void cancelAllMechanismCommands() {
+        CommandScheduler.getInstance().cancel(m_intakeCommands.groundIntake(getBeltSpeed()));
+        CommandScheduler.getInstance().cancel(m_intakeCommands.scoreAmp(getAmpSpeed()));
+        CommandScheduler.getInstance().cancel(m_intakeCommands.sourceIntake(getSourceSpeed()));
     }
 
     public void periodic() {
