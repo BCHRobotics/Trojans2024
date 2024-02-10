@@ -63,61 +63,73 @@ public class Mechanism extends SubsystemBase{
         this.m_ampMotor.enableVoltageCompensation(12);
     }
 
-    //update the phase of the beambreak sensor
+    /**
+     * updates the phase of the beam break sensor
+     */
     private void updatePhase() {
         this.m_beamBreak.updatePhase();
         this.m_currentPhase = this.m_beamBreak.getPhase();
     }
 
     /**
-     * Sets belt speed in percent output 
-     * @param speed the commanded belt speed [-1 --> 1]
+     * Sets the speed of the belt motor
+     * @param speed the speed in volts [0 --> 12]
      */
     private void setBeltSpeed(double speed) {
         this.m_beltMotor.setVoltage(speed);
     }
 
     /**
-     * Gets belt speed in percent output [-1 --> 1]
+     * Gets the motor voltage of the belt motor
+     * @return the voltage the motor is getting
      */
     private double getBeltSpeed() {
         return this.m_beltMotor.getBusVoltage();
     }
 
     /**
-     * Sets source intake speed in percent output
-     * @param speed the commanded source intake speed [-1 --> 1]
+     * Sets the speed of the source motor
+     * @param speed the speed in volts [0 --> 12]
      */
     private void setSourceSpeed(double speed) {
         this.m_sourceMotor.setVoltage(speed);
     }
 
     /**
-     * Gets source intake speed in percent output [-1 --> 1]
+     * Gets the motor voltage of the source motor
+     * @return the voltage the motor is getting
      */
     private double getSourceSpeed() {
         return this.m_sourceMotor.getBusVoltage();
     }
     
     /**
-     * Sets amp motor speed in percent output
-     * @param speed the commanded amp motor speed [-1 --> 1]
+     * Sets the speed of the amp motor
+     * @param speed the speed in volts [0 --> 12]
      */
     private void setAmpSpeed(double speed) {
         this.m_ampMotor.setVoltage(speed);
     }
 
     /**
-     * Gets amp motor speed in percent output [-1 --> 1]
+     * Gets the motor voltage of the amp motor
+     * @return the voltage the motor is getting
      */
     private double getAmpSpeed() {
         return this.m_ampMotor.getBusVoltage();
     }
 
+    /**
+     * A method to check if the phase changed
+     * @param phase the phase that is checked
+     */
     private boolean checkState(Phase phase) {
         return m_currentPhase == phase;
     }
 
+    /**
+     * Cancels all mechanism commands
+     */
     private void cancelAllMechanismCommands() {
         CommandScheduler.getInstance().cancel(groundIntake(getBeltSpeed()));
         CommandScheduler.getInstance().cancel(scoreAmp(getAmpSpeed()));
@@ -126,7 +138,7 @@ public class Mechanism extends SubsystemBase{
 
     /**
      * A command for intaking from the ground
-     * @param speed the commanded speed percent [-1 --> 1]
+     * @param speed the commanded speed in voltage [0 --> 12]
      */
     public Command groundIntake(double speed) {
         return 
@@ -152,7 +164,7 @@ public class Mechanism extends SubsystemBase{
  
     /**
      * A command for intaking from the source
-     * @param speed the commanded speed percent [-1 --> 1]
+     * @param speed the commanded speed in voltage [0 --> 12]
      */
     public Command sourceIntake(double speed) {
         return parallel (
@@ -171,8 +183,8 @@ public class Mechanism extends SubsystemBase{
     }
 
     /**
-     * A command for scoring into the amp
-     * @param speed the commanded speed percent [-1 --> 1]
+     * A command for scoring in the amp
+     * @param speed the commanded speed in voltage [0 --> 12]
      */
     public Command scoreAmp(double speed) {
         return parallel(
@@ -195,7 +207,7 @@ public class Mechanism extends SubsystemBase{
  
     /**
      * A command for stopping the mechanism
-     * @param speed the commanded speed percent [-1 --> 1]
+     * @param speed the commanded speed in voltage [0 --> 12]
      */
     public Command stopMechanism() {
         return parallel(
@@ -206,6 +218,11 @@ public class Mechanism extends SubsystemBase{
         );
     }
 
+    /**
+     * Custom wait command
+     * @param waitTimeMillis the time to wait in milliseconds
+     * @return When the wait timer expires
+     */
     public static boolean waitFor(long waitTimeMillis) {
         try {
             Thread.sleep(waitTimeMillis);

@@ -17,7 +17,6 @@ public class BeamBreak {
     // Current phase
     private Phase m_currentPhase;
 
-    // Constructor
     public BeamBreak(int pickupSensorChannel, int loadedSensorChannel, int shootSensorChannel) {
         m_pickupSensor = new DigitalInput(MechanismConstants.kPickupSensorChannel);
         m_loadedSensor = new DigitalInput(MechanismConstants.kLoadedSensorChannel);
@@ -26,7 +25,9 @@ public class BeamBreak {
         m_currentPhase = Phase.NONE; // Default phase
     }
 
-    // Method to update the phase based on sensor inputs
+    /**
+     * Uupdate the phase based on sensor inputs
+     */
     public void updatePhase() {
         if (!m_loadedSensor.get()) {
             m_currentPhase = Phase.LOADED;
@@ -44,6 +45,10 @@ public class BeamBreak {
         }
     }
 
+    /**
+     * Gets the current phase
+     * @return the phase
+     */
     public Phase getPhase() {
         return m_currentPhase;
     }
