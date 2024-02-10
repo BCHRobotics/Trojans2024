@@ -114,8 +114,20 @@ public class Drivetrain extends SubsystemBase {
 
     // If the camera sees an apriltag, set the target pose to the pose of that apriltag
     if (m_camera.getResult().hasTargets() 
-    && m_camera.getCameraPipeline() == VisionConstants.APRILTAG_PIPELINE) {
+    && m_camera.getCameraPipeline() == VisionConstants.APRILTAG_PIPELINE && !m_alignWithTarget) {
       targetPose = m_camera.getApriltagPose(getPose(), getHeading());
+    }
+
+    if (m_alignWithTarget && targetPose != null) {
+      Pose2d robotPose = getPose();
+
+      double xSpeed = targetPose.getX() - robotPose.getX();
+      double ySpeed = targetPose.getY() - robotPose.getY();
+
+      // Do not let the commanded speed above 0.05
+      xSpeed = Math.min(xSpeed, 0.75);
+      ySpeed = Math.min(ySpeed, 0.75);
+      drive(xSpeed, ySpeed, 0, true, true);
     }
   }
 
@@ -123,9 +135,11 @@ public class Drivetrain extends SubsystemBase {
    * Toggles 'align mode' which when on forces the robot to align to a target.
    * It also resets the target pose so the robot doesn't get stuck on a target that doesn't exist.
    */
-  public void alignToNote() {
+  public void toggleAlignMode() {
     m_alignWithTarget = !m_alignWithTarget;
-    targetPose = null;
+    if (!m_alignWithTarget) {
+      targetPose = null;
+    }
   }
 
   /**
@@ -166,33 +180,8 @@ public class Drivetrain extends SubsystemBase {
    * @param rateLimit     Whether to enable rate limiting for smoother control.
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {
-    /* 
-    // Target aligning logic
-    if (m_alignWithTarget && targetPose != null) {
-      if (targetPose != null && m_camera.getCameraPipeline() == VisionConstants.APRILTAG_PIPELINE) {
-        // The tag's offset is gained from the robot position and the tag position, both in field space
-        Transform2d tagOffset = new Transform2d(targetPose, getPose());
-
-        xSpeed = tagOffset.getX();
-        ySpeed = tagOffset.getY();
-      }
-      else if (m_camera.getCameraPipeline() == VisionConstants.NOTE_PIPELINE) {
-        // note logic
-      }
-    }
-    */
-
-    if (m_alignWithTarget) {
-      if(m_camera.getCameraPipeline() == VisionConstants.APRILTAG_PIPELINE){
-        rot = m_camera.getRotationSpeed();
-      }
-      
-    }
-
     double xSpeedCommanded;
     double ySpeedCommanded;
-    
-
     
     if (rateLimit) {
       // Convert XY to polar for rate limiting
@@ -326,10 +315,16 @@ public class Drivetrain extends SubsystemBase {
   /**
    * Returns the heading of the robot.
    *
-   * @return the robot's heading in degrees, from -180 to 180
+   * @return the robot's heading in degrees, from -Infinity to Infinity
    */
   public double getHeading() {
-    return Rotation2d.fromDegrees(m_gyro.getAngle()).getDegrees();
+    /* I'm multiplying the navx heading by -1 
+    * because WPILib uses CCW as the positive direction
+    * and NavX uses CW as the positive direction
+    */ 
+
+    // TODO: make sure this doesn't mess anything else up
+    return Rotation2d.fromDegrees(-m_gyro.getAngle()).getDegrees();
   }
 
   /**

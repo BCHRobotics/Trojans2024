@@ -40,9 +40,6 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {  
-        NamedCommands.registerCommand("ALIGN", new RunCommand(() -> m_robotDrive.drive(0,0,Drivetrain.m_camera.getRotationSpeed(),true,true))); 
-
-
         // Configure the button bindings
         this.configureButtonBindings();
 
@@ -58,7 +55,7 @@ public class RobotContainer {
                     OIConstants.kFieldRelative, OIConstants.kRateLimited),
                 m_robotDrive));
 
-        // TODO: add a command for aligning the robot to a target during auto
+        NamedCommands.registerCommand("ALIGN", new RunCommand(() -> m_robotDrive.toggleAlignMode())); 
 
         // Build an auto chooser. This will use Commands.none() as the default option.
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -87,7 +84,7 @@ public class RobotContainer {
             .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));  
             
         m_driverController.button(3)
-            .onTrue(new RunCommand(() -> m_robotDrive.drive(0,0,Drivetrain.m_camera.getRotationSpeed(),true,true)));
+            .onTrue(new InstantCommand(() -> m_robotDrive.toggleAlignMode()));
 
         m_driverController.button(4)
             .onTrue(new InstantCommand(() -> m_robotDrive.toggleCameraPipeline()));

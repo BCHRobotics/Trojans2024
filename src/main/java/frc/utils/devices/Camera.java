@@ -19,7 +19,7 @@ public class Camera {
 
     public static PhotonCamera getInstance() {
         if (instance == null) { 
-            instance = new PhotonCamera("Photon"); // replace with the name of the camera which is set in the UI
+            instance = new PhotonCamera("Photon_Limelight"); // replace with the name of the camera which is set in the UI
         }
         return instance;
     }
@@ -59,7 +59,7 @@ public class Camera {
         // Only return the pose if there is actually a target
         if (result.hasTargets()) {
             Transform2d robotRelativeOffset = new Transform2d(rawOffset.getX(), 
-            -rawOffset.getY(), 
+            rawOffset.getY(), 
             new Rotation2d(rawOffset.getRotation().getZ()));
 
             return toFieldTransform(robotRelativeOffset, robotHeading);
@@ -77,15 +77,16 @@ public class Camera {
             Transform2d robotToTag = getTargetTransform(robotHeading);
 
             // Addd the robot to tag offset to the robot pose to get the tag pose in field space
-            Pose2d tagPose = robotPose.plus(robotToTag);
+            Pose2d tagPose = new Pose2d(robotPose.getX() + 
+            robotToTag.getX(), robotPose.getY() + 
+            robotToTag.getY(), new Rotation2d((robotHeading + robotToTag.getRotation().getDegrees()) * (Math.PI / 180)));
 
-            // Define and add another offset so the robot stops just in front of the tag
-            // THIS MIGHT NOT WORK AS TAG ROTATION HASN'T BEEN TESTED
-            Transform2d desiredOffset = toFieldTransform(new Transform2d(1, 0, new Rotation2d(180)), tagPose.getRotation().getDegrees());
-            tagPose = tagPose.plus(desiredOffset);
-            
-            //manual pose addition (old code)
-            //Pose2d tagPose = new Pose2d(robotPose.getX() + robotToTag.getX(), robotPose.getY() + robotToTag.getY(), new Rotation2d(0));
+            Transform2d desiredOffset = toFieldTransform(new Transform2d(0.6, 0, new Rotation2d(0)), tagPose.getRotation().getDegrees());
+            tagPose = new Pose2d(tagPose.getX() + desiredOffset.getX(), tagPose.getY() + desiredOffset.getY(), tagPose.getRotation());
+
+            //FIX TAG HEADING PLEASE ITS WRONG
+
+            // TODO: add an offset to the tag position so the robot doesn't hit a wall
 
             return tagPose;
         }
@@ -109,25 +110,15 @@ public class Camera {
      * (object as in a tag or robot or something else that points in a direction)
      * into a Transform2d in field relative coordinates.
      */
-    public Transform2d toFieldTransform(Transform2d robotTransform, double heading) {
-        Transform2d fieldTransform = 
-        new Transform2d(robotTransform.getX() * Math.cos(heading * (Math.PI / 180))
-         + robotTransform.getY() * -Math.sin(heading * (Math.PI / 180)), 
-         robotTransform.getX() * -Math.sin(heading * (Math.PI / 180))
-         + robotTransform.getY() * Math.cos(heading * (Math.PI / 180)),
-         robotTransform.getRotation());
+    public Transform2d toFieldTransform(Transform2d objectTransform, double heading) {
+        // Multiply the heading by PI/180 to convert to radians
+        double sinHeading = Math.sin(heading * (Math.PI / 180));
+        double cosHeading = Math.cos(heading * (Math.PI / 180));
 
-        return fieldTransform;
-    }
-    
-    public Transform2d robotToFieldTransform(Transform2d robotTransform, double robotHeading){
-        double cosHeading = Math.cos(robotHeading * (Math.PI / 180));
-        double sinHeading = Math.sin(robotHeading * (Math.PI / 180));
+        double fieldX = objectTransform.getX() * cosHeading + objectTransform.getY() * -sinHeading;
+        double fieldY = objectTransform.getX() * sinHeading + objectTransform.getY() * cosHeading;
 
-        double fieldX = robotTransform.getX() * cosHeading + robotTransform.getY() * sinHeading;
-        double fieldY = robotTransform.getY() * sinHeading + robotTransform.getX() * cosHeading;
-
-        Transform2d fieldTransform = new Transform2d(fieldX, fieldY, robotTransform.getRotation());
+        Transform2d fieldTransform = new Transform2d(fieldX, fieldY, objectTransform.getRotation());
 
         return fieldTransform;
     }
