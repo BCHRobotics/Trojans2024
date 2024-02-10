@@ -118,7 +118,7 @@ public class Drivetrain extends SubsystemBase {
       targetPose = m_camera.getApriltagPose(getPose(), getHeading());
     }
 
-    if (m_alignWithTarget && targetPose != null) {
+    if (m_alignWithTarget && targetPose != null && m_camera.getCameraPipeline() == VisionConstants.APRILTAG_PIPELINE) {
       Pose2d robotPose = getPose();
 
       double xSpeed = targetPose.getX() - robotPose.getX();
@@ -182,6 +182,10 @@ public class Drivetrain extends SubsystemBase {
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {
     double xSpeedCommanded;
     double ySpeedCommanded;
+    
+    if (m_alignWithTarget && m_camera.getCameraPipeline() == VisionConstants.NOTE_PIPELINE) {
+      rot = m_camera.getRotationSpeed();
+    }
     
     if (rateLimit) {
       // Convert XY to polar for rate limiting
