@@ -19,7 +19,7 @@ public class Camera {
 
     public static PhotonCamera getInstance() {
         if (instance == null) { 
-            instance = new PhotonCamera("Photon_Limelight"); // replace with the name of the camera which is set in the UI
+            instance = new PhotonCamera("Photon_Webcam"); // replace with the name of the camera which is set in the UI
         }
         return instance;
     }
@@ -81,12 +81,8 @@ public class Camera {
             robotToTag.getX(), robotPose.getY() + 
             robotToTag.getY(), new Rotation2d((robotHeading + robotToTag.getRotation().getDegrees()) * (Math.PI / 180)));
 
-            Transform2d desiredOffset = toFieldTransform(new Transform2d(0.75, 0, new Rotation2d(0)), tagPose.getRotation().getDegrees());
+            Transform2d desiredOffset = toFieldTransform(new Transform2d(0.6, 0, new Rotation2d(0)), tagPose.getRotation().getDegrees());
             tagPose = new Pose2d(tagPose.getX() + desiredOffset.getX(), tagPose.getY() + desiredOffset.getY(), tagPose.getRotation());
-
-            //FIX TAG HEADING PLEASE ITS WRONG
-
-            // TODO: add an offset to the tag position so the robot doesn't hit a wall
 
             return tagPose;
         }

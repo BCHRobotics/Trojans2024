@@ -83,9 +83,11 @@ public class RobotContainer {
             .onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive))
             .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));  
             
+        // Align with target button
         m_driverController.button(3)
             .onTrue(new InstantCommand(() -> m_robotDrive.toggleAlignMode()));
 
+        // Toggle camera pipeline button (swtich between note and apriltag pipelines)
         m_driverController.button(4)
             .onTrue(new InstantCommand(() -> m_robotDrive.toggleCameraPipeline()));
     }
@@ -96,7 +98,6 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */ 
     public Command getAutonomousCommand() {
-        // return Autos.getBasicAuto(m_robotDrive);
         return autoChooser.getSelected();
     }
 
