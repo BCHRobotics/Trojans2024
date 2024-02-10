@@ -45,7 +45,7 @@ public class Elevator extends SubsystemBase {
 
     private boolean forcedGoal = false;
 
-    /** Creates a new Mechanism. */
+    /** Creates a new Elevator. */
     public Elevator() {
         
         m_leftMotor = new CANSparkMax(ElevatorConstants.kLeftElevatorMotorCanId, MotorType.kBrushless);
@@ -83,14 +83,26 @@ public class Elevator extends SubsystemBase {
         m_controller.setGoal(0);
     }
     
+    /**
+     * Sets the speed of the drive motor
+     * @param speed speed in volts [0 --> 12]
+     */
     private void setLeftMotorSpeed(double speed) {
         this.m_leftMotor.setVoltage(speed);
     }
 
+    /**
+     * Checks to see if a limit switched is being pressed
+     * @param limitSwitch The limit switch to check
+     * @return if the limit switch is being pressed
+     */
     private boolean checkLimitSwitchPress(SparkLimitSwitch limitSwitch) {
         return limitSwitch.isPressed();
     }
 
+    /**
+     * Stops the elevator and sets the goal to the current setpoint
+     */
     private void limitReached() {
         System.out.println("in reached limit");
         cancelAllElevatorCommands();
@@ -99,12 +111,18 @@ public class Elevator extends SubsystemBase {
         System.out.println("forced goal");
     }
 
+    /**
+     * Calculates and sets the profiled speed of the motor
+     */
     private void calculateSpeed() {
         totalSpeed = m_controller.calculate(m_leftEncoder.getPosition())
                      + m_feedforward.calculate(m_controller.getSetpoint().velocity);
         setLeftMotorSpeed(totalSpeed);
     }
 
+    /**
+     * Checks for limits and sets the motor speed
+     */
     private void setProfiledSpeed() {
         if (!forcedGoal && 
            (checkLimitSwitchPress(m_forwardLimit) || 
@@ -121,6 +139,9 @@ public class Elevator extends SubsystemBase {
         }
     }
 
+    /**
+     * Cancels all elevator commands
+     */
     private void cancelAllElevatorCommands() {
         CommandScheduler.getInstance().cancel(moveToPositionCommand(kElevatorPositions.TOP));
         CommandScheduler.getInstance().cancel(moveToPositionCommand(kElevatorPositions.SOURCE));
@@ -130,6 +151,10 @@ public class Elevator extends SubsystemBase {
         CommandScheduler.getInstance().cancel(moveToPositionCommand(kElevatorPositions.BOTTOM));
     }
 
+    /**
+     * Stops the elevator
+     * @return the command for stopping the elevator
+     */
     public Command stopElevatorCommand() {
         return Commands.runOnce(() -> this.cancelAllElevatorCommands());
     }
@@ -137,6 +162,11 @@ public class Elevator extends SubsystemBase {
     //TODO: choose between TOP or BOTTOM position for encoder reset
     //TODO: choose what to do on default
     //TODO: Top and bottom are climb
+    /**
+     * Sets the elevator positions
+     * @param position the position to be set
+     * @return the command to get to the position
+     */
     public Command moveToPositionCommand(ElevatorConstants.kElevatorPositions position) {
         switch (position) {
             case TOP:
