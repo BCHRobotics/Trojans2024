@@ -218,21 +218,6 @@ public class Mechanism extends SubsystemBase{
         );
     }
 
-    /**
-     * Custom wait command
-     * @param waitTimeMillis the time to wait in milliseconds
-     * @return When the wait timer expires
-     */
-    public static boolean waitFor(long waitTimeMillis) {
-        try {
-            Thread.sleep(waitTimeMillis);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); // restore interrupted status
-            return false; // or handle the interruption differently
-        }
-        return true;
-    }
-
     public void periodic() {
         this.updatePhase();
         SmartDashboard.putString("Current Phase: ", this.m_currentPhase.name());
