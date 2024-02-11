@@ -82,6 +82,14 @@ public class Elevator extends SubsystemBase {
         m_leftEncoder.setPosition(0);
         m_controller.setGoal(0);
     }
+
+    /**
+     * Checks if the elevator postion is at the goal
+     * @return if goal is reached
+     */
+    public static boolean checkAtGoal() {
+        return m_controller.atGoal();
+    }
     
     /**
      * Sets the speed of the drive motor
