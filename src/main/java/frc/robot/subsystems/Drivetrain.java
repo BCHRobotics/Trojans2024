@@ -77,6 +77,7 @@ public class Drivetrain extends SubsystemBase {
   private boolean m_alignWithTarget = false;
   private boolean m_isAligned = false;
   private Pose2d targetPose;
+  private Pose2d oldRobotPose;
 
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
@@ -128,12 +129,16 @@ public class Drivetrain extends SubsystemBase {
     if (!m_alignWithTarget) {
       targetPose = null;
     }
+    else {
+      oldRobotPose = getPose();
+    }
   }
 
   public boolean checkAlignment() {
     return m_isAligned;
   }
 
+  // Apriltag alignment code
   public void alignWithTag() {
     // Apriltag code
     if (m_camera.getCameraPipeline() == VisionConstants.APRILTAG_PIPELINE) {
@@ -175,16 +180,18 @@ public class Drivetrain extends SubsystemBase {
     }
   }
 
-  // TODO: replace this function with a not stupid one and go back to calling drive in robotcontainer
-  public void driveCommand(double xSpeed, double ySpeed, double rotSpeed, boolean fieldRelative, boolean rateLimit) {
-    // Note code
+  // Note alignment code
+  public void alignWithNote() {
     if (m_camera.getCameraPipeline() == VisionConstants.NOTE_PIPELINE) {
       // Note alignment code
       if (m_alignWithTarget) {
-        drive(xSpeed, ySpeed, m_camera.getRotationSpeed() + rotSpeed, fieldRelative, true);
+        drive(0.5, 0, m_camera.getRotationSpeed(), false, true);
       }
     }
+  }
 
+  // TODO: replace this function with a not stupid one and go back to calling drive in robotcontainer
+  public void driveCommand(double xSpeed, double ySpeed, double rotSpeed, boolean fieldRelative, boolean rateLimit) {
     if (!m_alignWithTarget) {
       drive(xSpeed, ySpeed, rotSpeed, fieldRelative, rateLimit);
     }
