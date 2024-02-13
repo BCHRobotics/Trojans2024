@@ -84,8 +84,6 @@ public class Drivetrain extends SubsystemBase {
   // The stored field position of the target apriltag
   private Pose2d targetPose;
 
-  //TODO: consider re-working the vision tracking functions
-
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
       DriveConstants.kDriveKinematics,
@@ -107,9 +105,10 @@ public class Drivetrain extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // Update the odometry in the periodic block
+    // Refresh the data gathered by the camera
     m_camera.refreshResult();
 
+    // Update the odometry in the periodic block
     m_odometry.update(
         Rotation2d.fromDegrees(m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)),
         new SwerveModulePosition[] {
@@ -119,6 +118,7 @@ public class Drivetrain extends SubsystemBase {
             m_rearRight.getPosition()
         });
 
+    // Print debug values to smartDashboard
     this.printToDashboard();
 
     // Update the target pose
