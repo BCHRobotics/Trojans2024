@@ -18,21 +18,9 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "NoteToAmp"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "ALIGN"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Copy of NoteToAmp"
           }
         }
       ]
