@@ -112,6 +112,11 @@ public class Drivetrain extends SubsystemBase {
         });
 
     this.printToDashboard();
+
+    // Update the target pose
+    if (m_camera.getResult().hasTargets() && !m_alignWithTarget) {
+      targetPose = m_camera.getApriltagPose(getPose(), getHeading());
+    }
   }
 
   /*
@@ -132,12 +137,6 @@ public class Drivetrain extends SubsystemBase {
   public void alignWithTag() {
     // Apriltag code
     if (m_camera.getCameraPipeline() == VisionConstants.APRILTAG_PIPELINE) {
-
-      // Update the target pose
-      if (m_camera.getResult().hasTargets() && !m_alignWithTarget) {
-        targetPose = m_camera.getApriltagPose(getPose(), getHeading());
-      }
-
       // Apriltag alignment code
       if (m_alignWithTarget && targetPose != null) {
         Pose2d robotPose = getPose();
