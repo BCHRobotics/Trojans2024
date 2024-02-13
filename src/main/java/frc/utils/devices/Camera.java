@@ -35,7 +35,7 @@ public class Camera {
         if(result.hasTargets()){
             double currentYaw = result.getBestTarget().getYaw();
 
-            rotationSpeed = currentYaw * -0.01;
+            rotationSpeed = currentYaw * -0.02;
         } else{
             rotationSpeed = 0;
         }

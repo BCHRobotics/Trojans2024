@@ -73,11 +73,18 @@ public class Drivetrain extends SubsystemBase {
 
   private boolean m_slowMode = false;
 
+  // If you switch the camera you have to change the name property of this
   public final static Camera m_camera = new Camera();
+
+  // Whether or not to try and align with a target
   private boolean m_alignWithTarget = false;
+  // Is true when the robot has finished a vision command
   private boolean m_isAligned = false;
+
+  // The stored field position of the target apriltag
   private Pose2d targetPose;
-  private Pose2d oldRobotPose;
+
+  //TODO: consider re-working the vision tracking functions
 
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
@@ -123,33 +130,53 @@ public class Drivetrain extends SubsystemBase {
   /*
    * Toggles 'align mode' which when on forces the robot to align to a target.
    * It also resets the target pose so the robot doesn't get stuck on a target that doesn't exist.
+   * 
+   * (ONLY USED DURING TELEOP)
    */
   public void toggleAlignMode() {
     m_alignWithTarget = !m_alignWithTarget;
     if (!m_alignWithTarget) {
       targetPose = null;
     }
-    else {
-      oldRobotPose = getPose();
-    }
   }
 
-  public void switchToNotePipeline(){
-    m_camera.setCameraPipeline(VisionConstants.NOTE_PIPELINE);
+  /*
+   * Activates vision tracking (used for tags and notes)
+   * 
+   * (ONLY USED DURING AUTO)
+   */
+  public void activateTracking(){
     m_alignWithTarget = true;
+    m_isAligned = false;
   }
 
-  public void switchToTagPipeline(){
-    m_camera.setCameraPipeline(VisionConstants.APRILTAG_PIPELINE);
-    m_alignWithTarget = true;
+  /**
+   * Switches the camera pipeline index (either note or apriltag tracking)
+   * 
+   * @param pipelineIndex the index to be switched to
+   */
+  public void switchPipeline(int pipelineIndex) {
+    m_camera.setCameraPipeline(pipelineIndex);
   }
 
+  /**
+   * Checks whether the robot has finished aligning with a target
+   * 
+   * (ONLY USED DURING AUTO)
+   * this functions as the end condition for the alignment functions
+   * 
+   * @return whether or not the robot has finished aligning
+   */
   public boolean checkAlignment() {
-    return m_isAligned;
+    return m_isAligned; // This boolean variable is used for all types of vision alignment
   }
 
-  // Apriltag alignment code
-  public void alignWithTag() {
+  /**
+   * A function for driving to the targeted apriltag, runs periodically 
+   * 
+   * (ONLY USED DURING AUTO)
+   */
+  public void driveToTag() {
     // Apriltag code
     if (m_camera.getCameraPipeline() == VisionConstants.APRILTAG_PIPELINE) {
       // Apriltag alignment code
@@ -161,20 +188,20 @@ public class Drivetrain extends SubsystemBase {
 
         // Do not let the commanded speed above a certain value
         if (xCommand > 0) {
-          xCommand = Math.min(xCommand, 0.5);
+          xCommand = Math.min(xCommand, VisionConstants.VISION_SPEED_LIMIT);
         }
         else {
-          xCommand = Math.max(xCommand, -0.5);
+          xCommand = Math.max(xCommand, -VisionConstants.VISION_SPEED_LIMIT);
         }
 
         if (yCommand < 0) {
-          yCommand = Math.max(yCommand, -0.5);
+          yCommand = Math.max(yCommand, -VisionConstants.VISION_SPEED_LIMIT);
         }
         else {
-          yCommand = Math.min(yCommand, 0.5);
+          yCommand = Math.min(yCommand, VisionConstants.VISION_SPEED_LIMIT);
         }
 
-        if (Math.abs(yCommand) < 0.08 && Math.abs(xCommand) < 0.08) {
+        if (Math.abs(yCommand) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD && Math.abs(xCommand) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD) {
           m_isAligned = true;
           m_alignWithTarget = false; // Stop the alignment when the target is reached
         }
@@ -190,12 +217,16 @@ public class Drivetrain extends SubsystemBase {
     }
   }
 
-  // Note alignment code
-  public void alignWithNote() {
+  /**
+   * A function for driving to the targeted note, runs periodically 
+   * 
+   * (ONLY USED DURING AUTO)
+   */
+  public void driveToNote() {
     if (m_camera.getCameraPipeline() == VisionConstants.NOTE_PIPELINE) {
       // Note alignment code
       if (m_alignWithTarget) {
-        drive(0.5, 0, m_camera.getRotationSpeed(), false, true);
+        drive(0.25, 0, m_camera.getRotationSpeed(), false, true);
 
         if (!m_camera.getResult().hasTargets()) {
           m_isAligned = true;
@@ -212,6 +243,49 @@ public class Drivetrain extends SubsystemBase {
   public void driveCommand(double xSpeed, double ySpeed, double rotSpeed, boolean fieldRelative, boolean rateLimit) {
     if (!m_alignWithTarget) {
       drive(xSpeed, ySpeed, rotSpeed, fieldRelative, rateLimit);
+    }
+    
+    if (m_alignWithTarget && m_camera.getCameraPipeline() == VisionConstants.NOTE_PIPELINE) {
+      // Align to the note while driving normally
+      drive(xSpeed, ySpeed, rotSpeed + m_camera.getRotationSpeed(), fieldRelative, rateLimit);
+    }
+
+    if (m_alignWithTarget && m_camera.getCameraPipeline() == VisionConstants.APRILTAG_PIPELINE) {
+      // Apriltag alignment code
+      if (targetPose != null) {
+        Pose2d robotPose = getPose();
+
+        double xCommand = targetPose.getX() - robotPose.getX();
+        double yCommand = targetPose.getY() - robotPose.getY();
+
+        // Do not let the commanded speed above a certain value
+        if (xCommand > 0) {
+          xCommand = Math.min(xCommand, VisionConstants.VISION_SPEED_LIMIT);
+        }
+        else {
+          xCommand = Math.max(xCommand, -VisionConstants.VISION_SPEED_LIMIT);
+        }
+
+        if (yCommand < 0) {
+          yCommand = Math.max(yCommand, -VisionConstants.VISION_SPEED_LIMIT);
+        }
+        else {
+          yCommand = Math.min(yCommand, VisionConstants.VISION_SPEED_LIMIT);
+        }
+
+        if (Math.abs(yCommand) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD && Math.abs(xCommand) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD) {
+          m_isAligned = true;
+          m_alignWithTarget = false; // Stop the alignment when the target is reached
+        }
+        else {
+          m_isAligned = false;
+        }
+
+        SmartDashboard.putNumber("Commanded X", xCommand);
+        SmartDashboard.putNumber("Commanded Y", yCommand);
+
+        drive(xCommand, yCommand, 0, true, true);
+      }
     }
   }
 

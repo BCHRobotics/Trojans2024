@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -55,18 +56,22 @@ public class RobotContainer {
                     OIConstants.kFieldRelative, OIConstants.kRateLimited),
                 m_robotDrive));
 
-        // This is the command that aligns the robot with an apriltag
+        // Apriltag alignment command
         NamedCommands.registerCommand("ALIGN TAG", new RunCommand(
-            () -> m_robotDrive.alignWithTag()).until( // Run the alignwithtag function
+            () -> m_robotDrive.driveToTag()).until( // Run the alignwithtag function
                 () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
                     new InstantCommand(
-                        () -> m_robotDrive.switchToTagPipeline()))); // Set alignmode to true before starting
+                        () -> m_robotDrive.activateTracking()))); // Set alignmode to true before starting
 
+        // Note alignment command
         NamedCommands.registerCommand("ALIGN NOTE", new RunCommand(
-            () -> m_robotDrive.alignWithNote()).until( // Run the alignwithtag function
-                () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
+            () -> m_robotDrive.driveToNote()).until( // Run the 'drive to note' function
+                () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true, i.e the robot is done aligning
                     new InstantCommand(
-                        () -> m_robotDrive.switchToNotePipeline()))); // Set alignmode to true before starting
+                        () -> m_robotDrive.activateTracking()))); // Set alignmode to true before starting, and set isAligned to false
+
+        NamedCommands.registerCommand("TAG PIPELINE", new InstantCommand(() -> m_robotDrive.switchPipeline(VisionConstants.APRILTAG_PIPELINE)));
+        NamedCommands.registerCommand("NOTE PIPELINE", new InstantCommand(() -> m_robotDrive.switchPipeline(VisionConstants.NOTE_PIPELINE)));
 
         // Build an auto chooser. This will use Commands.none() as the default option.
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -83,10 +88,20 @@ public class RobotContainer {
    * {@link JoystickButton}.
    */
     private void configureButtonBindings() {
-        // Break Command (Button 2)
+
+        /* 
+         * CURRENT BUTTON LAYOUT (subject to change):
+         * Button 2 -- BRAKE
+         * Button 5 -- RESET GYRO
+         * Button 1 (TRIGGER) -- SLOW MODE
+         * Button 3 -- ACTIVATE VISION
+         * Button 4 -- SWITCH VISION PIPELINE
+         */ 
+
+        // Brake Command (Button 2)
         m_driverController.button(2).whileTrue(new RunCommand(() -> m_robotDrive.setX(), m_robotDrive));
 
-        // Zero heading (Button 5)
+        // Reset Gyro (Button 5)
         m_driverController.button(5).whileTrue(new RunCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
         
         // Slow Command (Button 1)
@@ -94,11 +109,11 @@ public class RobotContainer {
             .onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive))
             .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));  
             
-        // Align with target button
+        // Align with target button (Button 3)
         m_driverController.button(3)
             .onTrue(new InstantCommand(() -> m_robotDrive.toggleAlignMode()));
 
-        // Toggle camera pipeline button (swtich between note and apriltag pipelines)
+        // Switch between camera and note pipelines (Button 4)
         m_driverController.button(4)
             .onTrue(new InstantCommand(() -> m_robotDrive.toggleCameraPipeline()));
     }

@@ -12,6 +12,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "NOTE PIPELINE"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "StartToNote"
@@ -20,7 +26,25 @@
         {
           "type": "named",
           "data": {
-            "name": "NOTE"
+            "name": "ALIGN NOTE"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "TAG PIPELINE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Copy of StartToNote"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN TAG"
           }
         }
       ]

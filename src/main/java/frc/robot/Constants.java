@@ -72,6 +72,9 @@ public final class Constants {
     // Camera pipeline indexes
     public static final int NOTE_PIPELINE = 0;
     public static final int APRILTAG_PIPELINE = 1;
+
+    public static final double VISION_SPEED_LIMIT = 0.5;
+    public static final double APRILTAG_DISTANCE_THRESHOLD = 0.08;
   }
 
   public static final class ModuleConstants {
