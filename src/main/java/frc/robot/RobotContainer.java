@@ -48,14 +48,19 @@ public class RobotContainer {
             // The left stick controls translation of the robot.
             // Turning is controlled by the X axis of the right stick.
             new RunCommand(
-                () -> m_robotDrive.drive(
+                () -> m_robotDrive.driveCommand(
                     -MathUtil.applyDeadband(m_driverController.getY(), OIConstants.kDriveDeadband),
                     -MathUtil.applyDeadband(m_driverController.getX(), OIConstants.kDriveDeadband),
                     -MathUtil.applyDeadband(m_driverController.getTwist(), OIConstants.kTwistDeadband),
                     OIConstants.kFieldRelative, OIConstants.kRateLimited),
                 m_robotDrive));
 
-        NamedCommands.registerCommand("ALIGN", new InstantCommand(() -> m_robotDrive.toggleAlignMode())); 
+        // This is the command that aligns the robot with an apriltag
+        NamedCommands.registerCommand("ALIGN", new RunCommand(
+            () -> m_robotDrive.alignWithTag()).until( // Run the alignwithtag function
+                () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
+                    new InstantCommand(
+                        () -> m_robotDrive.toggleAlignMode()))); // Set alignmode to true before starting
 
         // Build an auto chooser. This will use Commands.none() as the default option.
         autoChooser = AutoBuilder.buildAutoChooser();

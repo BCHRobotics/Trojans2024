@@ -28,6 +28,12 @@
           "data": {
             "name": "ALIGN"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Copy of NoteToAmp"
+          }
         }
       ]
     }

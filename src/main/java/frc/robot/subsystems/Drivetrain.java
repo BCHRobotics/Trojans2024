@@ -75,6 +75,7 @@ public class Drivetrain extends SubsystemBase {
 
   public final static Camera m_camera = new Camera();
   private boolean m_alignWithTarget = false;
+  private boolean m_isAligned = false;
   private Pose2d targetPose;
 
   // Odometry class for tracking robot pose
@@ -111,24 +112,6 @@ public class Drivetrain extends SubsystemBase {
         });
 
     this.printToDashboard();
-
-    // If the camera sees an apriltag, set the target pose to the pose of that apriltag
-    if (m_camera.getResult().hasTargets() 
-    && m_camera.getCameraPipeline() == VisionConstants.APRILTAG_PIPELINE && !m_alignWithTarget) {
-      targetPose = m_camera.getApriltagPose(getPose(), getHeading());
-    }
-
-    if (m_alignWithTarget && targetPose != null && m_camera.getCameraPipeline() == VisionConstants.APRILTAG_PIPELINE) {
-      Pose2d robotPose = getPose();
-
-      double xSpeed = targetPose.getX() - robotPose.getX();
-      double ySpeed = targetPose.getY() - robotPose.getY();
-
-      // Do not let the commanded speed above a certain value
-      xSpeed = Math.min(xSpeed, 0.75);
-      ySpeed = Math.min(ySpeed, 0.75);
-      drive(xSpeed, ySpeed, 0, true, true);
-    }
   }
 
   /*
@@ -139,6 +122,72 @@ public class Drivetrain extends SubsystemBase {
     m_alignWithTarget = !m_alignWithTarget;
     if (!m_alignWithTarget) {
       targetPose = null;
+    }
+  }
+
+  public boolean checkAlignment() {
+    return m_isAligned;
+  }
+
+  public void alignWithTag() {
+    // Apriltag code
+    if (m_camera.getCameraPipeline() == VisionConstants.APRILTAG_PIPELINE) {
+
+      // Update the target pose
+      if (m_camera.getResult().hasTargets() && !m_alignWithTarget) {
+        targetPose = m_camera.getApriltagPose(getPose(), getHeading());
+      }
+
+      // Apriltag alignment code
+      if (m_alignWithTarget && targetPose != null) {
+        Pose2d robotPose = getPose();
+
+        double xCommand = targetPose.getX() - robotPose.getX();
+        double yCommand = targetPose.getY() - robotPose.getY();
+
+        // Do not let the commanded speed above a certain value
+        if (xCommand > 0) {
+          xCommand = Math.min(xCommand, 0.5);
+        }
+        else {
+          xCommand = Math.max(xCommand, -0.5);
+        }
+
+        if (yCommand < 0) {
+          yCommand = Math.max(yCommand, -0.5);
+        }
+        else {
+          yCommand = Math.min(yCommand, 0.5);
+        }
+
+        if (Math.abs(yCommand) < 0.08 && Math.abs(xCommand) < 0.08) {
+          m_isAligned = true;
+          m_alignWithTarget = false; // Stop the alignment when the target is reached
+        }
+        else {
+          m_isAligned = false;
+        }
+
+        SmartDashboard.putNumber("Commanded X", xCommand);
+        SmartDashboard.putNumber("Commanded Y", yCommand);
+
+        drive(xCommand, yCommand, 0, true, true);
+      }
+    }
+  }
+
+  // TODO: replace this function with a not stupid one and go back to calling drive in robotcontainer
+  public void driveCommand(double xSpeed, double ySpeed, double rotSpeed, boolean fieldRelative, boolean rateLimit) {
+    // Note code
+    if (m_camera.getCameraPipeline() == VisionConstants.NOTE_PIPELINE) {
+      // Note alignment code
+      if (m_alignWithTarget) {
+        drive(xSpeed, ySpeed, m_camera.getRotationSpeed() + rotSpeed, fieldRelative, true);
+      }
+    }
+
+    if (!m_alignWithTarget) {
+      drive(xSpeed, ySpeed, rotSpeed, fieldRelative, rateLimit);
     }
   }
 
@@ -182,10 +231,6 @@ public class Drivetrain extends SubsystemBase {
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {
     double xSpeedCommanded;
     double ySpeedCommanded;
-    
-    if (m_alignWithTarget && m_camera.getCameraPipeline() == VisionConstants.NOTE_PIPELINE) {
-      rot = m_camera.getRotationSpeed();
-    }
     
     if (rateLimit) {
       // Convert XY to polar for rate limiting
@@ -326,8 +371,6 @@ public class Drivetrain extends SubsystemBase {
     * because WPILib uses CCW as the positive direction
     * and NavX uses CW as the positive direction
     */ 
-
-    // TODO: make sure this doesn't mess anything else up
     return Rotation2d.fromDegrees(-m_gyro.getAngle()).getDegrees();
   }
 
@@ -439,6 +482,7 @@ public class Drivetrain extends SubsystemBase {
     // Camera values
     SmartDashboard.putBoolean("Has Target", m_camera.getResult().hasTargets());
     SmartDashboard.putBoolean("Align", m_alignWithTarget);
+    SmartDashboard.putBoolean("Alignment Success", m_isAligned);
 
     if (targetPose != null) {
       SmartDashboard.putNumber("Target X", targetPose.getX());
