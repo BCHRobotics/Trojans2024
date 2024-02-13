@@ -56,11 +56,17 @@ public class RobotContainer {
                 m_robotDrive));
 
         // This is the command that aligns the robot with an apriltag
-        NamedCommands.registerCommand("ALIGN", new RunCommand(
+        NamedCommands.registerCommand("ALIGN_TAG", new RunCommand(
             () -> m_robotDrive.alignWithTag()).until( // Run the alignwithtag function
                 () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
                     new InstantCommand(
-                        () -> m_robotDrive.toggleAlignMode()))); // Set alignmode to true before starting
+                        () -> m_robotDrive.switchToTagPipeline()))); // Set alignmode to true before starting
+
+        NamedCommands.registerCommand("ALIGN_NOTE", new RunCommand(
+            () -> m_robotDrive.alignWithTag()).until( // Run the alignwithtag function
+                () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
+                    new InstantCommand(
+                        () -> m_robotDrive.switchToNotePipeline()))); // Set alignmode to true before starting
 
         // Build an auto chooser. This will use Commands.none() as the default option.
         autoChooser = AutoBuilder.buildAutoChooser();
