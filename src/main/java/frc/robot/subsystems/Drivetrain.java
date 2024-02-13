@@ -134,6 +134,18 @@ public class Drivetrain extends SubsystemBase {
     }
   }
 
+  public void switchToNotePipeline(){
+    m_camera.setCameraPipeline(VisionConstants.NOTE_PIPELINE);
+    m_alignWithTarget = true;
+  }
+
+  public void switchToTagPipeline(){
+    m_camera.setCameraPipeline(VisionConstants.APRILTAG_PIPELINE);
+    m_alignWithTarget = true;
+  }
+
+
+
   public boolean checkAlignment() {
     return m_isAligned;
   }
@@ -186,6 +198,13 @@ public class Drivetrain extends SubsystemBase {
       // Note alignment code
       if (m_alignWithTarget) {
         drive(0.5, 0, m_camera.getRotationSpeed(), false, true);
+
+        if (!m_camera.getResult().hasTargets()) {
+          m_isAligned = true;
+        }
+        else {
+          m_isAligned = false;
+        }
       }
     }
   }
