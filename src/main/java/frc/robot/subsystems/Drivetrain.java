@@ -144,8 +144,6 @@ public class Drivetrain extends SubsystemBase {
     m_alignWithTarget = true;
   }
 
-
-
   public boolean checkAlignment() {
     return m_isAligned;
   }
@@ -201,6 +199,7 @@ public class Drivetrain extends SubsystemBase {
 
         if (!m_camera.getResult().hasTargets()) {
           m_isAligned = true;
+          m_alignWithTarget = false; // Stop the alignment when the target is reached
         }
         else {
           m_isAligned = false;
