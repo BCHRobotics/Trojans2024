@@ -115,7 +115,7 @@ public class Drivetrain extends SubsystemBase {
     this.printToDashboard();
 
     // Update the target pose
-    if (m_camera.getResult().hasTargets() && !m_alignWithTarget) {
+    if (m_camera.getResult().hasTargets()) {
       targetPose = m_camera.getApriltagPose(getPose(), getHeading());
     }
   }
