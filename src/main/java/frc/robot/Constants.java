@@ -83,14 +83,16 @@ public final class Constants {
     public static final double kGVolts = 0.0020415;
     public static final double kVVolts = 0.0001107;
 
-    public static final double kElevatorMotorReduction = 1;
-    public static final double kElevatorWheelDiameterInches = 3;
+    //20:1 from gearbox to output reduction
+    //18 tooth
+    //1.432in
+    public static final double kElevatorMotorReduction = 20;
+    public static final double kElevatorWheelPitchDiameterInches = 1.432;
+    public static final double kElevatorMotorCPR = 42;
 
-    public static final double kElevatorPositionConversionFactor = 1;
-   // (kElevatorWheelDiameterInches * Math.PI) / kElevatorMotorReduction;
-        //TODO: Double check measurements
-        //20:1 from gearbox to output 
-        //18 tooth, 1.43in
+    public static final double kElevatorPositionConversionFactor = 
+                        (kElevatorWheelPitchDiameterInches * Math.PI) / 
+                        (kElevatorMotorReduction * kElevatorMotorCPR);
       
     public enum kElevatorPositions {
       TOP,
@@ -118,7 +120,6 @@ public final class Constants {
     public static final int kPickupSensorChannel = 0;
     public static final int kLoadedSensorChannel = 1;
     public static final int kShootSensorChannel = 2;
-
   }
 
   public static final class ModuleConstants {
