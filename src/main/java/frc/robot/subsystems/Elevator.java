@@ -151,12 +151,14 @@ public class Elevator extends SubsystemBase {
      * Cancels all elevator commands
      */
     protected void cancelAllElevatorCommands() {
-        CommandScheduler.getInstance().cancel(m_elevatorCommands.moveToPositionCommand(kElevatorPositions.TOP));
-        CommandScheduler.getInstance().cancel(m_elevatorCommands.moveToPositionCommand(kElevatorPositions.SOURCE));
-        CommandScheduler.getInstance().cancel(m_elevatorCommands.moveToPositionCommand(kElevatorPositions.AMP));
-        CommandScheduler.getInstance().cancel(m_elevatorCommands.moveToPositionCommand(kElevatorPositions.TRAVEL));
-        CommandScheduler.getInstance().cancel(m_elevatorCommands.moveToPositionCommand(kElevatorPositions.INTAKE));
-        CommandScheduler.getInstance().cancel(m_elevatorCommands.moveToPositionCommand(kElevatorPositions.BOTTOM));
+        if (m_elevatorCommands != null) {
+            CommandScheduler.getInstance().cancel(m_elevatorCommands.moveToPositionCommand(kElevatorPositions.TOP));
+            CommandScheduler.getInstance().cancel(m_elevatorCommands.moveToPositionCommand(kElevatorPositions.SOURCE));
+            CommandScheduler.getInstance().cancel(m_elevatorCommands.moveToPositionCommand(kElevatorPositions.AMP));
+            CommandScheduler.getInstance().cancel(m_elevatorCommands.moveToPositionCommand(kElevatorPositions.TRAVEL));
+            CommandScheduler.getInstance().cancel(m_elevatorCommands.moveToPositionCommand(kElevatorPositions.INTAKE));
+            CommandScheduler.getInstance().cancel(m_elevatorCommands.moveToPositionCommand(kElevatorPositions.BOTTOM));
+        }
     }
     
     private void putToDashboard() {

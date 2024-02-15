@@ -1,6 +1,8 @@
 package frc.utils;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import frc.robot.Constants.MechanismConstants;
 
 public class BeamBreak {
@@ -8,6 +10,10 @@ public class BeamBreak {
     private final DigitalInput m_pickupSensor;
     private final DigitalInput m_loadedSensor;
     private final DigitalInput m_shootSensor;
+
+    private static Solenoid PCMChannel0;
+    private static Solenoid PCMChannel1;
+    private static Solenoid PCMChannel2;
 
     // Enum for the different phases
     public enum Phase {
@@ -22,7 +28,18 @@ public class BeamBreak {
         m_loadedSensor = new DigitalInput(MechanismConstants.kLoadedSensorChannel);
         m_shootSensor = new DigitalInput(MechanismConstants.kShootSensorChannel);
 
+        PCMChannel0 = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
+        PCMChannel1 = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
+        PCMChannel2 = new Solenoid(PneumaticsModuleType.CTREPCM, 2);
+
+
         m_currentPhase = Phase.NONE; // Default phase
+    }
+
+    public static void solenoidChannelActive(boolean activeChannel) {
+        PCMChannel0.set(activeChannel);
+        PCMChannel1.set(activeChannel);
+        PCMChannel2.set(activeChannel);
     }
 
     /**
