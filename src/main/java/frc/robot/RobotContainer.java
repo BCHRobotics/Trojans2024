@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-// import java.time.Instant;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.MathUtil;
@@ -17,14 +15,13 @@ import frc.robot.Constants.ElevatorConstants.kElevatorPositions;
 import frc.robot.commands.ElevatorCommands;
 import frc.robot.commands.IntakeCommands;
 import frc.robot.subsystems.Drivetrain;
+import frc.utils.BeamBreak;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-
-
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -97,26 +94,11 @@ public class RobotContainer {
         this.m_XboxController.povDown().onTrue(this.m_elevatorCommands.moveToPositionCommand(kElevatorPositions.INTAKE));
         this.m_XboxController.leftBumper().onTrue(this.m_elevatorCommands.stopElevatorCommand());
 
-    
-        // Amp scoring: Button B does Amp scoring by bringing the elevator up and turning on source intake.
-        this.m_XboxController.b().onTrue((InstantCommand)
-            m_elevatorCommands.moveToPositionCommand(kElevatorPositions.TOP));
-            m_intakeCommands.scoreAmp(6);
-        
-            //Source pickup: Button Y does souce pickup by bringing the elevator up and turning the intake on reverse.
-        this.m_XboxController.y().onTrue((InstantCommand)
-            m_elevatorCommands.moveToPositionCommand(kElevatorPositions.TOP));
-            m_intakeCommands.sourceIntake(6);
-        
-            //Ground pickup: Button X brings the elevator down and turns on the intake on reverse.
-        this.m_XboxController.x().onTrue((InstantCommand) 
-            m_elevatorCommands.moveToPositionCommand(kElevatorPositions.BOTTOM));
-            m_intakeCommands.groundIntake(6);
-        
-            //Cancell: Button A stops the mechanism.
+        this.m_XboxController.b().onTrue(this.m_intakeCommands.scoreAmp(6));
+        this.m_XboxController.y().onTrue(this.m_intakeCommands.sourceIntake(6));
+        this.m_XboxController.x().onTrue(this.m_intakeCommands.groundIntake(6));
         this.m_XboxController.a().onTrue(this.m_intakeCommands.stopMechanism());
     }
-    
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -131,6 +113,10 @@ public class RobotContainer {
     // This function is called when the robot enters disabled mode, it sets the motors to brake mode.
     public void eStop() {
         m_robotDrive.setIdleStates(1);
+    }
+
+    public void enablePCMChannels() {
+        BeamBreak.solenoidChannelActive(true);
     }
 
     // Sets the speed percentage to use based on the slider on the joystick
