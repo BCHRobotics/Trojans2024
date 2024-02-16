@@ -14,6 +14,9 @@ public class BeamBreak {
     private static Solenoid PCMChannel0;
     private static Solenoid PCMChannel1;
     private static Solenoid PCMChannel2;
+    private static Solenoid PCMChannel5;
+    private static Solenoid PCMChannel6;
+    private static Solenoid PCMChannel7;
 
     // Enum for the different phases
     public enum Phase {
@@ -31,7 +34,9 @@ public class BeamBreak {
         PCMChannel0 = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
         PCMChannel1 = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
         PCMChannel2 = new Solenoid(PneumaticsModuleType.CTREPCM, 2);
-
+        PCMChannel5 = new Solenoid(PneumaticsModuleType.CTREPCM, 5);
+        PCMChannel6 = new Solenoid(PneumaticsModuleType.CTREPCM, 6);
+        PCMChannel7 = new Solenoid(PneumaticsModuleType.CTREPCM, 7);
 
         m_currentPhase = Phase.NONE; // Default phase
     }
@@ -40,6 +45,9 @@ public class BeamBreak {
         PCMChannel0.set(activeChannel);
         PCMChannel1.set(activeChannel);
         PCMChannel2.set(activeChannel);
+        PCMChannel5.set(activeChannel);
+        PCMChannel6.set(activeChannel);
+        PCMChannel7.set(activeChannel);
     }
 
     /**
