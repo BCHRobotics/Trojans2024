@@ -8,14 +8,21 @@ import edu.wpi.first.math.controller.PIDController;
 import frc.robot.Constants.VisionConstants;
 
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Pose2d;
 
-public class Camera {
+public class Camera extends PhotonCamera{
+
+    public Camera(String cameraName) {
+        super(cameraName);
+    }
+
     double rotationSpeed;
     private static PhotonCamera instance;
+
 
     public static PhotonCamera getInstance() {
         if (instance == null) { 
@@ -23,6 +30,7 @@ public class Camera {
         }
         return instance;
     }
+
 
     PIDController turnController = new PIDController(0.05
     , 0.25, 0);
