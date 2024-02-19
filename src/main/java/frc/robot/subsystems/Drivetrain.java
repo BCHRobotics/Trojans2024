@@ -12,6 +12,7 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -21,15 +22,14 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
-import frc.utils.Limelight;
 import frc.utils.SwerveUtils;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -72,12 +72,12 @@ public class Drivetrain extends SubsystemBase {
 
   private boolean m_slowMode = false;
 
-  private boolean useVisionOdometry = true;
-
-  // Odometry class for tracking robot pose
+  // Define the standard deviations for the pose estimator, which determine how fast the pose
+  // estimate converges to the vision measurement. This should depend on the vision measurement noise
+  // and how many or how frequently vision measurements are applied to the pose estimator.
   private final SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
         DriveConstants.kDriveKinematics,
-        Rotation2d.fromDegrees(m_gyro.getAngle()),
+        getGyroYaw(),
         new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
           m_frontRight.getPosition(),
@@ -85,8 +85,9 @@ public class Drivetrain extends SubsystemBase {
           m_rearRight.getPosition()
         },
         new Pose2d(),
-        VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-        VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+        VecBuilder.fill(0.1, 0.1, 0.1),   // state standard deviation
+        VecBuilder.fill(1, 1, 1)          // vision standard deviateion
+  );
 
   /** Creates a new DriveSubsystem. */
   public Drivetrain() {
@@ -95,7 +96,6 @@ public class Drivetrain extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // Update the odometry in the periodic block
     this.updateOdometry();
 
     this.printToDashboard();
@@ -110,6 +110,10 @@ public class Drivetrain extends SubsystemBase {
     return m_poseEstimator.getEstimatedPosition();
   }
 
+  public Rotation2d getGyroYaw() {
+    return Rotation2d.fromDegrees(m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0));
+  }
+
   /**
    * Resets the odometry to the specified pose.
    *
@@ -117,7 +121,7 @@ public class Drivetrain extends SubsystemBase {
    */
   public void resetOdometry(Pose2d pose) {
     m_poseEstimator.resetPosition(
-        Rotation2d.fromDegrees(m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)),
+        getGyroYaw(),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),
@@ -129,26 +133,14 @@ public class Drivetrain extends SubsystemBase {
 
   public void updateOdometry() {
     m_poseEstimator.update(
-        Rotation2d.fromDegrees(m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)),
+        getGyroYaw(),
         new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
           m_frontRight.getPosition(),
           m_rearLeft.getPosition(),
           m_rearRight.getPosition()
         });
-
-    if (useVisionOdometry){
-      visionOdometry();
-    }
   }
-
-  public void visionOdometry() {
-    m_poseEstimator.addVisionMeasurement(
-    Limelight.getEstimatedGlobalPose(
-        m_poseEstimator.getEstimatedPosition()),
-    Timer.getFPGATimestamp() - 0.3);
-  }
-
 
   /**
    * Method to drive the robot using joystick info.
@@ -192,7 +184,7 @@ public class Drivetrain extends SubsystemBase {
         DriveConstants.kDriveKinematics.toSwerveModuleStates(ChassisSpeeds.discretize(
           fieldRelative
               ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, 
-                m_poseEstimator.getEstimatedPosition().getRotation()) //TODO: is gyro reversed needed?
+                getHeading())
                     : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered),
                 0.02));
 
@@ -306,12 +298,12 @@ public class Drivetrain extends SubsystemBase {
   }
 
   /**
-   * Returns the heading of the robot.
+   * Returns the extimated heading of the robot.
    *
-   * @return the robot's heading in degrees, from -180 to 180
+   * @return the robot's estimated heading
    */
-  public double getHeading() {
-    return getPose().getRotation().getDegrees();
+  public Rotation2d getHeading() {
+    return getPose().getRotation();
   }
 
   /**
@@ -370,6 +362,17 @@ public class Drivetrain extends SubsystemBase {
     return DriveConstants.kDriveKinematics.toChassisSpeeds(this.getModuleStates());
   }
 
+  /** See {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double)}. */
+  public void addVisionMeasurement(Pose2d visionMeasurement, double timestampSeconds) {
+    m_poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds);
+  }
+
+  /** See {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double, Matrix)}. */
+  public void addVisionMeasurement(
+          Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> stdDevs) {
+    m_poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
+  }
+
   /** Prints all values to dashboard */
   public void printToDashboard() {
     // Speed
@@ -381,7 +384,7 @@ public class Drivetrain extends SubsystemBase {
     // Position
     SmartDashboard.putNumber("X Position", this.getPose().getX());
     SmartDashboard.putNumber("Y Position", this.getPose().getY());
-    SmartDashboard.putNumber("Gyro Heading: ", this.getHeading());
+    SmartDashboard.putNumber("Gyro Heading: ", this.getHeading().getDegrees());
 
     // Slew rate filter variables
     SmartDashboard.putNumber("slewCurrentRotation: ", m_currentRotation);
