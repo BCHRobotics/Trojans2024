@@ -12,21 +12,9 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "NOTE PIPELINE"
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "StartToNote"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ALIGN NOTE"
+            "pathName": "Start to Amp"
           }
         },
         {
@@ -36,9 +24,75 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "ALIGN TAG"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "NOTE PIPELINE"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Copy of StartToNote"
+            "pathName": "Amp To First Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN NOTE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "First Note To Amp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "TAG PIPELINE"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN TAG"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp To Second Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "NOTE PIPELINE"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN NOTE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SecondNoteToAmp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "TAG PIPELINE"
           }
         },
         {
