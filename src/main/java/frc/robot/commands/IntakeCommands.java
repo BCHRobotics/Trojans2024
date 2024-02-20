@@ -9,7 +9,12 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Mechanism;
 import frc.utils.BeamBreak.Phase;
 
-public class IntakeCommands extends Mechanism{
+public class IntakeCommands extends Mechanism {
+
+    public IntakeCommands() {
+        super();
+    }
+
     /**
      * A command for intaking from the ground
      * @param speed the commanded speed in voltage [0 --> 12]

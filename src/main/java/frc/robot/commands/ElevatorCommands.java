@@ -9,6 +9,10 @@ import frc.robot.subsystems.Elevator;
 public class ElevatorCommands extends Elevator{
     Elevator m_elevator;
 
+    public ElevatorCommands() {
+        super();
+    }
+
     /**
      * Stops the elevator
      * @return the command for stopping the elevator

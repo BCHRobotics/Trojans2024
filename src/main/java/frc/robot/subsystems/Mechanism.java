@@ -48,7 +48,7 @@ public class Mechanism extends SubsystemBase{
         this.m_sourceMotor.setSmartCurrentLimit(60, 20);
         this.m_ampMotor.setSmartCurrentLimit(60, 20);
 
-        this.m_beltMotor.setInverted(false);
+        this.m_beltMotor.setInverted(true);
         this.m_sourceMotor.setInverted(false);
         this.m_ampMotor.setInverted(false);
 
@@ -129,9 +129,11 @@ public class Mechanism extends SubsystemBase{
      * Cancels all mechanism commands
      */
     protected void cancelAllMechanismCommands() {
-        CommandScheduler.getInstance().cancel(m_intakeCommands.groundIntake(getBeltSpeed()));
-        CommandScheduler.getInstance().cancel(m_intakeCommands.scoreAmp(getAmpSpeed()));
-        CommandScheduler.getInstance().cancel(m_intakeCommands.sourceIntake(getSourceSpeed()));
+        if (m_intakeCommands != null) {
+            CommandScheduler.getInstance().cancel(m_intakeCommands.groundIntake(getBeltSpeed()));
+            CommandScheduler.getInstance().cancel(m_intakeCommands.scoreAmp(getAmpSpeed()));
+            CommandScheduler.getInstance().cancel(m_intakeCommands.sourceIntake(getSourceSpeed()));
+        }
     }
 
     public void periodic() {
