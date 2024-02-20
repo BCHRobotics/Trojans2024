@@ -10,6 +10,7 @@ import javax.xml.crypto.dsig.Transform;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -74,12 +75,14 @@ public class Drivetrain extends SubsystemBase {
   private boolean m_slowMode = false;
 
   // If you switch the camera you have to change the name property of this
-  public final static Camera m_camera = new Camera();
+  public final static Camera m_noteCamera = new Camera("a"); // These names might need to be changed
+  public final static Camera m_tagCamera = new Camera("b"); // this too
 
   // Whether or not to try and align with a target
   private boolean m_alignWithTarget = false;
   // Is true when the robot has finished a vision command
   private boolean m_isAligned = false;
+  private boolean m_cameraMode = false;
 
   // The stored field position of the target apriltag
   private Pose2d targetPose;
@@ -99,14 +102,14 @@ public class Drivetrain extends SubsystemBase {
   public Drivetrain() {
     this.initializeAuto();
 
-    // By default try and detect apriltags
-    setCameraPipeline(VisionConstants.APRILTAG_PIPELINE);
+    m_cameraMode = false;
   }
 
   @Override
   public void periodic() {
     // Refresh the data gathered by the camera
-    m_camera.refreshResult();
+    m_noteCamera.refreshResult();
+    m_tagCamera.refreshResult();
 
     // Update the odometry in the periodic block
     m_odometry.update(
@@ -122,9 +125,13 @@ public class Drivetrain extends SubsystemBase {
     this.printToDashboard();
 
     // Update the target pose
-    if (m_camera.getResult().hasTargets()) {
-      targetPose = m_camera.getApriltagPose(getPose(), getHeading());
+    if (m_tagCamera.getResult().hasTargets()) {
+      targetPose = m_tagCamera.getApriltagPose(getPose(), getHeading());
     }
+  }
+
+  public void toggleCameraMode() {
+    m_cameraMode = !m_cameraMode;
   }
 
   /*
@@ -151,15 +158,6 @@ public class Drivetrain extends SubsystemBase {
   }
 
   /**
-   * Switches the camera pipeline index (either note or apriltag tracking)
-   * 
-   * @param pipelineIndex the index to be switched to
-   */
-  public void switchPipeline(int pipelineIndex) {
-    m_camera.setCameraPipeline(pipelineIndex);
-  }
-
-  /**
    * Checks whether the robot has finished aligning with a target
    * 
    * (ONLY USED DURING AUTO)
@@ -177,8 +175,6 @@ public class Drivetrain extends SubsystemBase {
    * (ONLY USED DURING AUTO)
    */
   public void driveToTag() {
-    // Apriltag code
-    if (m_camera.getCameraPipeline() == VisionConstants.APRILTAG_PIPELINE) {
       // Apriltag alignment code
       if (m_alignWithTarget && targetPose != null) {
         Pose2d robotPose = getPose();
@@ -214,7 +210,6 @@ public class Drivetrain extends SubsystemBase {
 
         drive(xCommand, yCommand, 0, true, true);
       }
-    }
   }
 
   /**
@@ -223,12 +218,11 @@ public class Drivetrain extends SubsystemBase {
    * (ONLY USED DURING AUTO)
    */
   public void driveToNote() {
-    if (m_camera.getCameraPipeline() == VisionConstants.NOTE_PIPELINE) {
-      // Note alignment code
+    // Note alignment code
       if (m_alignWithTarget) {
-        drive(0.25, 0, m_camera.getRotationSpeed(), false, true);
+        drive(0.25, 0, m_noteCamera.getRotationSpeed(), false, true);
 
-        if (!m_camera.getResult().hasTargets()) {
+        if (!m_noteCamera.getResult().hasTargets()) {
           m_isAligned = true;
           m_alignWithTarget = false; // Stop the alignment when the target is reached
         }
@@ -236,27 +230,38 @@ public class Drivetrain extends SubsystemBase {
           m_isAligned = false;
         }
       }
-    }
   }
 
   // TODO: replace this function with a not stupid one and go back to calling drive in robotcontainer
   public void driveCommand(double xSpeed, double ySpeed, double rotSpeed, boolean fieldRelative, boolean rateLimit) {
+
     if (!m_alignWithTarget) {
       drive(xSpeed, ySpeed, rotSpeed, fieldRelative, rateLimit);
     }
     
-    if (m_alignWithTarget && m_camera.getCameraPipeline() == VisionConstants.NOTE_PIPELINE) {
+    if (m_alignWithTarget && m_cameraMode == false) {
       // Align to the note while driving normally
-      drive(xSpeed, ySpeed, rotSpeed + m_camera.getRotationSpeed(), fieldRelative, rateLimit);
+      drive(xSpeed, ySpeed, rotSpeed + m_noteCamera.getRotationSpeed(), fieldRelative, rateLimit);
     }
 
-    if (m_alignWithTarget && m_camera.getCameraPipeline() == VisionConstants.APRILTAG_PIPELINE) {
+    if (m_alignWithTarget && m_cameraMode == true) {
       // Apriltag alignment code
       if (targetPose != null) {
         Pose2d robotPose = getPose();
 
         double xCommand = targetPose.getX() - robotPose.getX();
         double yCommand = targetPose.getY() - robotPose.getY();
+
+        double tagRotation = targetPose.getRotation().getDegrees();
+
+        if (tagRotation > 0) {
+          tagRotation -= 180;
+        }
+        else {
+          tagRotation += 180;
+        }
+
+        double rotCommand = tagRotation - getHeading();
 
         // Do not let the commanded speed above a certain value
         if (xCommand > 0) {
@@ -273,7 +278,13 @@ public class Drivetrain extends SubsystemBase {
           yCommand = Math.min(yCommand, VisionConstants.VISION_SPEED_LIMIT);
         }
 
-        if (Math.abs(yCommand) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD && Math.abs(xCommand) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD) {
+        if (rotCommand < 0) {
+          rotCommand = Math.max(rotCommand, -VisionConstants.VISION_TURN_LIMIT);
+        } else {
+          rotCommand = Math.min(rotCommand, VisionConstants.VISION_TURN_LIMIT);
+        }
+
+        if (Math.abs(rotCommand) < VisionConstants.APRILTAG_ROTATION_THRESHOLD && Math.abs(yCommand) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD && Math.abs(xCommand) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD) {
           m_isAligned = true;
           m_alignWithTarget = false; // Stop the alignment when the target is reached
         }
@@ -283,8 +294,9 @@ public class Drivetrain extends SubsystemBase {
 
         SmartDashboard.putNumber("Commanded X", xCommand);
         SmartDashboard.putNumber("Commanded Y", yCommand);
+        SmartDashboard.putNumber("Commanded Rot", rotCommand);
 
-        drive(xCommand, yCommand, 0, true, true);
+        drive(xCommand, yCommand, rotCommand, true, true);
       }
     }
   }
@@ -296,6 +308,15 @@ public class Drivetrain extends SubsystemBase {
    */
   public Pose2d getPose() {
     return m_odometry.getPoseMeters();
+  }
+
+  public Pose2d getTargetPose() {
+    if (targetPose != null) {
+      return targetPose;
+    }
+    else {
+      return new Pose2d();
+    }
   }
 
   /**
@@ -491,25 +512,6 @@ public class Drivetrain extends SubsystemBase {
   }
 
   /**
-   * Sets the camera's pipeline via an index
-   *
-   * @param pipelineIndex The index of the desired pipeline
-   */
-  public void setCameraPipeline(int pipelineIndex) {
-    m_camera.setCameraPipeline(pipelineIndex);
-  }
-
-  // Toggles the camera pipeline between note and apriltags
-  public void toggleCameraPipeline() {
-    if (m_camera.getCameraPipeline() == VisionConstants.NOTE_PIPELINE) {
-      setCameraPipeline(VisionConstants.APRILTAG_PIPELINE);
-    }
-    else if (m_camera.getCameraPipeline() == VisionConstants.APRILTAG_PIPELINE) {
-      setCameraPipeline(VisionConstants.NOTE_PIPELINE);
-    }
-  }
-
-  /**
    * Initializes the auto using PathPlannerLib.
    */
   public void initializeAuto() {
@@ -577,10 +579,9 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putString("Rear left Encoder", m_rearLeft.getState().toString());
     SmartDashboard.putString("Rear right Encoder", m_rearRight.getState().toString());
 
-    // Camera values
-    SmartDashboard.putBoolean("Has Target", m_camera.getResult().hasTargets());
     SmartDashboard.putBoolean("Align", m_alignWithTarget);
     SmartDashboard.putBoolean("Alignment Success", m_isAligned);
+    SmartDashboard.putBoolean("Camera Mode", m_cameraMode);
 
     if (targetPose != null) {
       SmartDashboard.putNumber("Target X", targetPose.getX());
@@ -589,10 +590,7 @@ public class Drivetrain extends SubsystemBase {
       SmartDashboard.putNumber("Target Rotation", targetPose.getRotation().getDegrees());
     }
 
-    if (m_camera.getResult().hasTargets()) {
-      SmartDashboard.putNumber("Target Rotation Offset", m_camera.getTargetTransform(getHeading()).getRotation().getDegrees());
-      SmartDashboard.putNumber("Target X Offset", m_camera.getTargetTransform(getHeading()).getX());
-      SmartDashboard.putNumber("Target Y Offset", m_camera.getTargetTransform(getHeading()).getY());
-    }
+    SmartDashboard.putBoolean("Note Cam", m_noteCamera.getResult().hasTargets());
+    SmartDashboard.putBoolean("Tag Cam", m_tagCamera.getResult().hasTargets());
   }
 }

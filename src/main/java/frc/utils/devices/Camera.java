@@ -16,16 +16,18 @@ import edu.wpi.first.math.geometry.Pose2d;
 public class Camera {
     double rotationSpeed;
     private static PhotonCamera instance;
+    private static String cameraName;
+
+    public Camera(String name) {
+        cameraName = name;
+    }
 
     public static PhotonCamera getInstance() {
         if (instance == null) { 
-            instance = new PhotonCamera("Photon_Webcam"); // replace with the name of the camera which is set in the UI
+            instance = new PhotonCamera(cameraName); // replace with the name of the camera which is set in the UI
         }
         return instance;
     }
-
-    PIDController turnController = new PIDController(0.05
-    , 0.25, 0);
 
     PhotonPipelineResult result = getInstance().getLatestResult();
     

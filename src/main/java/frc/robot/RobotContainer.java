@@ -6,6 +6,7 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
@@ -70,9 +71,6 @@ public class RobotContainer {
                     new InstantCommand(
                         () -> m_robotDrive.activateTracking()))); // Set alignmode to true before starting, and set isAligned to false
 
-        NamedCommands.registerCommand("TAG PIPELINE", new InstantCommand(() -> m_robotDrive.switchPipeline(VisionConstants.APRILTAG_PIPELINE)));
-        NamedCommands.registerCommand("NOTE PIPELINE", new InstantCommand(() -> m_robotDrive.switchPipeline(VisionConstants.NOTE_PIPELINE)));
-
         // Build an auto chooser. This will use Commands.none() as the default option.
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -115,7 +113,11 @@ public class RobotContainer {
 
         // Switch between camera and note pipelines (Button 4)
         m_driverController.button(4)
-            .onTrue(new InstantCommand(() -> m_robotDrive.toggleCameraPipeline()));
+            .onTrue(new InstantCommand(() -> m_robotDrive.toggleCameraMode()));
+
+        // Switch between camera and note pipelines (Button 4)
+        m_driverController.button(6)
+            .onTrue(AutoBuilder.pathfindToPose(m_robotDrive.getTargetPose(), new PathConstraints(2, 2, 2, 2)));
     }
 
     /**

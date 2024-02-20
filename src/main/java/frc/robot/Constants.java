@@ -73,8 +73,11 @@ public final class Constants {
     public static final int NOTE_PIPELINE = 0;
     public static final int APRILTAG_PIPELINE = 1;
 
-    public static final double VISION_SPEED_LIMIT = 0.5;
+    public static final double VISION_SPEED_LIMIT = 0.2;
+    public static final double VISION_TURN_LIMIT = 0.05;
+
     public static final double APRILTAG_DISTANCE_THRESHOLD = 0.08;
+    public static final double APRILTAG_ROTATION_THRESHOLD = 0.1;
   }
 
   public static final class ModuleConstants {
