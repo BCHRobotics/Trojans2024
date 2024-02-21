@@ -44,10 +44,7 @@ public class RobotContainer {
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
-    public RobotContainer() {  
-        // Configure the button bindings
-        this.configureButtonBindings();
-
+    public RobotContainer() {
         // Apriltag alignment command
         NamedCommands.registerCommand("ALIGN TAG", new RunCommand(
             () -> m_robotDrive.driveToTag()).until( // Run the alignwithtag function
@@ -70,6 +67,21 @@ public class RobotContainer {
         this.configureButtonBindings();
         // Configure the default commands for the input method chosen
         this.configureDefaultCommands();
+    }
+
+    // Configures default commands
+    public void configureDefaultCommands() {
+        // Configure the drivetrain to use the XBox controller
+            m_robotDrive.setDefaultCommand(
+                // The left stick controls translation of the robot.
+                // Turning is controlled by the X axis of the right stick.
+                new RunCommand(
+                        () -> m_robotDrive.drive(
+                                -MathUtil.applyDeadband(m_driverXboxController.getLeftY(), OIConstants.kDriveDeadband),
+                                -MathUtil.applyDeadband(m_driverXboxController.getLeftX(), OIConstants.kDriveDeadband),
+                                -MathUtil.applyDeadband(m_driverXboxController.getRightX(), OIConstants.kTurnDeadband),
+                                OIConstants.kFieldRelative, OIConstants.kRateLimited),
+                        m_robotDrive));
     }
 
   /**
