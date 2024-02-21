@@ -69,15 +69,18 @@ public final class Constants {
   public static final class VisionConstants{
     public static final double CAMERA_HEIGHT = 0.0;
 
-    // Camera pipeline indexes
-    public static final int NOTE_PIPELINE = 0;
-    public static final int APRILTAG_PIPELINE = 1;
-
-    public static final double VISION_SPEED_LIMIT = 0.2;
+    public static final double VISION_SPEED_LIMIT = 0.5;
     public static final double VISION_TURN_LIMIT = 0.05;
 
     public static final double APRILTAG_DISTANCE_THRESHOLD = 0.08;
     public static final double APRILTAG_ROTATION_THRESHOLD = 0.1;
+
+    public static final String NOTE_CAMERA_NAME = "a";
+    public static final String TAG_CAMERA_NAME = "b";
+
+    public static final double NOTE_P_TERM = 0.006;
+    public static final double NOTE_I_TERM = 0.004;
+    public static final double NOTE_D_TERM = 0.0003;
   }
 
   public static final class ModuleConstants {

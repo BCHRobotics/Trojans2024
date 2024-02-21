@@ -92,8 +92,8 @@ public class RobotContainer {
          * Button 2 -- BRAKE
          * Button 5 -- RESET GYRO
          * Button 1 (TRIGGER) -- SLOW MODE
-         * Button 3 -- ACTIVATE VISION
-         * Button 4 -- SWITCH VISION PIPELINE
+         * Button 3 -- ALIGN WITH NOTE
+         * Button 4 -- ALIGN WITH TAG
          */ 
 
         // Brake Command (Button 2)
@@ -107,13 +107,13 @@ public class RobotContainer {
             .onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive))
             .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));  
             
-        // Align with target button (Button 3)
+        // Align with note button (Button 3)
         m_driverController.button(3)
-            .onTrue(new InstantCommand(() -> m_robotDrive.toggleAlignMode()));
+            .onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
 
-        // Switch between camera and note pipelines (Button 4)
+        // Align with tag button (Button 4)
         m_driverController.button(4)
-            .onTrue(new InstantCommand(() -> m_robotDrive.toggleCameraMode()));
+            .onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
 
         // Switch between camera and note pipelines (Button 4)
         m_driverController.button(6)

@@ -84,8 +84,8 @@ public class Drivetrain extends SubsystemBase {
   private boolean m_slowMode = false;
 
   // If you switch the camera you have to change the name property of this
-  public final static Camera m_noteCamera = new Camera("a"); // These names might need to be changed
-  public final static Camera m_tagCamera = new Camera("b"); // this too
+  private final Camera m_noteCamera = new Camera(VisionConstants.NOTE_CAMERA_NAME); // These names might need to be changed
+  private final Camera m_tagCamera = new Camera(VisionConstants.TAG_CAMERA_NAME); // this too
 
   // Whether or not to try and align with a target
   private boolean m_alignWithTarget = false;
@@ -112,12 +112,14 @@ public class Drivetrain extends SubsystemBase {
   Transform3d robotToCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
 
   // Construct PhotonPoseEstimator
-  PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, m_tagCamera.getInstance(), robotToCam); // I'm using getInstance here as a temporary solution
+  //PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, m_tagCamera.getInstance(), robotToCam); // I'm using getInstance here as a temporary solution
 
+  /*
   public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
         photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
         return photonPoseEstimator.update();
   }
+  */
 
   /** Creates a new DriveSubsystem. */
   public Drivetrain() {
@@ -148,23 +150,6 @@ public class Drivetrain extends SubsystemBase {
     // Update the target pose
     if (m_tagCamera.getResult().hasTargets()) {
       targetPose = m_tagCamera.getApriltagPose(getPose(), getHeading());
-    }
-  }
-
-  public void toggleCameraMode() {
-    m_cameraMode = !m_cameraMode;
-  }
-
-  /*
-   * Toggles 'align mode' which when on forces the robot to align to a target.
-   * It also resets the target pose so the robot doesn't get stuck on a target that doesn't exist.
-   * 
-   * (ONLY USED DURING TELEOP)
-   */
-  public void toggleAlignMode() {
-    m_alignWithTarget = !m_alignWithTarget;
-    if (!m_alignWithTarget) {
-      targetPose = null;
     }
   }
 
@@ -199,8 +184,6 @@ public class Drivetrain extends SubsystemBase {
       // Apriltag alignment code
       if (m_alignWithTarget && targetPose != null) {
         Pose2d robotPose = getPose();
-        
-        
 
         double xCommand = targetPose.getX() - robotPose.getX();
         double yCommand = targetPose.getY() - robotPose.getY();
@@ -319,7 +302,7 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("Commanded Y", yCommand);
         SmartDashboard.putNumber("Commanded Rot", rotCommand);
 
-        drive(xCommand, yCommand, rotCommand, true, true);
+        drive(xCommand, yCommand, rotCommand * 0.3, true, true);
       }
     }
   }
@@ -340,6 +323,16 @@ public class Drivetrain extends SubsystemBase {
     else {
       return new Pose2d();
     }
+  }
+
+  public void alignWithNote() {
+    m_cameraMode = false;
+    m_alignWithTarget = true;
+  }
+
+  public void alignWithTag() {
+    m_cameraMode = true;
+    m_alignWithTarget = true;
   }
 
   /**

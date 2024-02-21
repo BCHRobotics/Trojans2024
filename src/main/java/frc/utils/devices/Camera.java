@@ -9,29 +9,23 @@ import frc.robot.Constants.VisionConstants;
 
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Pose2d;
 
-public class Camera {
+public class Camera extends PhotonCamera {
 
-    double rotationSpeed;
-    private static PhotonCamera instance;
-    private static String cameraName;
+    private double rotationSpeed;
+    private PIDController alignController;
 
     public Camera(String name) {
-        cameraName = name;
+        super(name);
+        alignController = new PIDController(VisionConstants.NOTE_P_TERM, VisionConstants.NOTE_I_TERM, VisionConstants.NOTE_D_TERM);
     }
 
-    public static PhotonCamera getInstance() {
-        if (instance == null) { 
-            instance = new PhotonCamera(cameraName); // replace with the name of the camera which is set in the UI
-        }
-        return instance;
-    }
-
-    PhotonPipelineResult result = getInstance().getLatestResult();
+    PhotonPipelineResult result = this.getLatestResult();
     
     // Gets the desired rotation speed in order to align with the target
     public double getRotationSpeed(){
@@ -39,7 +33,8 @@ public class Camera {
         if(result.hasTargets()){
             double currentYaw = result.getBestTarget().getYaw();
 
-            rotationSpeed = currentYaw * -0.02;
+            rotationSpeed = alignController.calculate(currentYaw);
+            
         } else{
             rotationSpeed = 0;
         }
@@ -54,7 +49,7 @@ public class Camera {
 
     // Refresh the camera's result
     public void refreshResult() {
-        result = getInstance().getLatestResult();
+        result = this.getLatestResult();
     }
 
     public Transform2d getTargetTransform(double robotHeading) {
@@ -75,10 +70,7 @@ public class Camera {
 
     // A function for getting the field position of a tracked apriltag
     public Pose2d getApriltagPose(Pose2d robotPose, double robotHeading) {
-
-        // Make sure the camera is currently tracking an apriltag before getting pose data
-        if (instance.getPipelineIndex() == VisionConstants.APRILTAG_PIPELINE) {
-            Transform2d robotToTag = getTargetTransform(robotHeading);
+        Transform2d robotToTag = getTargetTransform(robotHeading);
 
             // Addd the robot to tag offset to the robot pose to get the tag pose in field space
             Pose2d tagPose = new Pose2d(robotPose.getX() + 
@@ -89,20 +81,16 @@ public class Camera {
             tagPose = new Pose2d(tagPose.getX() + desiredOffset.getX(), tagPose.getY() + desiredOffset.getY(), tagPose.getRotation());
 
             return tagPose;
-        }
-        else {
-            return null;
-        }
     }
 
     // A function for setting the pipeline index of the camera
     public void setCameraPipeline(int pipelineIndex) {
-        instance.setPipelineIndex(pipelineIndex);
+        this.setPipelineIndex(pipelineIndex);
     }
 
     // A function for getting the pipeline index of the camera
     public int getCameraPipeline() {
-        return instance.getPipelineIndex();
+        return this.getPipelineIndex();
     }
 
     /*
