@@ -48,18 +48,6 @@ public class RobotContainer {
         // Configure the button bindings
         this.configureButtonBindings();
 
-        // Configure default commands
-        m_robotDrive.setDefaultCommand(
-            // The left stick controls translation of the robot.
-            // Turning is controlled by the X axis of the right stick.
-            new RunCommand(
-                () -> m_robotDrive.driveCommand(
-                    -MathUtil.applyDeadband(m_driverController.getY(), OIConstants.kDriveDeadband),
-                    -MathUtil.applyDeadband(m_driverController.getX(), OIConstants.kDriveDeadband),
-                    -MathUtil.applyDeadband(m_driverController.getTwist(), OIConstants.kTwistDeadband),
-                    OIConstants.kFieldRelative, OIConstants.kRateLimited),
-                m_robotDrive));
-
         // Apriltag alignment command
         NamedCommands.registerCommand("ALIGN TAG", new RunCommand(
             () -> m_robotDrive.driveToTag()).until( // Run the alignwithtag function
@@ -77,6 +65,11 @@ public class RobotContainer {
         // Build an auto chooser. This will use Commands.none() as the default option.
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
+
+        // Configure the button bindings
+        this.configureButtonBindings();
+        // Configure the default commands for the input method chosen
+        this.configureDefaultCommands();
     }
 
   /**
