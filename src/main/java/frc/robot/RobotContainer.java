@@ -33,8 +33,10 @@ public class RobotContainer {
     // The robot's subsystems
     private final Drivetrain m_robotDrive = new Drivetrain();
 
-    // The driver's controller
-    CommandJoystick m_driverController = new CommandJoystick(OIConstants.kDriverControllerPort);
+    // Flightstick controller
+    CommandJoystick m_driverFlightstickController = new CommandJoystick(OIConstants.kDriverControllerPort);
+    // XBox controller
+    CommandXboxController m_driverXboxController = new CommandXboxController(1);
 
     // The auto chooser
     private final SendableChooser<Command> autoChooser;
