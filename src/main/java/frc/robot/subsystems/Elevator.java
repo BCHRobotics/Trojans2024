@@ -112,11 +112,11 @@ public class Elevator extends SubsystemBase {
      * Stops the elevator and sets the goal to the current setpoint
      */
     private void limitReached() {
-        System.out.println("in reached limit");
+       // System.out.println("in reached limit");
         cancelAllElevatorCommands();
         m_controller.forceAtGoal();
         forcedGoal = true;
-        System.out.println("forced goal");
+      //  System.out.println("forced goal");
     }
 
     /**
@@ -136,8 +136,8 @@ public class Elevator extends SubsystemBase {
            (checkLimitSwitchPress(m_forwardLimit) || 
             checkLimitSwitchPress(m_reverseLimit))) {
 
-            System.out.println(checkLimitSwitchPress(m_forwardLimit) 
-                ? "Top Limit Hit" : "Bottom Limit Hit");
+            //System.out.println(checkLimitSwitchPress(m_forwardLimit) 
+            //    ? "Top Limit Hit" : "Bottom Limit Hit");
 
             limitReached();
         } else {

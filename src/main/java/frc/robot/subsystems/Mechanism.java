@@ -21,11 +21,7 @@ public class Mechanism extends SubsystemBase{
     private IntakeCommands m_intakeCommands;
 
     // The beam-break sensor that detects where a note is in the mechanism
-    private final BeamBreak m_beamBreak = new BeamBreak(
-        MechanismConstants.kPickupSensorChannel, 
-        MechanismConstants.kLoadedSensorChannel, 
-        MechanismConstants.kShootSensorChannel
-    );
+    private final BeamBreak m_beamBreak = new BeamBreak();
 
     // The phase of the beam-break sensor
     private Phase m_currentPhase = Phase.NONE;
@@ -44,7 +40,7 @@ public class Mechanism extends SubsystemBase{
         this.m_sourceMotor.setIdleMode(IdleMode.kBrake);
         this.m_ampMotor.setIdleMode(IdleMode.kBrake);
 
-        this.m_beltMotor.setSmartCurrentLimit(60, 20);
+        this.m_beltMotor.setSmartCurrentLimit(40, 20); //keep 40 for neo550
         this.m_sourceMotor.setSmartCurrentLimit(60, 20);
         this.m_ampMotor.setSmartCurrentLimit(60, 20);
 
@@ -81,7 +77,7 @@ public class Mechanism extends SubsystemBase{
      * Gets the motor voltage of the belt motor
      * @return the voltage the motor is getting
      */
-    private double getBeltSpeed() {
+    protected double getBeltSpeed() {
         return this.m_beltMotor.getBusVoltage();
     }
 
@@ -97,7 +93,7 @@ public class Mechanism extends SubsystemBase{
      * Gets the motor voltage of the source motor
      * @return the voltage the motor is getting
      */
-    private double getSourceSpeed() {
+    protected double getSourceSpeed() {
         return this.m_sourceMotor.getBusVoltage();
     }
     
@@ -113,7 +109,7 @@ public class Mechanism extends SubsystemBase{
      * Gets the motor voltage of the amp motor
      * @return the voltage the motor is getting
      */
-    private double getAmpSpeed() {
+    protected double getAmpSpeed() {
         return this.m_ampMotor.getBusVoltage();
     }
 
@@ -133,6 +129,14 @@ public class Mechanism extends SubsystemBase{
             CommandScheduler.getInstance().cancel(m_intakeCommands.groundIntake(getBeltSpeed()));
             CommandScheduler.getInstance().cancel(m_intakeCommands.scoreAmp(getAmpSpeed()));
             CommandScheduler.getInstance().cancel(m_intakeCommands.sourceIntake(getSourceSpeed()));
+        }
+    }
+
+    protected void removeAllMechanismCommands() {
+        if (m_intakeCommands != null) {
+            CommandScheduler.getInstance().removeComposedCommand(m_intakeCommands.groundIntake(getBeltSpeed()));
+            CommandScheduler.getInstance().removeComposedCommand(m_intakeCommands.scoreAmp(getAmpSpeed()));
+            CommandScheduler.getInstance().removeComposedCommand(m_intakeCommands.sourceIntake(getSourceSpeed()));
         }
     }
 

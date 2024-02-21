@@ -20,25 +20,26 @@ public class IntakeCommands extends Mechanism {
      * @param speed the commanded speed in voltage [0 --> 12]
      */
     public Command groundIntake(double speed) {
-        return 
-        parallel(
+        return parallel(
             Commands.startEnd(() -> this.setBeltSpeed(-speed), () -> this.setBeltSpeed(-speed * 0.75)),
             Commands.startEnd(() -> this.setSourceSpeed(speed), () -> this.setSourceSpeed(speed * 0.75)),
             Commands.startEnd(() -> this.setAmpSpeed(speed), () -> this.setAmpSpeed(speed * 0.75))
         )
-        .until(() -> this.checkState(Phase.PICKUP))
-        .andThen(() -> System.out.println("Pickup hit"))
+        .until(() -> this.checkState(Phase.GROUND_PICKUP))
+        .andThen(() -> System.out.println("BOTTOM hit"))
         .andThen(
             parallel(
-            startEnd(() -> this.setBeltSpeed(-speed * 0.75), () -> this.setBeltSpeed(0.0))
-            .until(() -> this.checkState(Phase.LOADED)))
-            .andThen(() -> System.out.println("loaded hit")),
+                Commands.startEnd(() -> this.setBeltSpeed(-speed * 0.75), () -> this.setBeltSpeed(0.0))
+                .until(() -> this.checkState(Phase.LOADED))
+                .andThen(() -> System.out.println("MIDDLE hit")),
 
-            startEnd(() -> this.setSourceSpeed(-speed * 0.75), () -> this.setSourceSpeed(0.0))
-            .until(() -> this.checkState(Phase.LOADED)),
+                Commands.startEnd(() -> this.setSourceSpeed(-speed * 0.75), () -> this.setSourceSpeed(0.0))
+                .until(() -> this.checkState(Phase.LOADED)),
 
-            startEnd(() -> this.setAmpSpeed(-speed * 0.75), () -> this.setAmpSpeed(0.0))
-            .until(() -> this.checkState(Phase.LOADED)));
+                Commands.startEnd(() -> this.setAmpSpeed(-speed * 0.75), () -> this.setAmpSpeed(0.0))
+                .until(() -> this.checkState(Phase.LOADED))
+            )
+        );
     }
  
     /**
@@ -51,14 +52,15 @@ public class IntakeCommands extends Mechanism {
             Commands.startEnd(() -> this.setAmpSpeed(-speed), () -> this.setAmpSpeed(-speed * 0.75)),
             Commands.startEnd(() -> this.setBeltSpeed(speed), () -> this.setBeltSpeed(speed * 0.75))
         )
-        .until(() -> this.checkState(Phase.SHOOT))
+        .until(() -> this.checkState(Phase.SOURCE_INTAKE))
         .andThen(
             parallel(
                 Commands.startEnd(() -> this.setSourceSpeed(-speed * 0.75), () -> this.setSourceSpeed(0)),
                 Commands.startEnd(() -> this.setAmpSpeed(-speed * 0.75), () -> this.setAmpSpeed(0)),
                 Commands.startEnd(() -> this.setBeltSpeed(speed * 0.75), () -> this.setBeltSpeed(0))
             )
-            .until(() -> this.checkState(Phase.LOADED)));
+            .until(() -> this.checkState(Phase.LOADED))
+        );
     }
 
     /**
@@ -68,13 +70,13 @@ public class IntakeCommands extends Mechanism {
     public Command scoreAmp(double speed) {
         return parallel(
             Commands.startEnd(() -> this.setAmpSpeed(-speed), () -> this.setAmpSpeed(-speed))
-            .until(() -> this.checkState(Phase.SHOOT)),
+            .until(() -> this.checkState(Phase.SOURCE_INTAKE)),
 
             Commands.startEnd(() -> this.setSourceSpeed(speed), () -> this.setSourceSpeed(speed))
-            .until(() -> this.checkState(Phase.SHOOT)),
+            .until(() -> this.checkState(Phase.SOURCE_INTAKE)),
 
             Commands.startEnd(() -> this.setBeltSpeed(-speed), () -> this.setBeltSpeed(-speed))
-            .until(() -> this.checkState(Phase.SHOOT))
+            .until(() -> this.checkState(Phase.SOURCE_INTAKE))
         )
         .andThen(
             parallel(
@@ -83,17 +85,50 @@ public class IntakeCommands extends Mechanism {
                 Commands.runOnce(() -> this.setBeltSpeed(0))
             ).beforeStarting(new WaitCommand(1)));
     }
+
+    public Command newScoreAmp(double speed) {
+        return parallel(
+            Commands.startEnd(() -> this.setAmpSpeed(-speed), () -> this.setAmpSpeed(-speed))
+            .until(() -> this.checkState(Phase.NONE)),
+
+            Commands.startEnd(() -> this.setSourceSpeed(speed), () -> this.setSourceSpeed(speed))
+            .until(() -> this.checkState(Phase.NONE)),
+
+            Commands.startEnd(() -> this.setBeltSpeed(-speed), () -> this.setBeltSpeed(-speed))
+            .until(() -> this.checkState(Phase.NONE))
+        )
+        .andThen(
+            parallel(
+                Commands.runOnce(() -> this.setAmpSpeed(0)),
+                Commands.runOnce(() -> this.setSourceSpeed(0)),
+                Commands.runOnce(() -> this.setBeltSpeed(0))
+            ).beforeStarting(new WaitCommand(3)));
+    }
+
+    private boolean checkSpeed() {
+        if (this.getBeltSpeed() == 0 && this.getAmpSpeed() == 0 && this.getSourceSpeed() == 0) return true;
+        return false;
+    }
  
     /**
      * A command for stopping the mechanism
      * @param speed the commanded speed in voltage [0 --> 12]
      */
     public Command stopMechanism() {
-        return parallel(
-            Commands.runOnce(() -> this.cancelAllMechanismCommands()),
-            Commands.runOnce(() -> this.setBeltSpeed(0)),
-            Commands.runOnce(() -> this.setSourceSpeed(0)),
-            Commands.runOnce(() -> this.setAmpSpeed(0))
-        );
+        return Commands.runOnce(() -> this.cancelAllMechanismCommands())
+            .andThen(
+                parallel(
+                    Commands.runOnce(() -> this.setBeltSpeed(0)),
+                    Commands.runOnce(() -> this.setSourceSpeed(0)),
+                    Commands.runOnce(() -> this.setAmpSpeed(0))
+                )
+            )
+            .andThen(
+                Commands.runOnce(() -> this.removeAllMechanismCommands())
+            );
+    }
+
+    public Command nstopMechanism() {
+        return Commands.runOnce(() -> this.removeAllMechanismCommands());
     }
 }

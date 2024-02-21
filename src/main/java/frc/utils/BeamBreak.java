@@ -7,9 +7,9 @@ import frc.robot.Constants.MechanismConstants;
 
 public class BeamBreak {
     // Digital inputs for the beam break sensors
-    private final DigitalInput m_pickupSensor;
-    private final DigitalInput m_loadedSensor;
-    private final DigitalInput m_shootSensor;
+    private final DigitalInput m_bottomSensor;
+    private final DigitalInput m_middleSensor;
+    private final DigitalInput m_topSensor;
 
     private static Solenoid PCMChannel0;
     private static Solenoid PCMChannel1;
@@ -20,16 +20,16 @@ public class BeamBreak {
 
     // Enum for the different phases
     public enum Phase {
-        NONE, PICKUP, LOADED, SHOOT
+        NONE, GROUND_PICKUP, LOADED, SOURCE_INTAKE
     }
 
     // Current phase
     private Phase m_currentPhase;
 
-    public BeamBreak(int pickupSensorChannel, int loadedSensorChannel, int shootSensorChannel) {
-        m_pickupSensor = new DigitalInput(MechanismConstants.kPickupSensorChannel);
-        m_loadedSensor = new DigitalInput(MechanismConstants.kLoadedSensorChannel);
-        m_shootSensor = new DigitalInput(MechanismConstants.kShootSensorChannel);
+    public BeamBreak() {
+        m_bottomSensor = new DigitalInput(MechanismConstants.kBottomSensorChannel);
+        m_middleSensor = new DigitalInput(MechanismConstants.kMiddleSensorChannel);
+        m_topSensor = new DigitalInput(MechanismConstants.kTopSensorChannel);
 
         PCMChannel0 = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
         PCMChannel1 = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
@@ -51,22 +51,20 @@ public class BeamBreak {
     }
 
     /**
-     * Uupdate the phase based on sensor inputs
+     * Update the phase based on sensor inputs
      */
     public void updatePhase() {
-        if (!m_loadedSensor.get()) {
+        m_currentPhase = Phase.NONE;
+        if ((!m_middleSensor.get() && !m_bottomSensor.get() && !m_topSensor.get()) 
+               || (!m_topSensor.get() && !m_bottomSensor.get())) {
+        
             m_currentPhase = Phase.LOADED;
+        }
+        else if (!m_topSensor.get()) {
+            m_currentPhase = Phase.SOURCE_INTAKE;
 
-        } else if (!m_pickupSensor.get()) {
-            m_currentPhase = Phase.PICKUP;
-
-        } else if (!m_shootSensor.get()) {
-            m_currentPhase = Phase.SHOOT;
-
-        } else if (m_loadedSensor.get() 
-                && m_pickupSensor.get() 
-                && m_shootSensor.get()) {
-            m_currentPhase = Phase.NONE;
+        } else if (!m_bottomSensor.get()) {
+            m_currentPhase = Phase.GROUND_PICKUP;
         }
     }
 
