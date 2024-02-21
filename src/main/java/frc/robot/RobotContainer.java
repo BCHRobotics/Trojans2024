@@ -79,7 +79,7 @@ public class RobotContainer {
                         () -> m_robotDrive.drive(
                                 -MathUtil.applyDeadband(m_driverXboxController.getLeftY(), OIConstants.kDriveDeadband),
                                 -MathUtil.applyDeadband(m_driverXboxController.getLeftX(), OIConstants.kDriveDeadband),
-                                -MathUtil.applyDeadband(m_driverXboxController.getRightX(), OIConstants.kTurnDeadband),
+                                -MathUtil.applyDeadband(m_driverXboxController.getRightX(), OIConstants.kTwistDeadband),
                                 OIConstants.kFieldRelative, OIConstants.kRateLimited),
                         m_robotDrive));
     }
@@ -94,38 +94,32 @@ public class RobotContainer {
    * {@link JoystickButton}.
    */
     private void configureButtonBindings() {
-
         /* 
          * CURRENT BUTTON LAYOUT (subject to change):
-         * Button 2 -- BRAKE
-         * Button 5 -- RESET GYRO
-         * Button 1 (TRIGGER) -- SLOW MODE
-         * Button 3 -- ALIGN WITH NOTE
-         * Button 4 -- ALIGN WITH TAG
+         * Y -- RESET GYRO
+         * RIGHT BUMPER -- BRAKE
+         * LEFT BUMPER -- TOGGLE SLOW MODE
+         * X -- ALIGN WITH TAG
+         * B -- ALIGN WITH NOTE
+         * A -- CANCEL ALIGN
          */ 
 
-        // Brake Command (Button 2)
-        m_driverController.button(2).whileTrue(new RunCommand(() -> m_robotDrive.setX(), m_robotDrive));
+        // Zero heading command (Y Button)
+        this.m_driverXboxController.y().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
 
-        // Reset Gyro (Button 5)
-        m_driverController.button(5).whileTrue(new RunCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
-        
-        // Slow Command (Button 1)
-        m_driverController.button(1)
-            .onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive))
-            .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));  
-            
-        // Align with note button (Button 3)
-        m_driverController.button(3)
-            .onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
+        // Brake command (Right Bumper)
+        this.m_driverXboxController.rightBumper().whileTrue(new RunCommand(() -> m_robotDrive.setX(),m_robotDrive));
 
-        // Align with tag button (Button 4)
-        m_driverController.button(4)
-            .onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
+        // Slow mode command (Left Bumper)
+        this.m_driverXboxController.leftBumper().onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive));
+        this.m_driverXboxController.leftBumper().onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
 
-        // Switch between camera and note pipelines (Button 4)
-        m_driverController.button(6)
-            .onTrue(AutoBuilder.pathfindToPose(m_robotDrive.getTargetPose(), new PathConstraints(2, 2, 2, 2)));
+        // Align with tag
+        this.m_driverXboxController.x().onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
+        // Align with note
+        this.m_driverXboxController.b().onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
+        // Cancel Alignment
+        this.m_driverXboxController.a().onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign()));
     }
 
     /**
@@ -144,6 +138,7 @@ public class RobotContainer {
 
     // Sets the speed percentage to use based on the slider on the joystick
     public void setSpeedPercent() {
-        m_robotDrive.setSpeedPercent(1 - ((m_driverController.getThrottle() + 1) / 2));
+        // THIS IS COMMENTED OUT FOR XBOX FOR NOW
+        //m_robotDrive.setSpeedPercent(1 - ((m_driverController.getThrottle() + 1) / 2));
     }
 }

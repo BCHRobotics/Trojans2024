@@ -307,6 +307,10 @@ public class Drivetrain extends SubsystemBase {
     }
   }
 
+  public void cancelAlign() {
+    m_alignWithTarget = false;
+  }
+
   /**
    * Returns the currently-estimated pose of the robot.
    *
