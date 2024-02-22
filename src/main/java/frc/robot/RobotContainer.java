@@ -76,7 +76,7 @@ public class RobotContainer {
                 // The left stick controls translation of the robot.
                 // Turning is controlled by the X axis of the right stick.
                 new RunCommand(
-                        () -> m_robotDrive.drive(
+                        () -> m_robotDrive.driveCommand(
                                 -MathUtil.applyDeadband(m_driverXboxController.getLeftY(), OIConstants.kDriveDeadband),
                                 -MathUtil.applyDeadband(m_driverXboxController.getLeftX(), OIConstants.kDriveDeadband),
                                 -MathUtil.applyDeadband(m_driverXboxController.getRightX(), OIConstants.kTwistDeadband),
@@ -140,5 +140,6 @@ public class RobotContainer {
     public void setSpeedPercent() {
         // THIS IS COMMENTED OUT FOR XBOX FOR NOW
         //m_robotDrive.setSpeedPercent(1 - ((m_driverController.getThrottle() + 1) / 2));
+        m_robotDrive.setSpeedPercent(0.3);
     }
 }

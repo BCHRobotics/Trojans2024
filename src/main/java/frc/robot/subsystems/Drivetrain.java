@@ -497,7 +497,7 @@ public class Drivetrain extends SubsystemBase {
   /** Zeroes the heading of the robot. */
   public void zeroHeading() {
     m_gyro.reset();
-    resetOdometry(new Pose2d());
+    resetOdometry(new Pose2d(getPose().getX(), getPose().getY(), new Rotation2d()));
   }
 
   /**
