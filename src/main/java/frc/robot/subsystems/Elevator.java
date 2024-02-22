@@ -9,16 +9,15 @@ import com.revrobotics.SparkLimitSwitch;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ElevatorConstants.kElevatorPositions;
-import frc.robot.commands.ElevatorCommands;
 import frc.utils.BetterProfiledPIDController;
 
 public class Elevator extends SubsystemBase {
-    private ElevatorCommands m_elevatorCommands;
-
     private final CANSparkMax m_leftMotor;
     private final CANSparkMax m_rightMotor;
 
@@ -31,7 +30,7 @@ public class Elevator extends SubsystemBase {
                 ElevatorConstants.kMaxSpeedMetersPerSecond,
                 ElevatorConstants.kMaxAccelerationMetersPerSecondSquared);
 
-    protected static BetterProfiledPIDController m_controller = new BetterProfiledPIDController(
+    private static BetterProfiledPIDController m_controller = new BetterProfiledPIDController(
             ElevatorConstants.kPThetaController,
             0,
             ElevatorConstants.kDThetaController,
@@ -46,7 +45,7 @@ public class Elevator extends SubsystemBase {
     private boolean forcedGoal = false;
 
     /** Creates a new Elevator. */
-    protected Elevator() {
+    public Elevator() {
         
         m_leftMotor = new CANSparkMax(ElevatorConstants.kLeftElevatorMotorCanId, MotorType.kBrushless);
         m_rightMotor = new CANSparkMax(ElevatorConstants.kRightElevatorMotorCanId, MotorType.kBrushless);
@@ -112,11 +111,11 @@ public class Elevator extends SubsystemBase {
      * Stops the elevator and sets the goal to the current setpoint
      */
     private void limitReached() {
-       // System.out.println("in reached limit");
+        System.out.println("in reached limit");
         cancelAllElevatorCommands();
         m_controller.forceAtGoal();
         forcedGoal = true;
-      //  System.out.println("forced goal");
+        System.out.println("forced goal");
     }
 
     /**
@@ -136,8 +135,8 @@ public class Elevator extends SubsystemBase {
            (checkLimitSwitchPress(m_forwardLimit) || 
             checkLimitSwitchPress(m_reverseLimit))) {
 
-            //System.out.println(checkLimitSwitchPress(m_forwardLimit) 
-            //    ? "Top Limit Hit" : "Bottom Limit Hit");
+            System.out.println(checkLimitSwitchPress(m_forwardLimit) 
+                ? "Top Limit Hit" : "Bottom Limit Hit");
 
             limitReached();
         } else {
@@ -150,15 +149,51 @@ public class Elevator extends SubsystemBase {
     /**
      * Cancels all elevator commands
      */
-    protected void cancelAllElevatorCommands() {
-        if (m_elevatorCommands != null) {
-            CommandScheduler.getInstance().cancel(m_elevatorCommands.moveToPositionCommand(kElevatorPositions.TOP));
-            CommandScheduler.getInstance().cancel(m_elevatorCommands.moveToPositionCommand(kElevatorPositions.SOURCE));
-            CommandScheduler.getInstance().cancel(m_elevatorCommands.moveToPositionCommand(kElevatorPositions.AMP));
-            CommandScheduler.getInstance().cancel(m_elevatorCommands.moveToPositionCommand(kElevatorPositions.TRAVEL));
-            CommandScheduler.getInstance().cancel(m_elevatorCommands.moveToPositionCommand(kElevatorPositions.INTAKE));
-            CommandScheduler.getInstance().cancel(m_elevatorCommands.moveToPositionCommand(kElevatorPositions.BOTTOM));
+    private void cancelAllElevatorCommands() {
+        CommandScheduler.getInstance().cancel(this.moveToPositionCommand(kElevatorPositions.SOURCE));
+        CommandScheduler.getInstance().cancel(this.moveToPositionCommand(kElevatorPositions.AMP));
+        CommandScheduler.getInstance().cancel(this.moveToPositionCommand(kElevatorPositions.TRAVEL));
+        CommandScheduler.getInstance().cancel(this.moveToPositionCommand(kElevatorPositions.INTAKE));
+    }
+
+    /**
+     * Sets the elevator positions
+     * @param position the position to be set
+     * @return the command to get to the position
+     */
+    public Command moveToPositionCommand(ElevatorConstants.kElevatorPositions position) {
+        switch (position) {
+            case AMP:
+                return this.runOnce(() -> Elevator.m_controller.setGoal(
+                    ElevatorConstants.kElevatorGoals[
+                    ElevatorConstants.kElevatorPositions.AMP.ordinal()]));
+
+            case SOURCE:
+                return this.runOnce(() -> Elevator.m_controller.setGoal(
+                    ElevatorConstants.kElevatorGoals[
+                    ElevatorConstants.kElevatorPositions.SOURCE.ordinal()]));
+
+            case TRAVEL:
+                return this.runOnce(() -> Elevator.m_controller.setGoal(
+                    ElevatorConstants.kElevatorGoals[
+                    ElevatorConstants.kElevatorPositions.TRAVEL.ordinal()]));
+
+            case INTAKE:
+                return this.runOnce(() -> Elevator.m_controller.setGoal(
+                    ElevatorConstants.kElevatorGoals[
+                    ElevatorConstants.kElevatorPositions.INTAKE.ordinal()]));
+
+            default:
+                return null;
         }
+    }
+
+    /**
+     * Stops the elevator
+     * @return the command for stopping the elevator
+     */
+    public Command stopElevatorCommand() {
+        return this.runOnce(() -> cancelAllElevatorCommands());
     }
     
     private void putToDashboard() {

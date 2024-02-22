@@ -2,21 +2,21 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-
 import frc.robot.Constants.ElevatorConstants.kElevatorPositions;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Mechanism;
 
 public class CombinedCommands {
-    ElevatorCommands m_elevatorCommands;
-    IntakeCommands m_intakeCommands;
+    Elevator m_elevator;
+    Mechanism m_mechanism;
 
     Command pickupFromGround() {
         return
-            Commands.runOnce(() -> m_elevatorCommands.moveToPositionCommand(kElevatorPositions.INTAKE))
+            Commands.runOnce(() -> m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
                 .until(Elevator::checkAtGoal)
                 .andThen(
-                    Commands.runOnce(() -> m_intakeCommands.groundIntake(6)))
+                    Commands.runOnce(() -> m_mechanism.groundIntake(6)))
                     .andThen(
-                        Commands.runOnce(() -> m_elevatorCommands.moveToPositionCommand(kElevatorPositions.TRAVEL)));
+                        Commands.runOnce(() -> m_elevator.moveToPositionCommand(kElevatorPositions.TRAVEL)));
     }
 }

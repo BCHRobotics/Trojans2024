@@ -95,17 +95,13 @@ public final class Constants {
                         (kElevatorMotorReduction * kElevatorMotorCPR);
       
     public enum kElevatorPositions {
-      TOP,
       SOURCE,
       AMP,
       TRAVEL,
-      INTAKE,
-      BOTTOM
+      INTAKE
     }
 
     public static int[] kElevatorGoals = new int[] {
-      20,
-      16,
       12,
       8,
       4,
