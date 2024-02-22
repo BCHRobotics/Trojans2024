@@ -34,9 +34,9 @@ public class RobotContainer {
     private final Drivetrain m_robotDrive = new Drivetrain();
 
     // Flightstick controller
-    CommandJoystick m_driverFlightstickController = new CommandJoystick(OIConstants.kDriverControllerPort);
+    CommandJoystick m_driverFlightstickController = new CommandJoystick(OIConstants.kFlightstickPort);
     // XBox controller
-    CommandXboxController m_driverXboxController = new CommandXboxController(1);
+    CommandXboxController m_driverXboxController = new CommandXboxController(OIConstants.kXBoxPort);
 
     // The auto chooser
     private final SendableChooser<Command> autoChooser;
@@ -50,14 +50,14 @@ public class RobotContainer {
             () -> m_robotDrive.driveToTag()).until( // Run the alignwithtag function
                 () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
                     new InstantCommand(
-                        () -> m_robotDrive.activateTracking()))); // Set alignmode to true before starting
+                        () -> m_robotDrive.alignWithTag()))); // Set alignmode to true before starting
 
         // Note alignment command
         NamedCommands.registerCommand("ALIGN NOTE", new RunCommand(
             () -> m_robotDrive.driveToNote()).until( // Run the 'drive to note' function
                 () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true, i.e the robot is done aligning
                     new InstantCommand(
-                        () -> m_robotDrive.activateTracking()))); // Set alignmode to true before starting, and set isAligned to false
+                        () -> m_robotDrive.alignWithNote()))); // Set alignmode to true before starting, and set isAligned to false
 
         // Build an auto chooser. This will use Commands.none() as the default option.
         autoChooser = AutoBuilder.buildAutoChooser();

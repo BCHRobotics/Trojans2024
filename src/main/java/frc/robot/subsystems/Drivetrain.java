@@ -153,16 +153,6 @@ public class Drivetrain extends SubsystemBase {
     }
   }
 
-  /*
-   * Activates vision tracking (used for tags and notes)
-   * 
-   * (ONLY USED DURING AUTO)
-   */
-  public void activateTracking(){
-    m_alignWithTarget = true;
-    m_isAligned = false;
-  }
-
   /**
    * Checks whether the robot has finished aligning with a target
    * 
@@ -329,14 +319,18 @@ public class Drivetrain extends SubsystemBase {
     }
   }
 
+  // Start aligning with a note
   public void alignWithNote() {
     m_cameraMode = false;
     m_alignWithTarget = true;
+    m_isAligned = false;
   }
 
+  // Start aligning with a tag
   public void alignWithTag() {
     m_cameraMode = true;
     m_alignWithTarget = true;
+    m_isAligned = false;
   }
 
   /**
