@@ -88,10 +88,10 @@ public class Drivetrain extends SubsystemBase {
   private final Camera m_tagCamera = new Camera(VisionConstants.TAG_CAMERA_NAME); // this too
 
   // Whether or not to try and align with a target
-  private boolean m_alignWithTarget = false;
+  private boolean isAlignmentActive = false;
   // Is true when the robot has finished a vision command
-  private boolean m_isAligned = false;
-  private boolean m_cameraMode = false;
+  private boolean isAlignmentSuccess = false;
+  private boolean cameraMode = false;
 
   // The stored field position of the target apriltag
   private Pose2d targetPose;
@@ -125,7 +125,7 @@ public class Drivetrain extends SubsystemBase {
   public Drivetrain() {
     this.initializeAuto();
 
-    m_cameraMode = false;
+    cameraMode = false;
   }
 
   @Override
@@ -162,7 +162,7 @@ public class Drivetrain extends SubsystemBase {
    * @return whether or not the robot has finished aligning
    */
   public boolean checkAlignment() {
-    return m_isAligned; // This boolean variable is used for all types of vision alignment
+    return isAlignmentSuccess; // This boolean variable is true when the robot has finished aligning (to either a tag or note)
   }
 
   /**
@@ -172,7 +172,7 @@ public class Drivetrain extends SubsystemBase {
    */
   public void driveToTag() {
       // Apriltag alignment code
-      if (m_alignWithTarget && targetPose != null) {
+      if (isAlignmentActive && targetPose != null) {
         Pose2d robotPose = getPose();
 
         double xCommand = targetPose.getX() - robotPose.getX();
@@ -194,15 +194,16 @@ public class Drivetrain extends SubsystemBase {
         }
 
         if (Math.abs(yCommand) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD && Math.abs(xCommand) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD) {
-          m_isAligned = true;
-          m_alignWithTarget = false; // Stop the alignment when the target is reached
+          isAlignmentSuccess = true;
+          isAlignmentActive = false; // Stop the alignment when the target is reached
         }
         else {
-          m_isAligned = false;
+          isAlignmentSuccess = false;
         }
 
-        SmartDashboard.putNumber("Commanded X", xCommand);
-        SmartDashboard.putNumber("Commanded Y", yCommand);
+        // Movement values being commanded to the robot
+        // SmartDashboard.putNumber("Commanded X", xCommand);
+        // SmartDashboard.putNumber("Commanded Y", yCommand);
 
         drive(xCommand, yCommand, 0, true, true);
       }
@@ -215,32 +216,32 @@ public class Drivetrain extends SubsystemBase {
    */
   public void driveToNote() {
     // Note alignment code
-      if (m_alignWithTarget) {
-        drive(0.25, 0, m_noteCamera.getRotationSpeed(), false, true);
+      if (isAlignmentActive) {
+        drive(-0.25, 0, m_noteCamera.getRotationSpeed(), false, true);
 
         if (!m_noteCamera.getResult().hasTargets()) {
-          m_isAligned = true;
-          m_alignWithTarget = false; // Stop the alignment when the target is reached
+          isAlignmentSuccess = true;
+          isAlignmentActive = false; // Stop the alignment when the target is reached
         }
         else {
-          m_isAligned = false;
+          isAlignmentSuccess = false;
         }
       }
   }
 
-  // TODO: replace this function with a not stupid one and go back to calling drive in robotcontainer
+  // TODO: replace this function with one that makes more sense and go back to calling drive in robotcontainer
   public void driveCommand(double xSpeed, double ySpeed, double rotSpeed, boolean fieldRelative, boolean rateLimit) {
 
-    if (!m_alignWithTarget) {
+    if (!isAlignmentActive) {
       drive(xSpeed, ySpeed, rotSpeed, fieldRelative, rateLimit);
     }
     
-    if (m_alignWithTarget && m_cameraMode == false) {
+    if (isAlignmentActive && cameraMode == false) {
       // Align to the note while driving normally
       drive(xSpeed, ySpeed, rotSpeed + m_noteCamera.getRotationSpeed(), fieldRelative, rateLimit);
     }
 
-    if (m_alignWithTarget && m_cameraMode == true) {
+    if (isAlignmentActive && cameraMode == true) {
       // Apriltag alignment code
       if (targetPose != null) {
         Pose2d robotPose = getPose();
@@ -258,6 +259,7 @@ public class Drivetrain extends SubsystemBase {
         }
 
         double rotCommand = tagRotation - getHeading();
+        rotCommand *= Math.abs(rotCommand); // square the rot command for smoother rotation
 
         // Do not let the commanded speed above a certain value
         if (xCommand > 0) {
@@ -281,11 +283,11 @@ public class Drivetrain extends SubsystemBase {
         }
 
         if (Math.abs(rotCommand) < VisionConstants.APRILTAG_ROTATION_THRESHOLD && Math.abs(yCommand) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD && Math.abs(xCommand) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD) {
-          m_isAligned = true;
-          m_alignWithTarget = false; // Stop the alignment when the target is reached
+          isAlignmentSuccess = true;
+          isAlignmentActive = false; // Stop the alignment when the target is reached
         }
         else {
-          m_isAligned = false;
+          isAlignmentSuccess = false;
         }
 
         SmartDashboard.putNumber("Commanded X", xCommand);
@@ -297,8 +299,9 @@ public class Drivetrain extends SubsystemBase {
     }
   }
 
+  // If the robot is trying to align with a note or tag this will cancel that
   public void cancelAlign() {
-    m_alignWithTarget = false;
+    isAlignmentActive = false;
   }
 
   /**
@@ -310,27 +313,24 @@ public class Drivetrain extends SubsystemBase {
     return m_odometry.getPoseMeters();
   }
 
-  public Pose2d getTargetPose() {
-    if (targetPose != null) {
-      return targetPose;
-    }
-    else {
-      return new Pose2d();
-    }
-  }
-
-  // Start aligning with a note
+  /*
+   * Starts aligning towards a note, if a note can be seen
+   */
   public void alignWithNote() {
-    m_cameraMode = false;
-    m_alignWithTarget = true;
-    m_isAligned = false;
+    cameraMode = false; // Set the camera mode to target notes
+    isAlignmentActive = true; // Start aligning
+
+    isAlignmentSuccess = false; // Set this to false so the alignment doesn't finish instantly
   }
 
-  // Start aligning with a tag
+  /*
+   * Starts aligning towards a tag, if a tag can be seen
+   */
   public void alignWithTag() {
-    m_cameraMode = true;
-    m_alignWithTarget = true;
-    m_isAligned = false;
+    cameraMode = true; // Set the camera mode to target apriltags
+    isAlignmentActive = true; // Start aligning
+
+    isAlignmentSuccess = false; // Set this to false so the alignment doesn't finish instantly
   }
 
   /**
@@ -593,10 +593,11 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putString("Rear left Encoder", m_rearLeft.getState().toString());
     SmartDashboard.putString("Rear right Encoder", m_rearRight.getState().toString());
 
-    SmartDashboard.putBoolean("Align", m_alignWithTarget);
-    SmartDashboard.putBoolean("Alignment Success", m_isAligned);
-    SmartDashboard.putBoolean("Camera Mode", m_cameraMode);
+    SmartDashboard.putBoolean("Align", isAlignmentActive);
+    SmartDashboard.putBoolean("Alignment Success", isAlignmentSuccess);
+    SmartDashboard.putBoolean("Camera Mode", cameraMode);
 
+    // Apriltag target location/rotation (field relative space)
     if (targetPose != null) {
       SmartDashboard.putNumber("Target X", targetPose.getX());
       SmartDashboard.putNumber("Target Y", targetPose.getY());
@@ -604,6 +605,7 @@ public class Drivetrain extends SubsystemBase {
       SmartDashboard.putNumber("Target Rotation", targetPose.getRotation().getDegrees());
     }
 
+    // Do the cameras have targets?
     SmartDashboard.putBoolean("Note Cam", m_noteCamera.getResult().hasTargets());
     SmartDashboard.putBoolean("Tag Cam", m_tagCamera.getResult().hasTargets());
   }

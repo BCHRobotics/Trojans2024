@@ -67,17 +67,22 @@ public final class Constants {
   }
 
   public static final class VisionConstants{
+    // Height of the camera (not used anywhere right now)
     public static final double CAMERA_HEIGHT = 0.0;
 
-    public static final double VISION_SPEED_LIMIT = 0.5;
-    public static final double VISION_TURN_LIMIT = 0.1;
+    // Speed and rotation caps for vision
+    public static final double VISION_SPEED_LIMIT = 0.8;
+    public static final double VISION_TURN_LIMIT = 0.3;
 
-    public static final double APRILTAG_DISTANCE_THRESHOLD = 0.2;
-    public static final double APRILTAG_ROTATION_THRESHOLD = 0.05;
+    // How close to an apriltag the robot has to be before stopping (meters)
+    public static final double APRILTAG_DISTANCE_THRESHOLD = 0.425;
+    public static final double APRILTAG_ROTATION_THRESHOLD = 0.1;
 
+    // Camera names (a and b are TEMPORARY NAMES)
     public static final String NOTE_CAMERA_NAME = "a";
     public static final String TAG_CAMERA_NAME = "b";
 
+    // PID values for aligning to a note
     public static final double NOTE_P_TERM = 0.006;
     public static final double NOTE_I_TERM = 0.004;
     public static final double NOTE_D_TERM = 0.0003;
@@ -140,7 +145,7 @@ public final class Constants {
 
   public static final class OIConstants {
     public static final int kFlightstickPort = 0;
-    public static final int kXBoxPort = 0;
+    public static final int kXBoxPort = 1;
     public static final double kDriveDeadband = 0.05;
     public static final double kTwistDeadband = 0.5;
     public static final boolean kFieldRelative = true;
