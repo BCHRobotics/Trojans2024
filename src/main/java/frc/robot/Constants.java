@@ -67,8 +67,8 @@ public final class Constants {
   }
 
   public static final class ElevatorConstants {
-    public static final int kLeftElevatorMotorCanId = 29;  //30
-    public static final int kRightElevatorMotorCanId = 28;  //31
+    public static final int kLeftElevatorMotorCanId = 20;  //30
+    public static final int kRightElevatorMotorCanId = 21;  //31
 
     public static final int kTopElevatorLimitSwitchPort = 5;
     public static final int kBottomElevatorLimitSwitchPort = 6;

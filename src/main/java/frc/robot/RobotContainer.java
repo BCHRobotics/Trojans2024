@@ -38,7 +38,7 @@ public class RobotContainer {
     // The driver's controller
     CommandJoystick m_driverController = new CommandJoystick(OIConstants.kDriverControllerPort);
 
-    CommandXboxController m_XboxController = new CommandXboxController(OIConstants.kDriverControllerPort);
+    CommandXboxController m_XboxController = new CommandXboxController(1);
 
     // The auto chooser
     private final SendableChooser<Command> autoChooser;

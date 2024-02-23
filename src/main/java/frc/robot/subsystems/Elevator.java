@@ -57,8 +57,8 @@ public class Elevator extends SubsystemBase {
 
         this.m_rightMotor.follow(m_leftMotor, true);
 
-        this.m_leftMotor.setIdleMode(IdleMode.kBrake);
-        this.m_rightMotor.setIdleMode(IdleMode.kBrake);
+        this.m_leftMotor.setIdleMode(IdleMode.kCoast);
+        this.m_rightMotor.setIdleMode(IdleMode.kCoast);
 
         this.m_leftMotor.setSmartCurrentLimit(60, 20);
         this.m_rightMotor.setSmartCurrentLimit(60, 20);
@@ -69,7 +69,7 @@ public class Elevator extends SubsystemBase {
         m_forwardLimit.enableLimitSwitch(true);
         m_reverseLimit.enableLimitSwitch(true);
 
-        this.m_leftMotor.setInverted(false);
+        this.m_leftMotor.setInverted(true);
 
         this.m_leftMotor.setOpenLoopRampRate(0.05);
 
@@ -142,7 +142,10 @@ public class Elevator extends SubsystemBase {
         } else {
             calculateSpeed();
             if (!this.checkLimitSwitchPress(m_forwardLimit) 
-             && !this.checkLimitSwitchPress(m_reverseLimit)) forcedGoal = false;
+             && !this.checkLimitSwitchPress(m_reverseLimit)) {
+                forcedGoal = false;
+                System.out.println("no switches hit");
+            } 
         }
     }
 
