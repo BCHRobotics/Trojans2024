@@ -15,6 +15,8 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Time;
+import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -60,8 +62,13 @@ public class Elevator extends SubsystemBase {
     // Test values
     double totalSpeed = 0;
 
+      private final Velocity<Voltage> voltsPerSecond = Volts.per(Second);
+  private final Measure<Velocity<Voltage>> m_quasistaticVoltage = voltsPerSecond.of(0.5);
+  private final Measure<Voltage> m_dynamicVoltage = Volts.of(3);
+  private final Measure<Time> m_timeout = Seconds.of(5);
+
     SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
-    new SysIdRoutine.Config( null, null, null, // Use default config
+    new SysIdRoutine.Config( m_quasistaticVoltage, m_dynamicVoltage, m_timeout,
     (state) -> Logger.recordOutput("SysIdTestState", state.toString())),
     new SysIdRoutine.Mechanism(
       (voltage) -> this.runVolts(voltage),
@@ -89,10 +96,9 @@ public class Elevator extends SubsystemBase {
         this.m_rightMotor.setSmartCurrentLimit(60, 20);
 
         // TODO: Undo this when actually want the right motor to work Tim
-        // this.m_rightMotor.follow(m_leftMotor);
+         this.m_rightMotor.follow(m_leftMotor, true);
 
-        this.m_leftMotor.setInverted(false);
-        this.m_rightMotor.setInverted(false);
+        this.m_leftMotor.setInverted(true);
 
         this.m_leftMotor.setOpenLoopRampRate(0.05);
         this.m_rightMotor.setOpenLoopRampRate(0.05);
