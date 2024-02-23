@@ -73,15 +73,16 @@ public final class Constants {
     public static final int kTopElevatorLimitSwitchPort = 5;
     public static final int kBottomElevatorLimitSwitchPort = 6;
 
-    public static final double kPThetaController = 0.62221;
-    public static final double kDThetaController = 0.010417;
+    public static final double kPThetaController = 3.8247;
+    public static final double kDThetaController = 0.010823;
 
     public static final double kMaxSpeedMetersPerSecond = 3.0;
     public static final double kMaxAccelerationMetersPerSecondSquared = 3.0;
 
-    public static final double kSVolts = 0.11211;
-    public static final double kGVolts = 0.0020415;
-    public static final double kVVolts = 0.0001107;
+    public static final double kSVolts = 0.14895;
+    public static final double kGVolts = 0.031297;
+    public static final double kVVolts = 0.0021013;
+    public static final double kAVolts = 0.00018868;
 
     //20:1 from gearbox to output reduction
     //18 tooth
@@ -102,9 +103,9 @@ public final class Constants {
     }
 
     public static double[] kElevatorGoals = new double[] {
-      0.4,
+      0.6,
+      0.5,
       0.3,
-      0.1,
       0
     };
   }

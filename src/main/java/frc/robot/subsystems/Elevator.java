@@ -38,7 +38,7 @@ public class Elevator extends SubsystemBase {
 
     private final ElevatorFeedforward m_feedforward =
         new ElevatorFeedforward(
-            ElevatorConstants.kSVolts, ElevatorConstants.kGVolts, ElevatorConstants.kVVolts);
+            ElevatorConstants.kSVolts, ElevatorConstants.kGVolts, ElevatorConstants.kVVolts, ElevatorConstants.kAVolts);
    
     double totalSpeed = 0;
 
