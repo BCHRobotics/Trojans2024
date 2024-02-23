@@ -11,7 +11,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ElevatorConstants.kElevatorPositions;
@@ -78,7 +77,7 @@ public class Elevator extends SubsystemBase {
 
         this.m_leftEncoder.setPositionConversionFactor(ElevatorConstants.kElevatorPositionConversionFactor);
 
-        m_controller.setTolerance(0.5);
+        m_controller.setTolerance(0.005);
 
         m_leftEncoder.setPosition(0);
         m_controller.setGoal(0);
@@ -212,6 +211,10 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putBoolean("At setpoint: ", m_controller.atSetpoint());
         SmartDashboard.putBoolean("Top limit switch hit: ", m_forwardLimit.isPressed());
         SmartDashboard.putBoolean("Bottom limit switch hit: ", m_reverseLimit.isPressed());
+        SmartDashboard.putNumber("Current limit: ", m_leftMotor.getOutputCurrent());
+        SmartDashboard.putNumber("P: ", m_controller.getP());
+        SmartDashboard.putNumber("I: ", m_controller.getI());
+        SmartDashboard.putNumber("D: ", m_controller.getD());
     }
     
     @Override

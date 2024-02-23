@@ -73,8 +73,8 @@ public final class Constants {
     public static final int kTopElevatorLimitSwitchPort = 5;
     public static final int kBottomElevatorLimitSwitchPort = 6;
 
-    public static final double kPThetaController = 3.8247;
-    public static final double kDThetaController = 0.010823;
+    public static final double kPThetaController = 3.8247;   //3.8247
+    public static final double kDThetaController = 0.010823; //0.010823
 
     public static final double kMaxSpeedMetersPerSecond = 3.0;
     public static final double kMaxAccelerationMetersPerSecondSquared = 3.0;
@@ -103,9 +103,9 @@ public final class Constants {
     }
 
     public static double[] kElevatorGoals = new double[] {
-      0.6,
-      0.5,
-      0.3,
+      0.39,
+      0.32,
+      0.08,
       0
     };
   }
