@@ -78,6 +78,8 @@ public class Elevator extends SubsystemBase {
 
         this.m_leftEncoder.setPositionConversionFactor(ElevatorConstants.kElevatorPositionConversionFactor);
 
+        m_controller.setTolerance(0.5);
+
         m_leftEncoder.setPosition(0);
         m_controller.setGoal(0);
     }

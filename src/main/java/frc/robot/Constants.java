@@ -101,10 +101,10 @@ public final class Constants {
       INTAKE
     }
 
-    public static int[] kElevatorGoals = new int[] {
-      12,
-      8,
-      4,
+    public static double[] kElevatorGoals = new double[] {
+      0.4,
+      0.3,
+      0.1,
       0
     };
   }
