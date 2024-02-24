@@ -27,33 +27,40 @@ public class Mechanism extends SubsystemBase{
     // The phase of the beam-break sensor
     private Phase m_currentPhase = Phase.NONE;
 
-    private final CANSparkMax m_beltMotor = new CANSparkMax(MechanismConstants.kBeltMotorCanId, MotorType.kBrushless);
+    private final CANSparkMax m_bottomBeltMotor = new CANSparkMax(MechanismConstants.kBottomBeltMotorCanId, MotorType.kBrushless);
+    private final CANSparkMax m_topBeltMotor = new CANSparkMax(MechanismConstants.kTopBeltMotorCanId, MotorType.kBrushless);
     private final CANSparkMax m_sourceMotor = new CANSparkMax(MechanismConstants.kSourceMotorCanId, MotorType.kBrushless);
     private final CANSparkMax m_ampMotor = new CANSparkMax(MechanismConstants.kAmpMotorCanId, MotorType.kBrushless);
 
     /** Creates a new Mechanism. */
     public Mechanism() {
-        this.m_beltMotor.restoreFactoryDefaults();
+        this.m_bottomBeltMotor.restoreFactoryDefaults();
+        this.m_topBeltMotor.restoreFactoryDefaults();
         this.m_sourceMotor.restoreFactoryDefaults();
         this.m_ampMotor.restoreFactoryDefaults();
 
-        this.m_beltMotor.setIdleMode(IdleMode.kBrake);
+        this.m_bottomBeltMotor.setIdleMode(IdleMode.kBrake);
+        this.m_topBeltMotor.setIdleMode(IdleMode.kBrake);
         this.m_sourceMotor.setIdleMode(IdleMode.kBrake);
         this.m_ampMotor.setIdleMode(IdleMode.kBrake);
 
-        this.m_beltMotor.setSmartCurrentLimit(40, 20); //keep 40 for neo550
+        this.m_bottomBeltMotor.setSmartCurrentLimit(40, 20); //keep 40 for neo550
+        this.m_topBeltMotor.setSmartCurrentLimit(40, 20); //keep 40 for neo550
         this.m_sourceMotor.setSmartCurrentLimit(60, 20);
         this.m_ampMotor.setSmartCurrentLimit(60, 20);
 
-        this.m_beltMotor.setInverted(true);
+        this.m_bottomBeltMotor.setInverted(true);
+        this.m_topBeltMotor.setInverted(true);
         this.m_sourceMotor.setInverted(false);
         this.m_ampMotor.setInverted(false);
 
-        this.m_beltMotor.setOpenLoopRampRate(0.05);
+        this.m_bottomBeltMotor.setOpenLoopRampRate(0.05);
+        this.m_topBeltMotor.setOpenLoopRampRate(0.05);
         this.m_sourceMotor.setOpenLoopRampRate(0.05);
         this.m_ampMotor.setOpenLoopRampRate(0.05);
 
-        this.m_beltMotor.enableVoltageCompensation(12);
+        this.m_bottomBeltMotor.enableVoltageCompensation(12);
+        this.m_topBeltMotor.enableVoltageCompensation(12);
         this.m_sourceMotor.enableVoltageCompensation(12);
         this.m_ampMotor.enableVoltageCompensation(12);
     }
@@ -71,15 +78,24 @@ public class Mechanism extends SubsystemBase{
      * @param speed the speed in volts [0 --> 12]
      */
     private void setBeltSpeed(double speed) {
-        this.m_beltMotor.setVoltage(speed);
+        this.m_bottomBeltMotor.setVoltage(speed);
+        this.m_topBeltMotor.setVoltage(speed);
     }
 
     /**
-     * Gets the motor voltage of the belt motor
+     * Gets the motor voltage of the bottom belt motor
      * @return the voltage the motor is getting
      */
-    private double getBeltSpeed() {
-        return this.m_beltMotor.getBusVoltage();
+    private double getBottomBeltSpeed() {
+        return this.m_bottomBeltMotor.getBusVoltage();
+    }
+
+    /**
+     * Gets the motor voltage of the top belt motor
+     * @return the voltage the motor is getting
+     */
+    private double getTopBeltSpeed() {
+        return this.m_topBeltMotor.getBusVoltage();
     }
 
     /**
@@ -126,7 +142,7 @@ public class Mechanism extends SubsystemBase{
      * Cancels all mechanism commands
      */
     private void cancelAllMechanismCommands() {
-        CommandScheduler.getInstance().cancel(this.groundIntake(getBeltSpeed()));
+        CommandScheduler.getInstance().cancel(this.groundIntake(getBottomBeltSpeed()));
         CommandScheduler.getInstance().cancel(this.scoreAmp(getAmpSpeed()));
         CommandScheduler.getInstance().cancel(this.sourceIntake(getSourceSpeed()));
     }
@@ -241,6 +257,8 @@ public class Mechanism extends SubsystemBase{
      * A command for scoring in the amp
      * @param speed the commanded speed in voltage [0 --> 12]
      */
+
+    //TODO: Slowdown amp motor when scoring
     public Command scoreAmp(double speed) {
         return parallel(
             Commands.startEnd(() -> this.setAmpSpeed(-speed), () -> this.setAmpSpeed(-speed))

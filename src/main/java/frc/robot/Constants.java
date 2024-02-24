@@ -110,7 +110,8 @@ public final class Constants {
     };
   }
   public static final class MechanismConstants {
-    public static final int kBeltMotorCanId = 23;
+    public static final int kBottomBeltMotorCanId = 33;
+    public static final int kTopBeltMotorCanId = 32;
     public static final int kSourceMotorCanId = 30;
     public static final int kAmpMotorCanId = 31;
 
