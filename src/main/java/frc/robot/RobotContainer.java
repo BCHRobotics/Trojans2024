@@ -10,6 +10,7 @@ import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
@@ -40,6 +41,8 @@ public class RobotContainer {
 
     // The auto chooser
     private final SendableChooser<Command> autoChooser;
+    // The input method chooser
+    private final SendableChooser<Boolean> inputChooser;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -68,6 +71,19 @@ public class RobotContainer {
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
+        inputChooser = new SendableChooser<>();
+
+        // Assigning values to the input method chooser
+        inputChooser.addOption("XBoxController", Boolean.FALSE);
+        inputChooser.addOption("Flightstick", Boolean.TRUE);
+        inputChooser.setDefaultOption("Flightstick", Boolean.TRUE);
+
+        SmartDashboard.putData("Input Chooser", inputChooser);
+
+        // Build an auto chooser. This will use Commands.none() as the default option.
+        autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("Auto Chooser", autoChooser);
+
         // Configure the button bindings
         this.configureButtonBindings();
         // Configure the default commands for the input method chosen
@@ -76,17 +92,32 @@ public class RobotContainer {
 
     // Configures default commands
     public void configureDefaultCommands() {
-        // Configure the drivetrain to use the XBox controller
+        // Configure default commands
+        if (inputChooser.getSelected().booleanValue() == true) {
+            // Configure the drivetrain to use the flightstick
+            m_robotDrive.setDefaultCommand(
+                // Joystick movement controls robot movement (up, right, left, down).
+                // Turning is controlled by the twist axis of the flightstick.
+                new RunCommand(
+                    () -> m_robotDrive.drive(
+                        -MathUtil.applyDeadband(m_driverFlightstickController.getY(), OIConstants.kDriveDeadband),
+                        -MathUtil.applyDeadband(m_driverFlightstickController.getX(), OIConstants.kDriveDeadband),
+                        -MathUtil.applyDeadband(m_driverFlightstickController.getTwist(), OIConstants.kTwistDeadband),
+                        OIConstants.kFieldRelative, OIConstants.kRateLimited),
+                    m_robotDrive));
+        } else {
+             // Configure the drivetrain to use the XBox controller
             m_robotDrive.setDefaultCommand(
                 // The left stick controls translation of the robot.
                 // Turning is controlled by the X axis of the right stick.
                 new RunCommand(
-                        () -> m_robotDrive.driveCommand(
+                        () -> m_robotDrive.drive(
                                 -MathUtil.applyDeadband(m_driverXboxController.getLeftY(), OIConstants.kDriveDeadband),
                                 -MathUtil.applyDeadband(m_driverXboxController.getLeftX(), OIConstants.kDriveDeadband),
-                                -MathUtil.applyDeadband(m_driverXboxController.getRightX(), OIConstants.kTwistDeadband),
+                                -MathUtil.applyDeadband(m_driverXboxController.getRightX(), OIConstants.kTurnDeadband),
                                 OIConstants.kFieldRelative, OIConstants.kRateLimited),
                         m_robotDrive));
+        }
     }
 
   /**
@@ -141,7 +172,8 @@ public class RobotContainer {
         m_robotDrive.setIdleStates(1);
     }
 
-    // Sets the speed percentage to use based on the slider on the joystick
+    // Sets the speed percentage to use based on the slider on the flightstick,
+    // this only works on the flightstick.
     public void setSpeedPercent() {
         // THIS IS COMMENTED OUT FOR XBOX FOR NOW
         //m_robotDrive.setSpeedPercent(1 - ((m_driverController.getThrottle() + 1) / 2));
