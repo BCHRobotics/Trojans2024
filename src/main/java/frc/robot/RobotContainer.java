@@ -67,10 +67,6 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("CANCEL ALIGN", new InstantCommand(() -> m_robotDrive.cancelAlign()));
 
-        // Build an auto chooser. This will use Commands.none() as the default option.
-        autoChooser = AutoBuilder.buildAutoChooser();
-        SmartDashboard.putData("Auto Chooser", autoChooser);
-
         inputChooser = new SendableChooser<>();
 
         // Assigning values to the input method chooser
@@ -132,13 +128,29 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* 
          * CURRENT BUTTON LAYOUT (subject to change):
+         * 
+         * -- XBox Controller -- 
+         * 
          * Y -- RESET GYRO
          * RIGHT BUMPER -- BRAKE
          * LEFT BUMPER -- TOGGLE SLOW MODE
          * X -- ALIGN WITH TAG
          * B -- ALIGN WITH NOTE
          * A -- CANCEL ALIGN
+         * 
+         * -- Flightstick Controller --
+         * 
+         * Button 5 - RESET GYRO
+         * Button 1 - BRAKE
+         * Button 2 - TOGGLE SLOW MODE
+         * Button 3 - ALIGN WITH TAG
+         * Button 4 - ALIGN WITH NOTE
+         * Button 6 - CANCEL ALIGN
          */ 
+
+        /*
+         * Xbox Controller Buttons
+         */
 
         // Zero heading command (Y Button)
         this.m_driverXboxController.y().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
@@ -156,6 +168,27 @@ public class RobotContainer {
         this.m_driverXboxController.b().onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
         // Cancel Alignment
         this.m_driverXboxController.a().onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign()));
+
+        /*
+         * Flightstick Controller Buttons
+         */
+
+        // Zero heading command (Button 5)
+        this.m_driverFlightstickController.button(5).onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
+
+        // Brake command (Button 1)
+        this.m_driverFlightstickController.button(1).onTrue(new RunCommand(() -> m_robotDrive.setX(),m_robotDrive));
+
+        // Toggle slow mode (Button 2)
+        this.m_driverFlightstickController.button(2).onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive));
+        this.m_driverFlightstickController.button(2).onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
+
+        // Align with apriltag command (Button 3)
+        this.m_driverFlightstickController.button(3).onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
+        // Align with note command (Button 4)
+        this.m_driverFlightstickController.button(4).onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
+        // Zero heading command (Button 5)
+        this.m_driverFlightstickController.button(6).onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
     }
 
     /**

@@ -338,8 +338,6 @@ public class Drivetrain extends SubsystemBase {
    * Starts aligning towards a note, if a note can be seen
    */
   public void alignWithNote() {
-    SmartDashboard.putBoolean("TEST", true);
-
     isAlignmentSuccess = false; // Set this to false so the alignment doesn't finish instantly
 
     cameraMode = false; // Set the camera mode to target notes
