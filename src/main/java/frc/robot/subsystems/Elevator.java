@@ -30,9 +30,9 @@ public class Elevator extends SubsystemBase {
                 ElevatorConstants.kMaxAccelerationMetersPerSecondSquared);
 
     private static BetterProfiledPIDController m_controller = new BetterProfiledPIDController(
-            ElevatorConstants.kPThetaController,
-            0,
-            ElevatorConstants.kDThetaController,
+            10, // ElevatorConstants.kPThetaController  
+            0, // 0
+            0, // ElevatorConstants.kDThetaController
             m_constraints);
 
     private final ElevatorFeedforward m_feedforward =
@@ -77,6 +77,10 @@ public class Elevator extends SubsystemBase {
 
         this.m_leftEncoder.setPositionConversionFactor(ElevatorConstants.kElevatorPositionConversionFactor);
 
+        // Temp:
+        this.m_leftEncoder.setVelocityConversionFactor(ElevatorConstants.kElevatorPositionConversionFactor);
+
+
         m_controller.setTolerance(0.005);
 
         m_leftEncoder.setPosition(0);
@@ -96,7 +100,8 @@ public class Elevator extends SubsystemBase {
      * @param speed speed in volts [0 --> 12]
      */
     private void setLeftMotorSpeed(double speed) {
-        this.m_leftMotor.setVoltage(speed);
+        // Changed to .set
+        this.m_leftMotor.set(speed);
     }
 
     /**
@@ -201,8 +206,11 @@ public class Elevator extends SubsystemBase {
     }
     
     private void putToDashboard() {
-        SmartDashboard.putNumber("Motor output speed", totalSpeed);
-        SmartDashboard.putNumber("Setpoint", m_controller.getSetpoint().position);
+        SmartDashboard.putNumber("Total output speed", totalSpeed);
+        SmartDashboard.putNumber("Velocity", m_leftEncoder.getVelocity());
+        SmartDashboard.putNumber("Raw PID output", m_controller.calculate(m_leftEncoder.getPosition()));
+        SmartDashboard.putNumber("Feedforward output", m_feedforward.calculate(m_controller.getSetpoint().velocity));
+
         SmartDashboard.putNumber("Encoder Position: ", m_leftEncoder.getPosition());
         SmartDashboard.putNumber("Proportional  Error: ", m_controller.getPositionError());
         SmartDashboard.putNumber("Integral Error", m_controller.getTotalError());
@@ -217,9 +225,6 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putBoolean("Top limit switch hit: ", m_forwardLimit.isPressed());
         SmartDashboard.putBoolean("Bottom limit switch hit: ", m_reverseLimit.isPressed());
         SmartDashboard.putNumber("Current limit: ", m_leftMotor.getOutputCurrent());
-        SmartDashboard.putNumber("P: ", m_controller.getP());
-        SmartDashboard.putNumber("I: ", m_controller.getI());
-        SmartDashboard.putNumber("D: ", m_controller.getD());
 
         SmartDashboard.putData("Elevator PID Controller", m_controller);
     }
