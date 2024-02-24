@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.4996992416787696,
-      "y": 4.06
+      "x": 0.45095045059448935,
+      "y": 6.941827850401545
     },
     "rotation": 0.0
   },
@@ -11,6 +11,12 @@
     "type": "sequential",
     "data": {
       "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "CANCEL ALIGN"
+          }
+        },
         {
           "type": "path",
           "data": {
@@ -27,12 +33,6 @@
           "type": "path",
           "data": {
             "pathName": "AmpToNote1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ALIGN NOTE"
           }
         }
       ]

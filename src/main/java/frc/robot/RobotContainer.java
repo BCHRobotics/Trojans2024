@@ -59,6 +59,11 @@ public class RobotContainer {
                     new InstantCommand(
                         () -> m_robotDrive.alignWithNote()))); // Set alignmode to true before starting, and set isAligned to false
 
+        NamedCommands.registerCommand("WAIT FOR ALIGN", new RunCommand(() -> m_robotDrive.alignAuto()).until(
+                () -> m_robotDrive.checkAlignment()));
+
+        NamedCommands.registerCommand("CANCEL ALIGN", new InstantCommand(() -> m_robotDrive.cancelAlign()));
+
         // Build an auto chooser. This will use Commands.none() as the default option.
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -140,6 +145,6 @@ public class RobotContainer {
     public void setSpeedPercent() {
         // THIS IS COMMENTED OUT FOR XBOX FOR NOW
         //m_robotDrive.setSpeedPercent(1 - ((m_driverController.getThrottle() + 1) / 2));
-        m_robotDrive.setSpeedPercent(0.3);
+        m_robotDrive.setSpeedPercent(0.05);
     }
 }

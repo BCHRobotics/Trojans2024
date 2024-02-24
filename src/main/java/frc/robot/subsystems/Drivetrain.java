@@ -14,7 +14,10 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -172,11 +175,23 @@ public class Drivetrain extends SubsystemBase {
    */
   public void driveToTag() {
       // Apriltag alignment code
-      if (isAlignmentActive && targetPose != null) {
+      if (isAlignmentActive && targetPose != null && cameraMode) {
         Pose2d robotPose = getPose();
 
         double xCommand = targetPose.getX() - robotPose.getX();
         double yCommand = targetPose.getY() - robotPose.getY();
+
+        double tagRotation = targetPose.getRotation().getDegrees();
+
+        if (tagRotation > 0) {
+          tagRotation -= 180;
+        }
+        else {
+          tagRotation += 180;
+        }
+
+        double rotCommand = tagRotation - getHeading();
+        rotCommand *= Math.abs(rotCommand); // square the rot command for smoother rotation
 
         // Do not let the commanded speed above a certain value
         if (xCommand > 0) {
@@ -193,7 +208,13 @@ public class Drivetrain extends SubsystemBase {
           yCommand = Math.min(yCommand, VisionConstants.VISION_SPEED_LIMIT);
         }
 
-        if (Math.abs(yCommand) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD && Math.abs(xCommand) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD) {
+        if (rotCommand < 0) {
+          rotCommand = Math.max(rotCommand, -VisionConstants.VISION_TURN_LIMIT);
+        } else {
+          rotCommand = Math.min(rotCommand, VisionConstants.VISION_TURN_LIMIT);
+        }
+
+        if (Math.abs(rotCommand) < VisionConstants.APRILTAG_ROTATION_THRESHOLD && Math.abs(targetPose.getY() - robotPose.getY()) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD && Math.abs(targetPose.getX() - robotPose.getX()) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD) {
           isAlignmentSuccess = true;
           isAlignmentActive = false; // Stop the alignment when the target is reached
         }
@@ -201,11 +222,11 @@ public class Drivetrain extends SubsystemBase {
           isAlignmentSuccess = false;
         }
 
-        // Movement values being commanded to the robot
-        // SmartDashboard.putNumber("Commanded X", xCommand);
-        // SmartDashboard.putNumber("Commanded Y", yCommand);
+        //SmartDashboard.putNumber("Commanded X", xCommand);
+        //SmartDashboard.putNumber("Commanded Y", yCommand);
+        //SmartDashboard.putNumber("Commanded Rot", rotCommand);
 
-        drive(xCommand, yCommand, 0, true, true);
+        drive(xCommand, yCommand, rotCommand * 0.3, true, true);
       }
   }
 
@@ -216,8 +237,8 @@ public class Drivetrain extends SubsystemBase {
    */
   public void driveToNote() {
     // Note alignment code
-      if (isAlignmentActive) {
-        drive(-0.25, 0, m_noteCamera.getRotationSpeed(), false, true);
+      if (isAlignmentActive && !cameraMode) {
+        drive(-VisionConstants.VISION_SPEED_LIMIT, 0, m_noteCamera.getRotationSpeed(), false, true);
 
         if (!m_noteCamera.getResult().hasTargets()) {
           isAlignmentSuccess = true;
@@ -282,7 +303,7 @@ public class Drivetrain extends SubsystemBase {
           rotCommand = Math.min(rotCommand, VisionConstants.VISION_TURN_LIMIT);
         }
 
-        if (Math.abs(rotCommand) < VisionConstants.APRILTAG_ROTATION_THRESHOLD && Math.abs(yCommand) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD && Math.abs(xCommand) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD) {
+        if (Math.abs(rotCommand) < VisionConstants.APRILTAG_ROTATION_THRESHOLD && Math.abs(targetPose.getY() - robotPose.getY()) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD && Math.abs(targetPose.getX() - robotPose.getX()) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD) {
           isAlignmentSuccess = true;
           isAlignmentActive = false; // Stop the alignment when the target is reached
         }
@@ -294,7 +315,7 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("Commanded Y", yCommand);
         SmartDashboard.putNumber("Commanded Rot", rotCommand);
 
-        drive(xCommand, yCommand, rotCommand * 0.3, true, true);
+        //drive(xCommand, yCommand, rotCommand * 0.3, true, true);
       }
     }
   }
@@ -317,20 +338,22 @@ public class Drivetrain extends SubsystemBase {
    * Starts aligning towards a note, if a note can be seen
    */
   public void alignWithNote() {
-    cameraMode = false; // Set the camera mode to target notes
-    isAlignmentActive = true; // Start aligning
+    SmartDashboard.putBoolean("TEST", true);
 
     isAlignmentSuccess = false; // Set this to false so the alignment doesn't finish instantly
+
+    cameraMode = false; // Set the camera mode to target notes
+    isAlignmentActive = true; // Start aligning
   }
 
   /*
    * Starts aligning towards a tag, if a tag can be seen
    */
   public void alignWithTag() {
+    isAlignmentSuccess = false; // Set this to false so the alignment doesn't finish instantly
+
     cameraMode = true; // Set the camera mode to target apriltags
     isAlignmentActive = true; // Start aligning
-
-    isAlignmentSuccess = false; // Set this to false so the alignment doesn't finish instantly
   }
 
   /**
@@ -558,6 +581,15 @@ public class Drivetrain extends SubsystemBase {
    */
   public void setChassisSpeeds(ChassisSpeeds speed) {
     this.setModuleStates(DriveConstants.kDriveKinematics.toSwerveModuleStates(speed));
+  }
+
+  public void alignAuto() {
+    if (cameraMode && isAlignmentActive) {
+      driveToTag();
+    }
+    else if (isAlignmentActive) {
+      driveToNote();
+    }
   }
 
   /**
