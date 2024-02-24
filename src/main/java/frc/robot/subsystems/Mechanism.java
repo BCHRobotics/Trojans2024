@@ -83,35 +83,11 @@ public class Mechanism extends SubsystemBase{
     }
 
     /**
-     * Gets the motor voltage of the bottom belt motor
-     * @return the voltage the motor is getting
-     */
-    private double getBottomBeltSpeed() {
-        return this.m_bottomBeltMotor.getBusVoltage();
-    }
-
-    /**
-     * Gets the motor voltage of the top belt motor
-     * @return the voltage the motor is getting
-     */
-    private double getTopBeltSpeed() {
-        return this.m_topBeltMotor.getBusVoltage();
-    }
-
-    /**
      * Sets the speed of the source motor
      * @param speed the speed in volts [0 --> 12]
      */
     private void setSourceSpeed(double speed) {
         this.m_sourceMotor.setVoltage(speed);
-    }
-
-    /**
-     * Gets the motor voltage of the source motor
-     * @return the voltage the motor is getting
-     */
-    private double getSourceSpeed() {
-        return this.m_sourceMotor.getBusVoltage();
     }
     
     /**
@@ -123,14 +99,6 @@ public class Mechanism extends SubsystemBase{
     }
 
     /**
-     * Gets the motor voltage of the amp motor
-     * @return the voltage the motor is getting
-     */
-    private double getAmpSpeed() {
-        return this.m_ampMotor.getBusVoltage();
-    }
-
-    /**
      * A method to check if the phase changed
      * @param phase the phase that is checked
      */
@@ -138,43 +106,7 @@ public class Mechanism extends SubsystemBase{
         return m_currentPhase == phase;
     }
 
-    /**
-     * Cancels all mechanism commands
-     */
-    private void cancelAllMechanismCommands() {
-        CommandScheduler.getInstance().cancel(this.groundIntake(getBottomBeltSpeed()));
-        CommandScheduler.getInstance().cancel(this.scoreAmp(getAmpSpeed()));
-        CommandScheduler.getInstance().cancel(this.sourceIntake(getSourceSpeed()));
-    }
-
-    /**
-     * A command for intaking from the ground
-     * @param speed the commanded speed in voltage [0 --> 12]
-     */
     public Command groundIntake(double speed) {
-        return parallel(
-            Commands.startEnd(() -> this.setBeltSpeed(-speed), () -> this.setBeltSpeed(-speed * 0.75)),
-            Commands.startEnd(() -> this.setSourceSpeed(speed), () -> this.setSourceSpeed(speed * 0.75)),
-            Commands.startEnd(() -> this.setAmpSpeed(speed), () -> this.setAmpSpeed(speed * 0.75))
-        )
-        .until(() -> this.checkState(Phase.GROUND_PICKUP))
-        .andThen(() -> System.out.println("BOTTOM hit"))
-        .andThen(
-            parallel(
-                Commands.startEnd(() -> this.setBeltSpeed(-speed * 0.75), () -> this.setBeltSpeed(0.0))
-                .until(() -> this.checkState(Phase.LOADED))
-                .andThen(() -> System.out.println("MIDDLE hit")),
-
-                Commands.startEnd(() -> this.setSourceSpeed(-speed * 0.75), () -> this.setSourceSpeed(0.0))
-                .until(() -> this.checkState(Phase.LOADED)),
-
-                Commands.startEnd(() -> this.setAmpSpeed(-speed * 0.75), () -> this.setAmpSpeed(0.0))
-                .until(() -> this.checkState(Phase.LOADED))
-            )
-        );
-    }
-
-    public Command newgroundIntake(double speed) {
         return this.startEnd(
             () -> {
                 this.setBeltSpeed(-speed);
@@ -192,8 +124,8 @@ public class Mechanism extends SubsystemBase{
             .andThen(startEnd(
                 () -> {
                 this.setBeltSpeed(-speed * 0.75);
-                this.setSourceSpeed(-speed * 0.75);
-                this.setAmpSpeed(-speed * 0.75);
+                this.setSourceSpeed(speed * 0.75);
+                this.setAmpSpeed(speed * 0.75);
             },
             () -> {
                 this.setBeltSpeed(0.0);
@@ -202,29 +134,8 @@ public class Mechanism extends SubsystemBase{
             }).until(() -> this.checkState(Phase.LOADED))
         );
       }
- 
-    /**
-     * A command for intaking from the source
-     * @param speed the commanded speed in voltage [0 --> 12]
-     */
-    public Command sourceIntake(double speed) {
-        return parallel (
-            Commands.startEnd(() -> this.setSourceSpeed(-speed), () -> this.setSourceSpeed(-speed * 0.75)),
-            Commands.startEnd(() -> this.setAmpSpeed(-speed), () -> this.setAmpSpeed(-speed * 0.75)),
-            Commands.startEnd(() -> this.setBeltSpeed(speed), () -> this.setBeltSpeed(speed * 0.75))
-        )
-        .until(() -> this.checkState(Phase.SOURCE_INTAKE))
-        .andThen(
-            parallel(
-                Commands.startEnd(() -> this.setSourceSpeed(-speed * 0.75), () -> this.setSourceSpeed(0)),
-                Commands.startEnd(() -> this.setAmpSpeed(-speed * 0.75), () -> this.setAmpSpeed(0)),
-                Commands.startEnd(() -> this.setBeltSpeed(speed * 0.75), () -> this.setBeltSpeed(0))
-            )
-            .until(() -> this.checkState(Phase.LOADED))
-        );
-    }
 
-    public Command newsourceIntake(double speed) {
+    public Command sourceIntake(double speed) {
         return this.startEnd(
             () -> {
                 this.setBeltSpeed(speed);
@@ -253,33 +164,8 @@ public class Mechanism extends SubsystemBase{
         );
     }
 
-    /**
-     * A command for scoring in the amp
-     * @param speed the commanded speed in voltage [0 --> 12]
-     */
-
     //TODO: Slowdown amp motor when scoring
     public Command scoreAmp(double speed) {
-        return parallel(
-            Commands.startEnd(() -> this.setAmpSpeed(-speed), () -> this.setAmpSpeed(-speed))
-            .until(() -> this.checkState(Phase.SOURCE_INTAKE)),
-
-            Commands.startEnd(() -> this.setSourceSpeed(speed), () -> this.setSourceSpeed(speed))
-            .until(() -> this.checkState(Phase.SOURCE_INTAKE)),
-
-            Commands.startEnd(() -> this.setBeltSpeed(-speed), () -> this.setBeltSpeed(-speed))
-            .until(() -> this.checkState(Phase.SOURCE_INTAKE))
-        )
-        .andThen(
-            parallel(
-                Commands.runOnce(() -> this.setAmpSpeed(0)),
-                Commands.runOnce(() -> this.setSourceSpeed(0)),
-                Commands.runOnce(() -> this.setBeltSpeed(0))
-            ).beforeStarting(new WaitCommand(1))
-        );
-    }
-
-    public Command newscoreAmp(double speed) {
         return this.startEnd(
             () -> {
                 this.setBeltSpeed(-speed);
