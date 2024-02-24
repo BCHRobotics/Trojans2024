@@ -28,6 +28,8 @@ import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Robot;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.utils.SwerveUtils;
@@ -97,7 +99,6 @@ public class Drivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     this.updateOdometry();
-
     this.printToDashboard();
   }
 
@@ -108,7 +109,7 @@ public class Drivetrain extends SubsystemBase {
    */
   public Pose2d getPose() {
     return m_poseEstimator.getEstimatedPosition();
-  }
+    }
 
   public Rotation2d getGyroYaw() {
     return Rotation2d.fromDegrees(m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0));
@@ -132,6 +133,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void updateOdometry() {
+
     m_poseEstimator.update(
         getGyroYaw(),
         new SwerveModulePosition[] {
