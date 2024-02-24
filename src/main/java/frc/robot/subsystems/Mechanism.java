@@ -4,16 +4,12 @@
 
 package frc.robot.subsystems;
 
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.MechanismConstants;
@@ -120,7 +116,6 @@ public class Mechanism extends SubsystemBase{
                 this.setAmpSpeed(speed * 0.75);
             })
             .until(() -> this.checkState(Phase.GROUND_PICKUP))
-            .andThen(() -> System.out.println("BOTTOM hit"))
             .andThen(startEnd(
                 () -> {
                 this.setBeltSpeed(-speed * 0.75);
@@ -170,15 +165,16 @@ public class Mechanism extends SubsystemBase{
             () -> {
                 this.setBeltSpeed(-speed);
                 this.setSourceSpeed(speed);
-                this.setAmpSpeed(-speed);
+                this.setAmpSpeed(-speed * 0.75);
             },
 
             () -> {
                 this.setBeltSpeed(-speed);
                 this.setSourceSpeed(speed);
-                this.setAmpSpeed(-speed);
+                this.setAmpSpeed(-speed * 0.75);
             }
         )
+        //TODO: try phase.NONE
         .until(() -> this.checkState(Phase.SOURCE_INTAKE))
         .andThen(
             this.runOnce(
@@ -189,6 +185,33 @@ public class Mechanism extends SubsystemBase{
                 }
             )
             .beforeStarting(new WaitCommand(1))
+        );
+    }
+
+    public Command scoreSpeaker(double speed) {
+        return this.runOnce(
+            () -> {
+                this.setSourceSpeed(speed);
+                this.setAmpSpeed(speed);
+            }
+        )
+        .andThen(
+            this.runOnce(
+                () -> {
+                    this.setBeltSpeed(-speed);
+                }
+            )
+            .beforeStarting(new WaitCommand(1))
+        )
+        .until(() -> this.checkState(Phase.NONE))
+        .andThen(
+            this.runOnce(
+                () -> {
+                    this.setBeltSpeed(0);
+                    this.setSourceSpeed(0);
+                    this.setAmpSpeed(0);
+                }
+            )
         );
     }
 
