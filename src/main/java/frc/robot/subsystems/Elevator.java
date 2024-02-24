@@ -201,12 +201,17 @@ public class Elevator extends SubsystemBase {
     }
     
     private void putToDashboard() {
-        SmartDashboard.putNumber("Motor Speed: ", totalSpeed);
+        SmartDashboard.putNumber("Motor output speed", totalSpeed);
+        SmartDashboard.putNumber("Setpoint", m_controller.getSetpoint().position);
         SmartDashboard.putNumber("Encoder Position: ", m_leftEncoder.getPosition());
-        SmartDashboard.putNumber("Position Tolerence: ", m_controller.getPositionTolerance());
-        SmartDashboard.putNumber("Position Error: ", m_controller.getPositionError());
-        SmartDashboard.putNumber("Velocity Tolerence: ", m_controller.getVelocityTolerance());
-        SmartDashboard.putNumber("Velocity Error: ", m_controller.getVelocityError());
+        SmartDashboard.putNumber("Proportional  Error: ", m_controller.getPositionError());
+        SmartDashboard.putNumber("Integral Error", m_controller.getTotalError());
+        SmartDashboard.putNumber("Derivative Error: ", m_controller.getVelocityError());
+
+        SmartDashboard.putNumber("kp * Error", m_controller.getP() * m_controller.getPositionError());
+        SmartDashboard.putNumber("ki * errorSum", m_controller.getI() * m_controller.getTotalError());
+        SmartDashboard.putNumber("kd * errorRate", m_controller.getD() * m_controller.getVelocityError());
+
         SmartDashboard.putBoolean("At goal: ", m_controller.atGoal());
         SmartDashboard.putBoolean("At setpoint: ", m_controller.atSetpoint());
         SmartDashboard.putBoolean("Top limit switch hit: ", m_forwardLimit.isPressed());
@@ -215,6 +220,8 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putNumber("P: ", m_controller.getP());
         SmartDashboard.putNumber("I: ", m_controller.getI());
         SmartDashboard.putNumber("D: ", m_controller.getD());
+
+        SmartDashboard.putData("Elevator PID Controller", m_controller);
     }
     
     @Override

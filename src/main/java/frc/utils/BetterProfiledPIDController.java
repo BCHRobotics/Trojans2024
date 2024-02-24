@@ -7,7 +7,6 @@ package frc.utils;
 import edu.wpi.first.math.MathSharedStore;
 import edu.wpi.first.math.MathUsageId;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -20,7 +19,7 @@ import edu.wpi.first.util.sendable.SendableRegistry;
 public class BetterProfiledPIDController implements Sendable {
   private static int instances;
 
-  private PIDController m_controller;
+  private BetterPIDController m_controller;
   private double m_minimumInput;
   private double m_maximumInput;
 
@@ -61,7 +60,7 @@ public class BetterProfiledPIDController implements Sendable {
   @SuppressWarnings("this-escape")
   public BetterProfiledPIDController(
       double Kp, double Ki, double Kd, TrapezoidProfile.Constraints constraints, double period) {
-    m_controller = new PIDController(Kp, Ki, Kd, period);
+    m_controller = new BetterPIDController(Kp, Ki, Kd, period);
     m_constraints = constraints;
     m_profile = new TrapezoidProfile(m_constraints);
     instances++;
@@ -343,6 +342,15 @@ public class BetterProfiledPIDController implements Sendable {
    */
   public double getVelocityError() {
     return m_controller.getVelocityError();
+  }
+
+  /**
+   * Returns the total error of all computed values.
+   *
+   * @return The integral error.
+   */
+  public double getTotalError() {
+    return m_controller.getTotalError();
   }
 
   /**
