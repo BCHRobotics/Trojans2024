@@ -95,6 +95,7 @@ public class Drivetrain extends SubsystemBase {
   // Is true when the robot has finished a vision command
   private boolean isAlignmentSuccess = false;
   private boolean cameraMode = false;
+  private boolean isRunningAuto = false;
 
   // The stored field position of the target apriltag
   private Pose2d targetPose;
@@ -214,19 +215,28 @@ public class Drivetrain extends SubsystemBase {
           rotCommand = Math.min(rotCommand, VisionConstants.VISION_TURN_LIMIT);
         }
 
+        if (Math.abs(tagRotation - getHeading()) < VisionConstants.APRILTAG_ROTATION_THRESHOLD) {
+          rotCommand = 0;
+        }
+
+        if (Math.abs(targetPose.getY() - robotPose.getY()) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD) {
+          yCommand = 0;
+        }
+        
+        if (Math.abs(targetPose.getX() - robotPose.getX()) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD) {
+          xCommand = 0;
+        }
+
         if (Math.abs(rotCommand) < VisionConstants.APRILTAG_ROTATION_THRESHOLD && Math.abs(targetPose.getY() - robotPose.getY()) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD && Math.abs(targetPose.getX() - robotPose.getX()) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD) {
           isAlignmentSuccess = true;
           isAlignmentActive = false; // Stop the alignment when the target is reached
+
+          setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
         }
         else {
           isAlignmentSuccess = false;
+          drive(xCommand, yCommand, rotCommand * 0.3, true, true);
         }
-
-        //SmartDashboard.putNumber("Commanded X", xCommand);
-        //SmartDashboard.putNumber("Commanded Y", yCommand);
-        //SmartDashboard.putNumber("Commanded Rot", rotCommand);
-
-        drive(xCommand, yCommand, rotCommand * 0.3, true, true);
       }
   }
 
@@ -280,7 +290,6 @@ public class Drivetrain extends SubsystemBase {
         }
 
         double rotCommand = tagRotation - getHeading();
-        rotCommand *= Math.abs(rotCommand); // square the rot command for smoother rotation
 
         // Do not let the commanded speed above a certain value
         if (xCommand > 0) {
@@ -303,19 +312,27 @@ public class Drivetrain extends SubsystemBase {
           rotCommand = Math.min(rotCommand, VisionConstants.VISION_TURN_LIMIT);
         }
 
-        if (Math.abs(rotCommand) < VisionConstants.APRILTAG_ROTATION_THRESHOLD && Math.abs(targetPose.getY() - robotPose.getY()) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD && Math.abs(targetPose.getX() - robotPose.getX()) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD) {
+        if (Math.abs(tagRotation - getHeading()) < VisionConstants.APRILTAG_ROTATION_THRESHOLD) {
+          rotCommand = 0;
+        }
+
+        if (Math.abs(targetPose.getY() - robotPose.getY()) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD) {
+          yCommand = 0;
+        }
+        
+        if (Math.abs(targetPose.getX() - robotPose.getX()) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD) {
+          xCommand = 0;
+        }
+
+        if (Math.abs(tagRotation - getHeading()) < VisionConstants.APRILTAG_ROTATION_THRESHOLD && Math.abs(targetPose.getY() - robotPose.getY()) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD && Math.abs(targetPose.getX() - robotPose.getX()) < VisionConstants.APRILTAG_DISTANCE_THRESHOLD) {
           isAlignmentSuccess = true;
           isAlignmentActive = false; // Stop the alignment when the target is reached
+          setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
         }
         else {
           isAlignmentSuccess = false;
+          drive(xCommand, yCommand, rotCommand * 0.3, true, true);
         }
-
-        SmartDashboard.putNumber("Commanded X", xCommand);
-        SmartDashboard.putNumber("Commanded Y", yCommand);
-        SmartDashboard.putNumber("Commanded Rot", rotCommand);
-
-        //drive(xCommand, yCommand, rotCommand * 0.3, true, true);
       }
     }
   }
@@ -369,6 +386,16 @@ public class Drivetrain extends SubsystemBase {
             m_rearRight.getPosition()
         },
         pose);
+  }
+
+  // Called when the robot enters auto mode (temporary)
+  public void enterAuto() {
+    isRunningAuto = true;
+  }
+
+  // Called when the robot enters teleop mode (temporary)
+  public void enterTeleop() {
+    isRunningAuto = false;
   }
 
   /**
@@ -579,15 +606,6 @@ public class Drivetrain extends SubsystemBase {
    */
   public void setChassisSpeeds(ChassisSpeeds speed) {
     this.setModuleStates(DriveConstants.kDriveKinematics.toSwerveModuleStates(speed));
-  }
-
-  public void alignAuto() {
-    if (cameraMode && isAlignmentActive) {
-      driveToTag();
-    }
-    else if (isAlignmentActive) {
-      driveToNote();
-    }
   }
 
   /**

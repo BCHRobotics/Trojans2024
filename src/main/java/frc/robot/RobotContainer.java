@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.fasterxml.jackson.core.sym.Name;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathConstraints;
@@ -62,13 +63,14 @@ public class RobotContainer {
                     new InstantCommand(
                         () -> m_robotDrive.alignWithNote()))); // Set alignmode to true before starting, and set isAligned to false
 
-        NamedCommands.registerCommand("WAIT FOR ALIGN", new RunCommand(() -> m_robotDrive.alignAuto()).until(
-                () -> m_robotDrive.checkAlignment()));
-
+        // A command for canceling the current align command
         NamedCommands.registerCommand("CANCEL ALIGN", new InstantCommand(() -> m_robotDrive.cancelAlign()));
+        // Command to be run at the start of an auto
+        NamedCommands.registerCommand("BEGIN", new InstantCommand(() -> m_robotDrive.enterAuto()));
+        // Command to be run at the end of an auto
+        NamedCommands.registerCommand("BEGIN", new InstantCommand(() -> m_robotDrive.enterTeleop()));
 
         inputChooser = new SendableChooser<>();
-
         // Assigning values to the input method chooser
         inputChooser.addOption("XBoxController", Boolean.FALSE);
         inputChooser.addOption("Flightstick", Boolean.TRUE);
@@ -95,7 +97,7 @@ public class RobotContainer {
                 // Joystick movement controls robot movement (up, right, left, down).
                 // Turning is controlled by the twist axis of the flightstick.
                 new RunCommand(
-                    () -> m_robotDrive.drive(
+                    () -> m_robotDrive.driveCommand(
                         -MathUtil.applyDeadband(m_driverFlightstickController.getY(), OIConstants.kDriveDeadband),
                         -MathUtil.applyDeadband(m_driverFlightstickController.getX(), OIConstants.kDriveDeadband),
                         -MathUtil.applyDeadband(m_driverFlightstickController.getTwist(), OIConstants.kTwistDeadband),
@@ -107,7 +109,7 @@ public class RobotContainer {
                 // The left stick controls translation of the robot.
                 // Turning is controlled by the X axis of the right stick.
                 new RunCommand(
-                        () -> m_robotDrive.drive(
+                        () -> m_robotDrive.driveCommand(
                                 -MathUtil.applyDeadband(m_driverXboxController.getLeftY(), OIConstants.kDriveDeadband),
                                 -MathUtil.applyDeadband(m_driverXboxController.getLeftX(), OIConstants.kDriveDeadband),
                                 -MathUtil.applyDeadband(m_driverXboxController.getRightX(), OIConstants.kTurnDeadband),

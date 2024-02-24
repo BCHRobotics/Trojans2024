@@ -71,12 +71,15 @@ public final class Constants {
     public static final double CAMERA_HEIGHT = 0.0;
 
     // Speed and rotation caps for vision
-    public static final double VISION_SPEED_LIMIT = 0.5;
-    public static final double VISION_TURN_LIMIT = 0.2;
+    public static final double VISION_SPEED_LIMIT = 1;
+    public static final double VISION_TURN_LIMIT = 0.5;
 
     // How close to an apriltag the robot has to be before stopping (meters)
-    public static final double APRILTAG_DISTANCE_THRESHOLD = 0.3;
-    public static final double APRILTAG_ROTATION_THRESHOLD = 0.1;
+    public static final double APRILTAG_DISTANCE_THRESHOLD = 0.2;
+    // The amount of rotational error alowed (degrees)
+    public static final double APRILTAG_ROTATION_THRESHOLD = 3;
+
+    public static final double APRILTAG_DESIRED_OFFSET = 0.5; // (meters)
 
     // Camera names (a and b are TEMPORARY NAMES)
     public static final String NOTE_CAMERA_NAME = "a";
