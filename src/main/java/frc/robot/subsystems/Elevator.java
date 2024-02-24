@@ -99,9 +99,9 @@ public class Elevator extends SubsystemBase {
      * Sets the speed of the drive motor
      * @param speed speed in volts [0 --> 12]
      */
+    // fix this commennt later
     private void setLeftMotorSpeed(double speed) {
-        // Changed to .set
-        this.m_leftMotor.set(speed);
+        this.m_leftMotor.setVoltage(speed * 12);
     }
 
     /**
