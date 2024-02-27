@@ -22,7 +22,7 @@ public class Camera extends PhotonCamera {
 
     public Camera(String name) {
         super(name);
-        alignController = new PIDController(VisionConstants.NOTE_P_TERM, VisionConstants.NOTE_I_TERM, VisionConstants.NOTE_D_TERM);
+        alignController = new PIDController(VisionConstants.kNoteP, VisionConstants.kNoteI, VisionConstants.kNoteD);
     }
 
     PhotonPipelineResult result = this.getLatestResult();
@@ -77,7 +77,7 @@ public class Camera extends PhotonCamera {
             robotToTag.getX(), robotPose.getY() + 
             robotToTag.getY(), new Rotation2d((robotHeading + robotToTag.getRotation().getDegrees()) * (Math.PI / 180)));
 
-            Transform2d desiredOffset = toFieldTransform(new Transform2d(VisionConstants.APRILTAG_DESIRED_OFFSET, 0, new Rotation2d(0)), tagPose.getRotation().getDegrees());
+            Transform2d desiredOffset = toFieldTransform(new Transform2d(VisionConstants.kTagDesiredOffset, 0, new Rotation2d(0)), tagPose.getRotation().getDegrees());
             tagPose = new Pose2d(tagPose.getX() + desiredOffset.getX(), tagPose.getY() + desiredOffset.getY(), tagPose.getRotation());
 
             return tagPose;

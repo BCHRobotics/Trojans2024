@@ -14,12 +14,6 @@
         {
           "type": "named",
           "data": {
-            "name": "BEGIN"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "CANCEL ALIGN"
           }
         },
@@ -66,9 +60,33 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "AmpToNote2"
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "END"
+            "name": "ALIGN NOTE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note2ToAmp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN TAG"
           }
         }
       ]

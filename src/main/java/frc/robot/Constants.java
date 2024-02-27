@@ -68,27 +68,29 @@ public final class Constants {
 
   public static final class VisionConstants{
     // Height of the camera (not used anywhere right now)
-    public static final double CAMERA_HEIGHT = 0.0;
+    public static final double kCameraHeight = 0.0;
 
     // Speed and rotation caps for vision
-    public static final double VISION_SPEED_LIMIT = 1;
-    public static final double VISION_TURN_LIMIT = 0.5;
+    public static final double kVisionSpeedLimit = 1;
+    public static final double kVisionTurningLimit = 0.6;
 
     // How close to an apriltag the robot has to be before stopping (meters)
-    public static final double APRILTAG_DISTANCE_THRESHOLD = 0.2;
+    public static final double kTagDistanceThreshold = 0.2;
     // The amount of rotational error alowed (degrees)
-    public static final double APRILTAG_ROTATION_THRESHOLD = 3;
+    public static final double kTagRotationThreshold = 7.5;
 
-    public static final double APRILTAG_DESIRED_OFFSET = 0.5; // (meters)
+    public static final double kTagDesiredOffset = 1; // (meters)
+
+    public static final double kTagSlowdownDistance = 0.8;
 
     // Camera names (a and b are TEMPORARY NAMES)
-    public static final String NOTE_CAMERA_NAME = "a";
-    public static final String TAG_CAMERA_NAME = "b";
+    public static final String kNoteCameraName = "a";
+    public static final String kTagCameraName = "b";
 
     // PID values for aligning to a note
-    public static final double NOTE_P_TERM = 0.006;
-    public static final double NOTE_I_TERM = 0.004;
-    public static final double NOTE_D_TERM = 0.0003;
+    public static final double kNoteP = 0.006;
+    public static final double kNoteI = 0.004;
+    public static final double kNoteD = 0.0003;
   }
 
   public static final class ModuleConstants {

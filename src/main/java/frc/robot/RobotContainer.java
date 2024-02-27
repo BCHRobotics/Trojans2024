@@ -65,10 +65,6 @@ public class RobotContainer {
 
         // A command for canceling the current align command
         NamedCommands.registerCommand("CANCEL ALIGN", new InstantCommand(() -> m_robotDrive.cancelAlign()));
-        // Command to be run at the start of an auto
-        NamedCommands.registerCommand("BEGIN", new InstantCommand(() -> m_robotDrive.enterAuto()));
-        // Command to be run at the end of an auto
-        NamedCommands.registerCommand("BEGIN", new InstantCommand(() -> m_robotDrive.enterTeleop()));
 
         inputChooser = new SendableChooser<>();
         // Assigning values to the input method chooser
