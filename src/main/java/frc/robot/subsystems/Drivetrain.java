@@ -171,13 +171,16 @@ public class Drivetrain extends SubsystemBase {
   /**
    * A function for driving to the targeted apriltag, runs periodically 
    */
-  public void driveToTag() {
+  public void driveToTag(double offsetX, double offsetY) {
       // Apriltag alignment code
       if (isAlignmentActive && targetPose != null && cameraMode == true) {
         Pose2d robotPose = getPose();
 
-        double xCommand = targetPose.getX() - robotPose.getX();
-        double yCommand = targetPose.getY() - robotPose.getY();
+        Transform2d desiredOffset = m_tagCamera.toFieldTransform(new Transform2d(offsetX, offsetY, new Rotation2d(0)), targetPose.getRotation().getDegrees());
+
+        // The desired offset is how far from the tag you want to be (y axis shouldn't realy be used)
+        double xCommand = targetPose.getX() + desiredOffset.getX() - robotPose.getX();
+        double yCommand = targetPose.getY() + desiredOffset.getY() - robotPose.getY();
 
         double tagRotation = targetPose.getRotation().getDegrees();
 
@@ -211,27 +214,9 @@ public class Drivetrain extends SubsystemBase {
           rotCommand = Math.min(rotCommand, VisionConstants.kVisionTurningLimit);
         }
 
-        if (Math.abs(targetPose.getX() - robotPose.getX()) > VisionConstants.kTagSlowdownDistance) {
-          if (xCommand < 0) {
-            xCommand = -VisionConstants.kVisionSpeedLimit;
-          }
-          else {
-            xCommand = VisionConstants.kVisionSpeedLimit;
-          }
-        }
-
-        if (Math.abs(targetPose.getY() - robotPose.getY()) > VisionConstants.kTagSlowdownDistance) {
-          if (yCommand < 0) {
-            yCommand = -VisionConstants.kVisionSpeedLimit;
-          }
-          else {
-            yCommand = VisionConstants.kVisionSpeedLimit;
-          }
-        }
-
         boolean rotFinished = Math.abs(tagRotation - getHeading()) < VisionConstants.kTagRotationThreshold;
-        boolean xFinished = Math.abs(targetPose.getX() - robotPose.getX()) < VisionConstants.kTagDistanceThreshold;
-        boolean yFinished = Math.abs(targetPose.getY() - robotPose.getY()) < VisionConstants.kTagDistanceThreshold;
+        boolean xFinished = Math.abs(targetPose.getX() + desiredOffset.getX() - robotPose.getX()) < VisionConstants.kTagDistanceThreshold;
+        boolean yFinished = Math.abs(targetPose.getY() + desiredOffset.getY() - robotPose.getY()) < VisionConstants.kTagDistanceThreshold;
 
         if (rotFinished) { rotCommand = 0; }
         if (xFinished) { xCommand = 0; }
@@ -239,7 +224,7 @@ public class Drivetrain extends SubsystemBase {
 
         if (rotFinished && xFinished && yFinished) {
           isAlignmentSuccess = true;
-          //isAlignmentActive = false; // Stop the alignment when the target is reached
+          isAlignmentActive = false; // Stop the alignment when the target is reached
           setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
         }
         else {
@@ -283,7 +268,7 @@ public class Drivetrain extends SubsystemBase {
 
     if (isAlignmentActive && cameraMode == true && targetPose != null) {
       // Apriltag alignment code
-      driveToTag();
+      driveToTag(VisionConstants.kTagOffsetX, VisionConstants.kTagOffsetY);
     }
   }
 

@@ -77,9 +77,6 @@ public class Camera extends PhotonCamera {
             robotToTag.getX(), robotPose.getY() + 
             robotToTag.getY(), new Rotation2d((robotHeading + robotToTag.getRotation().getDegrees()) * (Math.PI / 180)));
 
-            Transform2d desiredOffset = toFieldTransform(new Transform2d(VisionConstants.kTagDesiredOffset, 0, new Rotation2d(0)), tagPose.getRotation().getDegrees());
-            tagPose = new Pose2d(tagPose.getX() + desiredOffset.getX(), tagPose.getY() + desiredOffset.getY(), tagPose.getRotation());
-
             return tagPose;
     }
 

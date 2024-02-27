@@ -51,7 +51,7 @@ public class RobotContainer {
     public RobotContainer() {
         // Apriltag alignment command
         NamedCommands.registerCommand("ALIGN TAG", new RunCommand(
-            () -> m_robotDrive.driveToTag()).until( // Run the alignwithtag function
+            () -> m_robotDrive.driveToTag(VisionConstants.kTagOffsetX, VisionConstants.kTagOffsetY)).until( // Run the alignwithtag function
                 () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
                     new InstantCommand(
                         () -> m_robotDrive.alignWithTag()))); // Set alignmode to true before starting
@@ -185,8 +185,8 @@ public class RobotContainer {
         this.m_driverFlightstickController.button(3).onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
         // Align with note command (Button 4)
         this.m_driverFlightstickController.button(4).onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
-        // Zero heading command (Button 5)
-        this.m_driverFlightstickController.button(6).onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
+        // Zero heading command (Button 6)
+        this.m_driverFlightstickController.button(6).onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign(), m_robotDrive));
     }
 
     /**
