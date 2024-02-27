@@ -1,0 +1,169 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.47025552740564164,
+      "y": 7.168516673215683
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Start to Amp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "TAG PIPELINE"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN TAG"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "NOTE PIPELINE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp To First Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN NOTE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "First Note To Amp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "TAG PIPELINE"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN TAG"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "NOTE PIPELINE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp To Second Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN NOTE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SecondNoteToAmp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "TAG PIPELINE"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN TAG"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Stupid"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Back to stupid"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Stupid"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Back to stupid"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Stupid"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Back to stupid"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Stupid"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Back to stupid"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Stupid"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Back to stupid"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
