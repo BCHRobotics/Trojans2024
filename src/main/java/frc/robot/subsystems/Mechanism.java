@@ -13,12 +13,15 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.MechanismConstants;
+import frc.robot.Constants.ElevatorConstants.kElevatorPositions;
 import frc.utils.BeamBreak;
 import frc.utils.BeamBreak.Phase;
 
 public class Mechanism extends SubsystemBase{
     // The beam-break sensor that detects where a note is in the mechanism
     private final BeamBreak m_beamBreak = new BeamBreak();
+
+    private Elevator m_elevator = new Elevator();
 
     // The phase of the beam-break sensor
     private Phase m_currentPhase = Phase.NONE;
@@ -156,26 +159,25 @@ public class Mechanism extends SubsystemBase{
                 this.setAmpSpeed(0.0);
             })
             .until(() -> this.checkState(Phase.LOADED))
+            .andThen(() -> this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
         );
     }
 
-    //TODO: Slowdown amp motor when scoring
     public Command scoreAmp(double speed) {
         return this.startEnd(
             () -> {
                 this.setBeltSpeed(-speed);
                 this.setSourceSpeed(speed);
-                this.setAmpSpeed(-speed * 0.75);
+                this.setAmpSpeed(-speed * 0.7);
             },
 
             () -> {
                 this.setBeltSpeed(-speed);
                 this.setSourceSpeed(speed);
-                this.setAmpSpeed(-speed * 0.75);
+                this.setAmpSpeed(-speed * 0.7);
             }
         )
-        //TODO: try phase.NONE
-        .until(() -> this.checkState(Phase.SOURCE_INTAKE))
+        .until(() -> this.checkState(Phase.NONE)) //before it was Phase.SOURCE_INTAKE
         .andThen(
             this.runOnce(
                 () -> {
@@ -185,6 +187,7 @@ public class Mechanism extends SubsystemBase{
                 }
             )
             .beforeStarting(new WaitCommand(1))
+            .andThen(() -> this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
         );
     }
 
@@ -204,6 +207,7 @@ public class Mechanism extends SubsystemBase{
             .beforeStarting(new WaitCommand(1))
         )
         .until(() -> this.checkState(Phase.NONE))
+        .andThen(() -> this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
         .andThen(
             this.runOnce(
                 () -> {

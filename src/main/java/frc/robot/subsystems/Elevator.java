@@ -90,7 +90,7 @@ public class Elevator extends SubsystemBase {
      * Checks if the elevator postion is at the goal
      * @return if goal is reached
      */
-    public static boolean checkAtGoal() {
+    public boolean checkAtGoal() {
         return m_controller.atGoal();
     }
     

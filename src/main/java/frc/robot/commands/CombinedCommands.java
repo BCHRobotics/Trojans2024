@@ -13,9 +13,39 @@ public class CombinedCommands {
     Command pickupFromGround() {
         return
             Commands.runOnce(() -> m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
-                .until(Elevator::checkAtGoal)
+                .until(() -> m_elevator.checkAtGoal())
                 .andThen(
-                    Commands.runOnce(() -> m_mechanism.groundIntake(6)))
+                    Commands.runOnce(() -> m_mechanism.groundIntake(12)))
+                    .andThen(
+                        Commands.runOnce(() -> m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE)));
+    }
+
+    Command pickupFromSource() {
+        return
+            Commands.runOnce(() -> m_elevator.moveToPositionCommand(kElevatorPositions.SOURCE))
+                .until(() -> m_elevator.checkAtGoal())
+                .andThen(
+                    Commands.runOnce(() -> m_mechanism.sourceIntake(6)))
+                    .andThen(
+                        Commands.runOnce(() -> m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE)));
+    }
+
+    Command scoreIntoAmp() {
+        return
+            Commands.runOnce(() -> m_elevator.moveToPositionCommand(kElevatorPositions.AMP))
+                .until(() -> m_elevator.checkAtGoal())
+                .andThen(
+                    Commands.runOnce(() -> m_mechanism.scoreAmp(6)))
+                    .andThen(
+                        Commands.runOnce(() -> m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE)));
+    }
+
+    Command scoreIntoSpeaker() {
+        return
+            Commands.runOnce(() -> m_elevator.moveToPositionCommand(kElevatorPositions.AMP))
+                .until(() -> m_elevator.checkAtGoal())
+                .andThen(
+                    Commands.runOnce(() -> m_mechanism.scoreSpeaker(12)))
                     .andThen(
                         Commands.runOnce(() -> m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE)));
     }
