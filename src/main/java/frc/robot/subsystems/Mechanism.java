@@ -22,9 +22,9 @@ public class Mechanism extends SubsystemBase{
     // The beam-break sensor that detects where a note is in the mechanism
     private final BeamBreak m_beamBreak = new BeamBreak();
 
-    private Elevator m_elevator;
+   // private Elevator m_elevator;
 
-    private LEDs m_LEDs;
+    private LEDs m_LEDs = new LEDs();
 
     // The phase of the beam-break sensor
     private Phase m_currentPhase = Phase.NONE;
@@ -106,10 +106,10 @@ public class Mechanism extends SubsystemBase{
      */
     private boolean checkState(Phase phase) {
         if (this.m_currentPhase == Phase.NONE) {
-            this.m_LEDs.setLEDs(true);
+            this.turnOffLEDs();
         }
         else {
-            this.m_LEDs.setLEDs(false);
+            this.turnOnLEDs();
         }
 
         return m_currentPhase == phase;
@@ -145,7 +145,6 @@ public class Mechanism extends SubsystemBase{
                 this.setSourceSpeed(0.0);
                 this.setAmpSpeed(0.0);
             }).until(() -> this.checkState(Phase.LOADED))
-        //    .andThen(() -> this.m_LEDs.setLEDs(true))
         );
       }
 
@@ -180,8 +179,7 @@ public class Mechanism extends SubsystemBase{
                 this.setAmpSpeed(0.0);
             })
             .until(() -> this.checkState(Phase.LOADED))
-           // .andThen(() -> this.m_LEDs.setLEDs(true))
-            .andThen(() -> this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
+           // .andThen(() -> this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
         );
     }
 
@@ -214,8 +212,7 @@ public class Mechanism extends SubsystemBase{
                 }
             )
             .beforeStarting(new WaitCommand(1))
-            //.andThen(() -> this.m_LEDs.setLEDs(false))
-            .andThen(() -> this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
+           // .andThen(() -> this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
         );
     }
 
@@ -240,7 +237,7 @@ public class Mechanism extends SubsystemBase{
             .beforeStarting(new WaitCommand(1))
         )
         .until(() -> this.checkState(Phase.NONE))
-        .andThen(() -> this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
+       // .andThen(() -> this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
         .andThen(
             this.runOnce(
                 () -> {
@@ -249,7 +246,6 @@ public class Mechanism extends SubsystemBase{
                     this.setAmpSpeed(0);
                 }
             )
-           // .andThen(() -> this.m_LEDs.setLEDs(false))
         );
     }
 
@@ -263,6 +259,14 @@ public class Mechanism extends SubsystemBase{
           this.setSourceSpeed(0);
           this.setAmpSpeed(0);
         });
+    }
+
+    public void turnOnLEDs() {
+        this.m_LEDs.setLEDs(false);
+    }
+
+    public void turnOffLEDs() {
+        this.m_LEDs.setLEDs(true);
     }
 
     public void periodic() {

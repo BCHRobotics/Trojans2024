@@ -21,13 +21,10 @@ public class LEDs extends SubsystemBase{
      * @param state true for on, false for off
      * @return
      */
-    public Command setLEDs(boolean state) {
-        return this.runOnce(
-            () -> {
-                this.m_FrontLED.set(state); 
-                this.m_RearLeftLED.set(state);
-                this.m_RearRightLED.set(state);
-            }
-        );
+    public void setLEDs(boolean state) {
+        this.m_FrontLED.set(state); 
+        this.m_RearLeftLED.set(state);
+        this.m_RearRightLED.set(state);
+        System.out.println("LEDS are: " + state);
     }
 }

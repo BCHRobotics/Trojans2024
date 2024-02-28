@@ -39,7 +39,6 @@ public class RobotContainer {
     private final Elevator m_elevator = new Elevator();
     private final Mechanism m_mechanism = new Mechanism();
     private final CombinedCommands m_combinedCommands = new CombinedCommands();
-    private final LEDs m_LEDs = new LEDs();
 
     // The driver's controller
     CommandJoystick m_driverController = new CommandJoystick(OIConstants.kDriverControllerPort);
@@ -123,12 +122,12 @@ public class RobotContainer {
         this.m_driverXboxController.leftBumper().onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
 
 
-        //this.m_operatorController.povUp().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.SOURCE));
-        //this.m_operatorController.povRight().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.AMP));
-        //this.m_operatorController.povDown().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE));
-        //this.m_operatorController.leftBumper().onTrue(this.m_elevator.stopElevatorCommand());
+        this.m_operatorController.povUp().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.SOURCE));
+        this.m_operatorController.povRight().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.AMP));
+        this.m_operatorController.povDown().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE));
+        this.m_operatorController.leftBumper().onTrue(this.m_elevator.stopElevatorCommand());
 
-        this.m_operatorController.povUp().onTrue(this.m_combinedCommands.pickupFromSource());
+        //this.m_operatorController.povUp().onTrue(this.m_combinedCommands.pickupFromSource());
 
         this.m_operatorController.b().onTrue(this.m_mechanism.scoreAmp(6));
         this.m_operatorController.y().onTrue(this.m_mechanism.sourceIntake(6));
@@ -172,6 +171,6 @@ public class RobotContainer {
      * Initializes the LEDs
      */
     public void initLEDs() {
-        m_LEDs.setLEDs(false);
+        this.m_mechanism.turnOffLEDs();
     }
 }

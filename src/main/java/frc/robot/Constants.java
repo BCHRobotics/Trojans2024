@@ -119,9 +119,9 @@ public final class Constants {
   }
 
   public static final class LEDConstants {
-    public static final int kFrontLEDPort = 0;
-    public static final int kRearLeftLEDPort = 1;
-    public static final int kRearRightLEDPort = 2;
+    public static final int kFrontLEDPort = 7;
+    public static final int kRearLeftLEDPort = 8;
+    public static final int kRearRightLEDPort = 9;
   }
 
   public static final class ModuleConstants {
