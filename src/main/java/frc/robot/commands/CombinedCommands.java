@@ -10,7 +10,7 @@ public class CombinedCommands {
     Elevator m_elevator;
     Mechanism m_mechanism;
 
-    Command pickupFromGround() {
+    public Command pickupFromGround() {
         return
             Commands.runOnce(() -> m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
                 .until(() -> m_elevator.checkAtGoal())
@@ -30,7 +30,7 @@ public class CombinedCommands {
                         Commands.runOnce(() -> m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE)));
     }
 
-    Command scoreIntoAmp() {
+    public Command scoreIntoAmp() {
         return
             Commands.runOnce(() -> m_elevator.moveToPositionCommand(kElevatorPositions.AMP))
                 .until(() -> m_elevator.checkAtGoal())
@@ -40,7 +40,7 @@ public class CombinedCommands {
                         Commands.runOnce(() -> m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE)));
     }
 
-    Command scoreIntoSpeaker() {
+    public Command scoreIntoSpeaker() {
         return
             Commands.runOnce(() -> m_elevator.moveToPositionCommand(kElevatorPositions.AMP))
                 .until(() -> m_elevator.checkAtGoal())

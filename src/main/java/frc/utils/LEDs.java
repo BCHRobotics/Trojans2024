@@ -6,22 +6,22 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LEDConstants;
 
 public class LEDs extends SubsystemBase{
-    private final DigitalOutput mFrontLED;
-    private final DigitalOutput mRearLeftLED;
-    private final DigitalOutput mRearRightLED;
+    private final DigitalOutput m_FrontLED;
+    private final DigitalOutput m_RearLeftLED;
+    private final DigitalOutput m_RearRightLED;
 
     public LEDs() {
-        this.mFrontLED = new DigitalOutput(LEDConstants.kFrontLEDPort);
-        this.mRearLeftLED = new DigitalOutput(LEDConstants.kRearLeftLEDPort);
-        this.mRearRightLED = new DigitalOutput(LEDConstants.kRearRightLEDPort);
+        this.m_FrontLED = new DigitalOutput(LEDConstants.kFrontLEDPort);
+        this.m_RearLeftLED = new DigitalOutput(LEDConstants.kRearLeftLEDPort);
+        this.m_RearRightLED = new DigitalOutput(LEDConstants.kRearRightLEDPort);
     }
 
     public Command setLEDs(boolean state) {
         return this.runOnce(
             () -> {
-                this.mFrontLED.set(state); 
-                this.mRearLeftLED.set(state);
-                this.mRearRightLED.set(state);
+                this.m_FrontLED.set(state); 
+                this.m_RearLeftLED.set(state);
+                this.m_RearRightLED.set(state);
             }
         );
     }
