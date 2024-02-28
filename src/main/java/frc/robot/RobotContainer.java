@@ -38,7 +38,7 @@ public class RobotContainer {
     // The driver's controller
     CommandJoystick m_driverController = new CommandJoystick(OIConstants.kDriverControllerPort);
 
-    CommandXboxController m_XboxController = new CommandXboxController(1);
+    CommandXboxController m_operatorController = new CommandXboxController(1);
 
     // The auto chooser
     private final SendableChooser<Command> autoChooser;
@@ -88,17 +88,16 @@ public class RobotContainer {
             .onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive))
             .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));    
 
-        this.m_XboxController.povUp().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.SOURCE));
-        this.m_XboxController.povRight().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.AMP));
-        this.m_XboxController.povLeft().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.TRAVEL));
-        this.m_XboxController.povDown().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE));
-        this.m_XboxController.leftBumper().onTrue(this.m_elevator.stopElevatorCommand());
+        this.m_operatorController.povUp().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.SOURCE));
+        this.m_operatorController.povRight().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.AMP));
+        this.m_operatorController.povDown().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE));
+        this.m_operatorController.leftBumper().onTrue(this.m_elevator.stopElevatorCommand());
 
-        this.m_XboxController.b().onTrue(this.m_mechanism.scoreAmp(6));
-        this.m_XboxController.y().onTrue(this.m_mechanism.sourceIntake(6));
-        this.m_XboxController.x().onTrue(this.m_mechanism.groundIntake(12));
-        this.m_XboxController.rightBumper().onTrue(this.m_mechanism.scoreSpeaker(12));
-        this.m_XboxController.a().onTrue(this.m_mechanism.stopMechanism());
+        this.m_operatorController.b().onTrue(this.m_mechanism.scoreAmp(6));
+        this.m_operatorController.y().onTrue(this.m_mechanism.sourceIntake(6));
+        this.m_operatorController.x().onTrue(this.m_mechanism.groundIntake(12));
+        this.m_operatorController.rightBumper().onTrue(this.m_mechanism.scoreSpeaker(12));
+        this.m_operatorController.a().onTrue(this.m_mechanism.stopMechanism());
     }
 
     /**

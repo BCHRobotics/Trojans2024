@@ -160,7 +160,6 @@ public class Elevator extends SubsystemBase {
     private void cancelAllElevatorCommands() {
         CommandScheduler.getInstance().cancel(this.moveToPositionCommand(kElevatorPositions.SOURCE));
         CommandScheduler.getInstance().cancel(this.moveToPositionCommand(kElevatorPositions.AMP));
-        CommandScheduler.getInstance().cancel(this.moveToPositionCommand(kElevatorPositions.TRAVEL));
         CommandScheduler.getInstance().cancel(this.moveToPositionCommand(kElevatorPositions.INTAKE));
     }
 
@@ -180,11 +179,6 @@ public class Elevator extends SubsystemBase {
                 return this.runOnce(() -> Elevator.m_controller.setGoal(
                     ElevatorConstants.kElevatorGoals[
                     ElevatorConstants.kElevatorPositions.SOURCE.ordinal()]));
-
-            case TRAVEL:
-                return this.runOnce(() -> Elevator.m_controller.setGoal(
-                    ElevatorConstants.kElevatorGoals[
-                    ElevatorConstants.kElevatorPositions.TRAVEL.ordinal()]));
 
             case INTAKE:
                 return this.runOnce(() -> Elevator.m_controller.setGoal(

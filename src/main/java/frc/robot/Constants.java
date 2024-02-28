@@ -98,14 +98,12 @@ public final class Constants {
     public enum kElevatorPositions {
       SOURCE,
       AMP,
-      TRAVEL,
       INTAKE
     }
 
     public static double[] kElevatorGoals = new double[] {
       0.39,
       0.32,
-      0.08,
       0
     };
   }
