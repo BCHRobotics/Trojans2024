@@ -19,7 +19,6 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Mechanism;
 import frc.utils.BeamBreak;
-import frc.utils.LEDs;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -171,6 +170,6 @@ public class RobotContainer {
      * Initializes the LEDs
      */
     public void initLEDs() {
-        this.m_mechanism.turnOffLEDs();
+        this.m_mechanism.powerLEDs("Off");
     }
 }

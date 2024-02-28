@@ -119,9 +119,18 @@ public final class Constants {
   }
 
   public static final class LEDConstants {
-    public static final int kFrontLEDPort = 7;
-    public static final int kRearLeftLEDPort = 8;
-    public static final int kRearRightLEDPort = 9;
+    public static final int kRedLEDPort = 7;
+    public static final int kGreenLEDPort = 8;
+    public static final int kBlueLEDPort = 9;
+
+    public static boolean[] kLEDRed = new boolean[] {true, false, false};
+    public static boolean[] kLEDGreen = new boolean[] {false, true, false};
+    public static boolean[] kLEDBlue = new boolean[] {false, false, true};
+    public static boolean[] kLEDYellow = new boolean[] {true, true, false};
+    public static boolean[] kLEDPurple = new boolean[] {true, false, true};
+    public static boolean[] kLEDCyan = new boolean[] {false, true, true};
+    public static boolean[] kLEDWhite = new boolean[] {true, true, true};
+    public static boolean[] kLEDOff = new boolean[] {false, false, false};
   }
 
   public static final class ModuleConstants {

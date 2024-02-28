@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.MechanismConstants;
+import frc.robot.Constants.LEDConstants;
 import frc.robot.Constants.ElevatorConstants.kElevatorPositions;
 import frc.utils.BeamBreak;
 import frc.utils.LEDs;
@@ -106,10 +107,10 @@ public class Mechanism extends SubsystemBase{
      */
     private boolean checkState(Phase phase) {
         if (this.m_currentPhase == Phase.NONE) {
-            this.turnOffLEDs();
+            this.powerLEDs("Off");
         }
         else {
-            this.turnOnLEDs();
+            this.powerLEDs("Purple");
         }
 
         return m_currentPhase == phase;
@@ -249,10 +250,6 @@ public class Mechanism extends SubsystemBase{
         );
     }
 
-    /**
-     * a method to stop the mechanism from running
-     * @return
-     */
     public Command stopMechanism() {
         return runOnce(() -> {
           this.setBeltSpeed(0);
@@ -261,12 +258,35 @@ public class Mechanism extends SubsystemBase{
         });
     }
 
-    public void turnOnLEDs() {
-        this.m_LEDs.setLEDs(false);
-    }
+    public void powerLEDs(String colour) {
+        switch (colour) {
+            case "Red":
+                this.m_LEDs.setLEDs(LEDConstants.kLEDRed[0], LEDConstants.kLEDRed[1], LEDConstants.kLEDRed[2]);
 
-    public void turnOffLEDs() {
-        this.m_LEDs.setLEDs(true);
+            case "Green":
+                this.m_LEDs.setLEDs(LEDConstants.kLEDGreen[0], LEDConstants.kLEDGreen[1], LEDConstants.kLEDGreen[2]);
+            
+            case "Blue":
+                this.m_LEDs.setLEDs(LEDConstants.kLEDBlue[0], LEDConstants.kLEDBlue[1], LEDConstants.kLEDBlue[2]);
+
+            case "Yellow":
+                this.m_LEDs.setLEDs(LEDConstants.kLEDYellow[0], LEDConstants.kLEDYellow[1], LEDConstants.kLEDYellow[2]);
+
+            case "Purple":
+                this.m_LEDs.setLEDs(LEDConstants.kLEDPurple[0], LEDConstants.kLEDPurple[1], LEDConstants.kLEDPurple[2]);
+
+            case "Cyan":
+                this.m_LEDs.setLEDs(LEDConstants.kLEDCyan[0], LEDConstants.kLEDCyan[1], LEDConstants.kLEDCyan[2]);
+
+            case "White":
+                this.m_LEDs.setLEDs(LEDConstants.kLEDWhite[0], LEDConstants.kLEDWhite[1], LEDConstants.kLEDWhite[2]);
+
+            case "Off":
+                this.m_LEDs.setLEDs(LEDConstants.kLEDOff[0], LEDConstants.kLEDOff[1], LEDConstants.kLEDOff[2]);
+        
+            default:
+                break;
+        }
     }
 
     public void periodic() {
