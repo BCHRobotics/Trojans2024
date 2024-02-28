@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.MechanismConstants;
@@ -256,6 +257,23 @@ public class Mechanism extends SubsystemBase{
           this.setSourceSpeed(0);
           this.setAmpSpeed(0);
         });
+    }
+
+    public Command lightShow() {
+        return Commands.repeatingSequence(
+            this.runOnce(() -> this.powerLEDs("red")),
+            new WaitCommand(0.1),
+            this.runOnce(() -> this.powerLEDs("blue")),
+            new WaitCommand(0.2),
+            this.runOnce(() -> this.powerLEDs("green")),
+            new WaitCommand(0.1),
+            this.runOnce(() -> this.powerLEDs("yellow")),
+            new WaitCommand(0.2),
+            this.runOnce(() -> this.powerLEDs("purple")),
+            new WaitCommand(0.1),
+            this.runOnce(() -> this.powerLEDs("cyan")),
+            new WaitCommand(0.2)
+        ).repeatedly();
     }
 
     public void powerLEDs(String colour) {
