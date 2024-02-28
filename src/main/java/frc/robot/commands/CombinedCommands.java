@@ -17,6 +17,6 @@ public class CombinedCommands {
                 .andThen(
                     Commands.runOnce(() -> m_mechanism.groundIntake(6)))
                     .andThen(
-                        Commands.runOnce(() -> m_elevator.moveToPositionCommand(kElevatorPositions.TRAVEL)));
+                        Commands.runOnce(() -> m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE)));
     }
 }
