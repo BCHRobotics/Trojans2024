@@ -20,7 +20,7 @@ public class CombinedCommands {
                         Commands.runOnce(() -> m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE)));
     }
 
-    Command pickupFromSource() {
+    public Command pickupFromSource() {
         return
             Commands.runOnce(() -> m_elevator.moveToPositionCommand(kElevatorPositions.SOURCE))
                 .until(() -> m_elevator.checkAtGoal())

@@ -7,18 +7,21 @@ import frc.robot.Constants.LEDConstants;
 
 public class LEDs extends SubsystemBase{
     private final DigitalOutput mFrontLED;
-    private final DigitalOutput mRearLED;
+    private final DigitalOutput mRearLeftLED;
+    private final DigitalOutput mRearRightLED;
 
     public LEDs() {
         this.mFrontLED = new DigitalOutput(LEDConstants.kFrontLEDPort);
-        this.mRearLED = new DigitalOutput(LEDConstants.kRearLEDPort);
+        this.mRearLeftLED = new DigitalOutput(LEDConstants.kRearLeftLEDPort);
+        this.mRearRightLED = new DigitalOutput(LEDConstants.kRearRightLEDPort);
     }
 
     public Command setLEDs(boolean state) {
         return this.runOnce(
             () -> {
                 this.mFrontLED.set(state); 
-                this.mRearLED.set(state);
+                this.mRearLeftLED.set(state);
+                this.mRearRightLED.set(state);
             }
         );
     }
