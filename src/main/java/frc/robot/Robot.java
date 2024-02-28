@@ -91,6 +91,9 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
+    // Configures the input method (xbox or flightstick) when entering teleop
+    m_robotContainer.configureDefaultCommands();
   }
 
   /** This function is called periodically during operator control. */

@@ -32,8 +32,8 @@ public final class Constants {
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
     public static final double kDirectionSlewRate = 1.4; // radians per second
-    public static final double kMagnitudeSlewRate = 3.6; // percent per second (1 = 100%)
-    public static final double kRotationalSlewRate = 3.0; // percent per second (1 = 100%)
+    public static final double kMagnitudeSlewRate = 2.8; // percent per second (1 = 100%) // 3.6
+    public static final double kRotationalSlewRate = 2.6; // percent per second (1 = 100%) // 3.0
 
     // Chassis configuration
     public static final double kTrackWidth = Units.inchesToMeters(24.5);
@@ -118,6 +118,33 @@ public final class Constants {
     public static final int kBottomSensorChannel = 0;
     public static final int kMiddleSensorChannel = 1;
     public static final int kTopSensorChannel = 2;
+    
+  public static final class VisionConstants{
+    // Height of the camera (not used anywhere right now)
+    public static final double kCameraHeight = 0.0;
+
+    // Speed and rotation caps for vision
+    public static final double kVisionSpeedLimit = 0.8;
+    public static final double kVisionTurningLimit = 0.6;
+
+    // How close to an apriltag the robot has to be before stopping (meters)
+    public static final double kTagDistanceThreshold = 0.035;
+    // The amount of rotational error alowed (degrees)
+    public static final double kTagRotationThreshold = 7.5;
+
+    public static final double kTagOffsetX = 1; // (meters)
+    public static final double kTagOffsetY = 0; // (meters)
+
+    public static final double kTagSlowdownDistance = 0.8;
+
+    // Camera names (a and b are TEMPORARY NAMES)
+    public static final String kNoteCameraName = "a";
+    public static final String kTagCameraName = "b";
+
+    // PID values for aligning to a note
+    public static final double kNoteP = 0.006;
+    public static final double kNoteI = 0.004;
+    public static final double kNoteD = 0.0003;
   }
 
   public static final class ModuleConstants {
@@ -176,8 +203,10 @@ public final class Constants {
   }
 
   public static final class OIConstants {
-    public static final int kDriverControllerPort = 0;
+    public static final int kFlightstickPort = 0;
+    public static final int kXBoxPort = 1;
     public static final double kDriveDeadband = 0.05;
+    public static final double kTurnDeadband = 0.15;
     public static final double kTwistDeadband = 0.5;
     public static final boolean kFieldRelative = true;
     public static final boolean kRateLimited = true;
