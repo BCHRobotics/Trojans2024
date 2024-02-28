@@ -33,7 +33,7 @@ public class Camera extends PhotonCamera {
         if(result.hasTargets()){
             double currentYaw = result.getBestTarget().getYaw();
 
-            rotationSpeed = alignController.calculate(currentYaw);
+            rotationSpeed = alignController.calculate(currentYaw - 10);
             
         } else{
             rotationSpeed = 0;
@@ -72,12 +72,12 @@ public class Camera extends PhotonCamera {
     public Pose2d getApriltagPose(Pose2d robotPose, double robotHeading) {
         Transform2d robotToTag = getTargetTransform(robotHeading);
 
-            // Addd the robot to tag offset to the robot pose to get the tag pose in field space
-            Pose2d tagPose = new Pose2d(robotPose.getX() + 
-            robotToTag.getX(), robotPose.getY() + 
-            robotToTag.getY(), new Rotation2d((robotHeading + robotToTag.getRotation().getDegrees()) * (Math.PI / 180)));
+        // Addd the robot to tag offset to the robot pose to get the tag pose in field space
+        Pose2d tagPose = new Pose2d(robotPose.getX() + 
+        robotToTag.getX(), robotPose.getY() + 
+        robotToTag.getY(), new Rotation2d((robotHeading + robotToTag.getRotation().getDegrees()) * (Math.PI / 180)));
 
-            return tagPose;
+        return tagPose;
     }
 
     // A function for setting the pipeline index of the camera

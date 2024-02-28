@@ -71,25 +71,25 @@ public final class Constants {
     public static final double kCameraHeight = 0.0;
 
     // Speed and rotation caps for vision
-    public static final double kVisionSpeedLimit = 0.8;
+    public static final double kVisionSpeedLimit = 1.25;
     public static final double kVisionTurningLimit = 0.6;
 
     // How close to an apriltag the robot has to be before stopping (meters)
-    public static final double kTagDistanceThreshold = 0.035;
+    public static final double kTagDistanceThreshold = 0.1;
     // The amount of rotational error alowed (degrees)
     public static final double kTagRotationThreshold = 7.5;
 
-    public static final double kTagOffsetX = 1; // (meters)
+    public static final double kTagOffsetX = 0.7; // (meters)
     public static final double kTagOffsetY = 0; // (meters)
 
-    public static final double kTagSlowdownDistance = 0.8;
+    public static final double kTagSlowdownDistance = 0.45;
 
     // Camera names (a and b are TEMPORARY NAMES)
     public static final String kNoteCameraName = "a";
     public static final String kTagCameraName = "b";
 
     // PID values for aligning to a note
-    public static final double kNoteP = 0.006;
+    public static final double kNoteP = 0.02;
     public static final double kNoteI = 0.004;
     public static final double kNoteD = 0.0003;
   }

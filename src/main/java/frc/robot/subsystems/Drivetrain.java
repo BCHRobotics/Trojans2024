@@ -214,6 +214,24 @@ public class Drivetrain extends SubsystemBase {
           rotCommand = Math.min(rotCommand, VisionConstants.kVisionTurningLimit);
         }
 
+        if (Math.abs(xCommand) > VisionConstants.kTagSlowdownDistance) {
+          if (xCommand < 0) {
+            xCommand = -VisionConstants.kVisionSpeedLimit;
+          }
+          else {
+            xCommand = VisionConstants.kVisionSpeedLimit;
+          }
+        }
+
+        if (Math.abs(yCommand) > VisionConstants.kTagSlowdownDistance) {
+          if (yCommand < 0) {
+            yCommand = -VisionConstants.kVisionSpeedLimit;
+          }
+          else {
+            yCommand = VisionConstants.kVisionSpeedLimit;
+          }
+        }
+
         boolean rotFinished = Math.abs(tagRotation - getHeading()) < VisionConstants.kTagRotationThreshold;
         boolean xFinished = Math.abs(targetPose.getX() + desiredOffset.getX() - robotPose.getX()) < VisionConstants.kTagDistanceThreshold;
         boolean yFinished = Math.abs(targetPose.getY() + desiredOffset.getY() - robotPose.getY()) < VisionConstants.kTagDistanceThreshold;
