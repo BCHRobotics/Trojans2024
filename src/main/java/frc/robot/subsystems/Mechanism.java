@@ -115,6 +115,11 @@ public class Mechanism extends SubsystemBase{
         return m_currentPhase == phase;
     }
 
+    /**
+     * ground intake command
+     * @param speed the speed to run the ground intake at in volts [0 --> 12]
+     * @return
+     */
     public Command groundIntake(double speed) {
         return this.startEnd(
             () -> {
@@ -144,6 +149,11 @@ public class Mechanism extends SubsystemBase{
         );
       }
 
+    /**
+     * source intake command
+     * @param speed the speed to run the source intake at in volts [0 --> 12]
+     * @return
+     */
     public Command sourceIntake(double speed) {
         return this.startEnd(
             () -> {
@@ -175,6 +185,11 @@ public class Mechanism extends SubsystemBase{
         );
     }
 
+    /**
+     * score amp command
+     * @param speed the speed to run the amp at in volts [0 --> 12]
+     * @return
+     */
     public Command scoreAmp(double speed) {
         return this.startEnd(
             () -> {
@@ -204,6 +219,11 @@ public class Mechanism extends SubsystemBase{
         );
     }
 
+    /**
+     * score speaker command
+     * @param speed the speed to run the speaker at in volts [0 --> 12]
+     * @return
+     */
     public Command scoreSpeaker(double speed) {
         return this.runOnce(
             () -> {
@@ -233,6 +253,10 @@ public class Mechanism extends SubsystemBase{
         );
     }
 
+    /**
+     * a method to stop the mechanism from running
+     * @return
+     */
     public Command stopMechanism() {
         return runOnce(() -> {
           this.setBeltSpeed(0);

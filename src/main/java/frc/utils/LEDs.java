@@ -16,6 +16,11 @@ public class LEDs extends SubsystemBase{
         this.m_RearRightLED = new DigitalOutput(LEDConstants.kRearRightLEDPort);
     }
 
+    /**
+     * Set the LEDs to a on
+     * @param state true for on, false for off
+     * @return
+     */
     public Command setLEDs(boolean state) {
         return this.runOnce(
             () -> {

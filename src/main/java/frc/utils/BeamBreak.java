@@ -45,6 +45,10 @@ public class BeamBreak {
         m_currentPhase = Phase.NONE; // Default phase
     }
 
+    /**
+     * Set the solenoid channels to active
+     * @param activeChannel
+     */
     public static void solenoidChannelActive(boolean activeChannel) {
         PCMChannel0.set(activeChannel);
         PCMChannel1.set(activeChannel);
