@@ -118,6 +118,11 @@ public final class Constants {
     public static final int kTopSensorChannel = 6;
   }
 
+  public static final class LEDConstants {
+    public static final int kFrontLEDPort = 0;
+    public static final int kRearLEDPort = 1;
+  }
+
   public static final class ModuleConstants {
     // The MAXSwerve module can be configured with one of three pinion gears: 12T,
     // 13T, or 14T.

@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.MechanismConstants;
 import frc.robot.Constants.ElevatorConstants.kElevatorPositions;
 import frc.utils.BeamBreak;
+import frc.utils.LEDs;
 import frc.utils.BeamBreak.Phase;
 
 public class Mechanism extends SubsystemBase{
@@ -22,6 +23,8 @@ public class Mechanism extends SubsystemBase{
     private final BeamBreak m_beamBreak = new BeamBreak();
 
     private Elevator m_elevator = new Elevator();
+
+    private LEDs m_LEDs = new LEDs();
 
     // The phase of the beam-break sensor
     private Phase m_currentPhase = Phase.NONE;
@@ -102,6 +105,12 @@ public class Mechanism extends SubsystemBase{
      * @param phase the phase that is checked
      */
     private boolean checkState(Phase phase) {
+        if (this.m_currentPhase == Phase.NONE) {
+            this.m_LEDs.setLEDs(true);
+        }
+        else {
+            this.m_LEDs.setLEDs(false);
+        }
         return m_currentPhase == phase;
     }
 
