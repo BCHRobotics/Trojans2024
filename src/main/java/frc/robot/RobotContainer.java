@@ -44,10 +44,14 @@ public class RobotContainer {
     // The driver's controller
     CommandJoystick m_driverController = new CommandJoystick(OIConstants.kDriverControllerPort);
 
+    CommandXboxController m_driverXboxController = new CommandXboxController(OIConstants.kDriverControllerPort);
+
     CommandXboxController m_operatorController = new CommandXboxController(1);
 
     // The auto chooser
     private final SendableChooser<Command> autoChooser;
+
+    private final boolean xbox = true;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -56,7 +60,8 @@ public class RobotContainer {
         // Configure the button bindings
         this.configureButtonBindings();
 
-        // Configure default commands
+        if (!xbox) {
+            // Configure default commands
         m_robotDrive.setDefaultCommand(
             // The left stick controls translation of the robot.
             // Turning is controlled by the X axis of the right stick.
@@ -67,6 +72,19 @@ public class RobotContainer {
                     -MathUtil.applyDeadband(m_driverController.getTwist(), OIConstants.kTwistDeadband),
                     OIConstants.kFieldRelative, OIConstants.kRateLimited),
                 m_robotDrive));
+        }
+        else {
+            m_robotDrive.setDefaultCommand(
+            // The left stick controls translation of the robot.
+            // Turning is controlled by the X axis of the right stick.
+            new RunCommand(
+                    () -> m_robotDrive.drive(
+                            -MathUtil.applyDeadband(m_driverXboxController.getLeftY(), OIConstants.kDriveDeadband),
+                            -MathUtil.applyDeadband(m_driverXboxController.getLeftX(), OIConstants.kDriveDeadband),
+                            -MathUtil.applyDeadband(m_driverXboxController.getRightX(), OIConstants.kTurnDeadband),
+                            OIConstants.kFieldRelative, OIConstants.kRateLimited),
+                    m_robotDrive));
+        }
 
         // Build an auto chooser. This will use Commands.none() as the default option.
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -92,7 +110,18 @@ public class RobotContainer {
         // Slow Command (Button 1)
         m_driverController.button(1)
             .onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive))
-            .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));    
+            .onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive)); 
+            
+        // Zero heading command (Y Button)
+        this.m_driverXboxController.y().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
+
+        // Brake command (Right Bumper)
+        this.m_driverXboxController.rightBumper().whileTrue(new RunCommand(() -> m_robotDrive.setX(),m_robotDrive));
+
+        // Slow mode command (Left Bumper)
+        this.m_driverXboxController.leftBumper().onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive));
+        this.m_driverXboxController.leftBumper().onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
+
 
         //this.m_operatorController.povUp().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.SOURCE));
         //this.m_operatorController.povRight().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.AMP));
