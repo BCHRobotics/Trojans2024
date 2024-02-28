@@ -97,6 +97,7 @@ public class RobotContainer {
         this.m_XboxController.b().onTrue(this.m_mechanism.scoreAmp(6));
         this.m_XboxController.y().onTrue(this.m_mechanism.sourceIntake(6));
         this.m_XboxController.x().onTrue(this.m_mechanism.groundIntake(12));
+        this.m_XboxController.rightBumper().onTrue(this.m_mechanism.scoreSpeaker(12));
         this.m_XboxController.a().onTrue(this.m_mechanism.stopMechanism());
     }
 

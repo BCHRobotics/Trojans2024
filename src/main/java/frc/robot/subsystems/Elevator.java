@@ -80,7 +80,6 @@ public class Elevator extends SubsystemBase {
         // Temp:
         this.m_leftEncoder.setVelocityConversionFactor(ElevatorConstants.kElevatorPositionConversionFactor);
 
-
         m_controller.setTolerance(0.005);
 
         m_leftEncoder.setPosition(0);

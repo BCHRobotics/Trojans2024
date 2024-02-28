@@ -115,9 +115,9 @@ public final class Constants {
     public static final int kSourceMotorCanId = 30;
     public static final int kAmpMotorCanId = 31;
 
-    public static final int kBottomSensorChannel = 0;
-    public static final int kMiddleSensorChannel = 1;
-    public static final int kTopSensorChannel = 2;
+    public static final int kBottomSensorChannel = 4;
+    public static final int kMiddleSensorChannel = 5;
+    public static final int kTopSensorChannel = 6;
   }
 
   public static final class ModuleConstants {
