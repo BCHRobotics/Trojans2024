@@ -108,10 +108,10 @@ public class Mechanism extends SubsystemBase{
      */
     public boolean checkState(Phase phase) {
         if (this.m_currentPhase == Phase.NONE) {
-            this.powerLEDs("Off");
+            //this.powerLEDs("Off");
         }
         else {
-            this.powerLEDs("Purple");
+            //this.powerLEDs("Purple");
         }
 
         return m_currentPhase == phase;
@@ -260,7 +260,7 @@ public class Mechanism extends SubsystemBase{
     }
 
     public Command lightShow() {
-        return Commands.repeatingSequence(
+        return Commands.sequence(
             this.runOnce(() -> this.powerLEDs("red")),
             new WaitCommand(0.1),
             this.runOnce(() -> this.powerLEDs("blue")),
