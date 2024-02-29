@@ -276,6 +276,21 @@ public class Mechanism extends SubsystemBase{
         ).repeatedly();
     }
 
+    public Command nlightShow() {
+        return this.runOnce(() -> this.powerLEDs("red"))
+        .andThen(() -> new WaitCommand(0.1))
+        .andThen(() -> this.runOnce(() -> this.powerLEDs("blue")))
+        .andThen(() -> new WaitCommand(0.2))
+        .andThen(() -> this.runOnce(() -> this.powerLEDs("green")))
+        .andThen(() -> new WaitCommand(0.1))
+        .andThen(() -> this.runOnce(() -> this.powerLEDs("yellow")))
+        .andThen(() -> new WaitCommand(0.2))
+        .andThen(() -> this.runOnce(() -> this.powerLEDs("purple")))
+        .andThen(() -> new WaitCommand(0.1))
+        .andThen(() -> this.runOnce(() -> this.powerLEDs("cyan")))
+        .andThen(() -> new WaitCommand(0.2));
+    }
+
     public void powerLEDs(String colour) {
         switch (colour) {
             case "Red":
