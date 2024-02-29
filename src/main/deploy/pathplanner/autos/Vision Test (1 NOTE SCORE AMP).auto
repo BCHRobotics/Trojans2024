@@ -2,21 +2,15 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.5148426719035912,
-      "y": 7.386898208501248
+      "x": 1.4854713072574635,
+      "y": 6.981410202136645
     },
-    "rotation": 0.0
+    "rotation": -92.12109639666146
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
-        {
-          "type": "named",
-          "data": {
-            "name": "CANCEL ALIGN"
-          }
-        },
         {
           "type": "path",
           "data": {
@@ -30,33 +24,15 @@
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 0.25
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "AmpToNote1"
+            "name": "ELEVATOR HIGH"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ALIGN NOTE"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Note1ToAmp"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ALIGN TAG"
+            "name": "AMP SCORE"
           }
         }
       ]
