@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.ElevatorConstants.kElevatorPositions;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Mechanism;
@@ -9,6 +10,11 @@ import frc.robot.subsystems.Mechanism;
 public class CombinedCommands {
     Elevator m_elevator;
     Mechanism m_mechanism;
+
+    public CombinedCommands(Elevator elevator, Mechanism mechanism) {
+        m_elevator = elevator;
+        m_mechanism = mechanism;
+    }
 
     public Command pickupFromGround() {
         return

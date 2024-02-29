@@ -29,7 +29,6 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.utils.devices.Camera;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -42,21 +41,19 @@ public class RobotContainer {
     private final Drivetrain m_robotDrive = new Drivetrain();
     private final Elevator m_elevator = new Elevator();
     private final Mechanism m_mechanism = new Mechanism();
-    private final CombinedCommands m_combinedCommands = new CombinedCommands();
+    private final CombinedCommands m_combinedCommands = new CombinedCommands(m_elevator, m_mechanism);
 
     // Flightstick controller
     CommandJoystick m_driverFlightstickController = new CommandJoystick(OIConstants.kFlightstickPort);
     // XBox controller
     CommandXboxController m_driverController = new CommandXboxController(OIConstants.kXBoxPort);
-
+    // Operator controller
     CommandXboxController m_operatorController = new CommandXboxController(1);
 
     // The auto chooser
     private final SendableChooser<Command> autoChooser;
     // The input method chooser
     private final SendableChooser<Boolean> inputChooser;
-
-    private final boolean xbox = true;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -203,7 +200,7 @@ public class RobotContainer {
         // Cancel elevator
         this.m_operatorController.leftBumper().onTrue(this.m_elevator.stopElevatorCommand());
 
-        //this.m_operatorController.povUp().onTrue(this.m_combinedCommands.pickupFromSource());
+        this.m_operatorController.povUp().onTrue(this.m_combinedCommands.pickupFromSource());
 
         // Scoring
         this.m_operatorController.b().onTrue(this.m_mechanism.scoreAmp(6));
