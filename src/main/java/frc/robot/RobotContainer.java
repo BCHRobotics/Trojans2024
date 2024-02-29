@@ -79,6 +79,11 @@ public class RobotContainer {
         // A command for canceling the current align command
         NamedCommands.registerCommand("CANCEL ALIGN", new InstantCommand(() -> m_robotDrive.cancelAlign()));
 
+        NamedCommands.registerCommand("INTAKE", m_mechanism.groundIntake(12));
+        NamedCommands.registerCommand("AMP SCORE", m_mechanism.scoreAmp(12));
+        NamedCommands.registerCommand("ELEVATOR LOW", m_elevator.moveToPositionCommand(kElevatorPositions.AMP));
+        NamedCommands.registerCommand("ELEVATOR HIGH", m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE));
+        
         inputChooser = new SendableChooser<>();
         // Assigning values to the input method chooser
         inputChooser.addOption("XBoxController", Boolean.FALSE);

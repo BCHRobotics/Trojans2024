@@ -12,12 +12,6 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "CANCEL ALIGN"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "StartToAmp"
@@ -30,33 +24,15 @@
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 0.25
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "AmpToNote1"
+            "name": "ELEVATOR HIGH"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ALIGN NOTE"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Note1ToAmp"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ALIGN TAG"
+            "name": "AMP SCORE"
           }
         }
       ]
