@@ -160,7 +160,7 @@ public class RobotContainer {
          * POV DOWN - ELEVATOR TO GROUND
          * LEFT BUMPER - CANCEL ELEVATOR
          * RIGHT BUMPER - SCORE SPEAKER
-         * B - SCORE AMP
+         * B - SCORE AMP 
          * Y - SOURCE INTAKE
          * X - GROUN INTAKE
          * A - CANCEL INTAKE
@@ -193,6 +193,8 @@ public class RobotContainer {
         this.m_driverController.b().onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
         // Cancel Alignment
         this.m_driverController.a().onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign()));
+        
+        this.m_driverController.povUp().onTrue(this.m_mechanism.nlightShow());
 
         /*
          * Operator Controller Buttons
