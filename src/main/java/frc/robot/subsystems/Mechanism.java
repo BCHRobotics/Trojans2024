@@ -106,7 +106,7 @@ public class Mechanism extends SubsystemBase{
      * A method to check if the phase changed
      * @param phase the phase that is checked
      */
-    private boolean checkState(Phase phase) {
+    public boolean checkState(Phase phase) {
         if (this.m_currentPhase == Phase.NONE) {
             this.powerLEDs("Off");
         }

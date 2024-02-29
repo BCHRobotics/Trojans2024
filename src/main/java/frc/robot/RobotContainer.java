@@ -23,6 +23,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Mechanism;
 import frc.utils.BeamBreak;
+import frc.utils.BeamBreak.Phase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -62,7 +63,7 @@ public class RobotContainer {
         // Apriltag alignment command
         NamedCommands.registerCommand("ALIGN TAG", new RunCommand(
             () -> m_robotDrive.driveToTag(VisionConstants.kTagOffsetX, VisionConstants.kTagOffsetY)).until( // Run the alignwithtag function
-                () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
+                () -> m_mechanism.checkState(Phase.GROUND_PICKUP)).beforeStarting( // Stop when checkAlignment is true
                     new InstantCommand(
                         () -> m_robotDrive.alignWithTag()))); // Set alignmode to true before starting
 
@@ -80,7 +81,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("AMP SCORE", m_mechanism.scoreAmp(12));
         NamedCommands.registerCommand("ELEVATOR LOW", m_elevator.moveToPositionCommand(kElevatorPositions.AMP));
         NamedCommands.registerCommand("ELEVATOR HIGH", m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE));
-        
+        NamedCommands.registerCommand("SPEAKER SCORE", m_mechanism.scoreSpeaker(12));
+
         inputChooser = new SendableChooser<>();
         // Assigning values to the input method chooser
         inputChooser.addOption("XBoxController", Boolean.FALSE);
