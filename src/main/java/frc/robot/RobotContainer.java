@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import org.ejml.equation.IntegerSequence.Combined;
 import com.fasterxml.jackson.core.sym.Name;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -15,8 +16,13 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.ElevatorConstants.kElevatorPositions;
+import frc.robot.commands.CombinedCommands;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Mechanism;
+import frc.utils.BeamBreak;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -34,16 +40,25 @@ import frc.utils.devices.Camera;
 public class RobotContainer {
     // The robot's subsystems
     private final Drivetrain m_robotDrive = new Drivetrain();
+    private final Elevator m_elevator = new Elevator();
+    private final Mechanism m_mechanism = new Mechanism();
+    private final CombinedCommands m_combinedCommands = new CombinedCommands();
 
     // Flightstick controller
     CommandJoystick m_driverFlightstickController = new CommandJoystick(OIConstants.kFlightstickPort);
     // XBox controller
     CommandXboxController m_driverXboxController = new CommandXboxController(OIConstants.kXBoxPort);
 
+    CommandXboxController m_driverXboxController = new CommandXboxController(OIConstants.kDriverControllerPort);
+
+    CommandXboxController m_operatorController = new CommandXboxController(1);
+
     // The auto chooser
     private final SendableChooser<Command> autoChooser;
     // The input method chooser
     private final SendableChooser<Boolean> inputChooser;
+
+    private final boolean xbox = true;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -160,6 +175,21 @@ public class RobotContainer {
         this.m_driverXboxController.leftBumper().onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive));
         this.m_driverXboxController.leftBumper().onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
 
+       // this.m_driverXboxController.a().onTrue(this.m_mechanism.nlightShow());
+
+
+        this.m_operatorController.povUp().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.SOURCE));
+        this.m_operatorController.povRight().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.AMP));
+        this.m_operatorController.povDown().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE));
+        this.m_operatorController.leftBumper().onTrue(this.m_elevator.stopElevatorCommand());
+
+        //this.m_operatorController.povUp().onTrue(this.m_combinedCommands.pickupFromSource());
+
+        this.m_operatorController.b().onTrue(this.m_mechanism.scoreAmp(6));
+        this.m_operatorController.y().onTrue(this.m_mechanism.sourceIntake(6));
+        this.m_operatorController.x().onTrue(this.m_mechanism.groundIntake(12));
+        this.m_operatorController.rightBumper().onTrue(this.m_mechanism.scoreSpeaker(12));
+        this.m_operatorController.a().onTrue(this.m_mechanism.stopMechanism());
         // Align with tag
         this.m_driverXboxController.x().onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
         // Align with note
@@ -198,16 +228,33 @@ public class RobotContainer {
         return autoChooser.getSelected();
     }
 
-    // This function is called when the robot enters disabled mode, it sets the motors to brake mode.
+    /**
+     * This function is called when the robot enters disabled mode, it sets the motors to brake mode.
+     */
     public void eStop() {
         m_robotDrive.setIdleStates(1);
     }
 
-    // Sets the speed percentage to use based on the slider on the flightstick,
-    // this only works on the flightstick.
+    /**
+     * enable the PCM channels
+     */
+    public void enablePCMChannels() {
+        BeamBreak.solenoidChannelActive(true);
+    }
+
+    /**
+     * Sets the speed percentage to use based on the slider on the joystick
+     */
     public void setSpeedPercent() {
         // THIS IS COMMENTED OUT FOR XBOX FOR NOW
         //m_robotDrive.setSpeedPercent(1 - ((m_driverController.getThrottle() + 1) / 2));
         m_robotDrive.setSpeedPercent(0.05);
+    }
+
+    /**
+     * Initializes the LEDs
+     */
+    public void initLEDs() {
+        this.m_mechanism.powerLEDs("Off");
     }
 }

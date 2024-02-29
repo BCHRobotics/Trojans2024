@@ -53,19 +53,85 @@ public final class Constants {
     public static final double kBackRightChassisAngularOffset = Math.PI / 2;
 
     // SPARK MAX CAN IDs
-    public static final int kFrontLeftDrivingCanId = 13;
-    public static final int kRearLeftDrivingCanId = 15;
-    public static final int kFrontRightDrivingCanId = 17;
-    public static final int kRearRightDrivingCanId = 11;
+    public static final int kFrontLeftDrivingCanId = 12; //13
+    public static final int kRearLeftDrivingCanId = 10; //15
+    public static final int kFrontRightDrivingCanId = 14; //17
+    public static final int kRearRightDrivingCanId = 16;  //11
 
-    public static final int kFrontLeftTurningCanId = 12;
-    public static final int kRearLeftTurningCanId = 14;
-    public static final int kFrontRightTurningCanId = 16;
-    public static final int kRearRightTurningCanId = 10;
+    public static final int kFrontLeftTurningCanId = 13; //12
+    public static final int kRearLeftTurningCanId = 11;  //14
+    public static final int kFrontRightTurningCanId = 15; //16
+    public static final int kRearRightTurningCanId = 17;  //10
 
     public static final boolean kGyroReversed = true;
   }
 
+  public static final class ElevatorConstants {
+    public static final int kLeftElevatorMotorCanId = 20;  //30
+    public static final int kRightElevatorMotorCanId = 21;  //31
+
+    public static final int kTopElevatorLimitSwitchPort = 5;
+    public static final int kBottomElevatorLimitSwitchPort = 6;
+
+    public static final double kPThetaController = 3.8247;   //3.8247
+    public static final double kDThetaController = 0.010823; //0.010823
+
+    public static final double kMaxSpeedMetersPerSecond = 3.0;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 3.0;
+
+    public static final double kSVolts = 0.14895;
+    public static final double kGVolts = 0.031297;
+    public static final double kVVolts = 0.0021013;
+    public static final double kAVolts = 0.00018868;
+
+    //20:1 from gearbox to output reduction
+    //18 tooth
+    //1.432in
+    public static final double kElevatorMotorReduction = 20;
+    public static final double kElevatorWheelPitchDiameterInches = 1.432;
+    public static final double kElevatorMotorCPR = 42;
+
+    public static final double kElevatorPositionConversionFactor = 
+                        (kElevatorWheelPitchDiameterInches * Math.PI) / 
+                        (kElevatorMotorReduction * kElevatorMotorCPR);
+      
+    public enum kElevatorPositions {
+      SOURCE,
+      AMP,
+      INTAKE
+    }
+
+    public static double[] kElevatorGoals = new double[] {
+      0.39,
+      0.32,
+      0
+    };
+  }
+  public static final class MechanismConstants {
+    public static final int kBottomBeltMotorCanId = 33;
+    public static final int kTopBeltMotorCanId = 32;
+    public static final int kSourceMotorCanId = 30;
+    public static final int kAmpMotorCanId = 31;
+
+    public static final int kBottomSensorChannel = 4;
+    public static final int kMiddleSensorChannel = 5;
+    public static final int kTopSensorChannel = 6;
+  }
+
+  public static final class LEDConstants {
+    public static final int kRedLEDPort = 7;
+    public static final int kGreenLEDPort = 8;
+    public static final int kBlueLEDPort = 9;
+
+    public static boolean[] kLEDRed = new boolean[] {true, false, false};
+    public static boolean[] kLEDGreen = new boolean[] {false, true, false};
+    public static boolean[] kLEDBlue = new boolean[] {false, false, true};
+    public static boolean[] kLEDYellow = new boolean[] {true, true, false};
+    public static boolean[] kLEDPurple = new boolean[] {true, false, true};
+    public static boolean[] kLEDCyan = new boolean[] {false, true, true};
+    public static boolean[] kLEDWhite = new boolean[] {true, true, true};
+    public static boolean[] kLEDOff = new boolean[] {false, false, false};
+    
   public static final class VisionConstants{
     // Height of the camera (not used anywhere right now)
     public static final double kCameraHeight = 0.0;
@@ -153,7 +219,7 @@ public final class Constants {
     public static final int kFlightstickPort = 0;
     public static final int kXBoxPort = 1;
     public static final double kDriveDeadband = 0.05;
-    public static final double kTurnDeadband = 0.15;
+    public static final double kTurnDeadband = 0.12;
     public static final double kTwistDeadband = 0.5;
     public static final boolean kFieldRelative = true;
     public static final boolean kRateLimited = true;
@@ -181,4 +247,5 @@ public final class Constants {
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
   }
+
 }

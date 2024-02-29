@@ -381,8 +381,8 @@ public class Drivetrain extends SubsystemBase {
             directionSlewRate * elapsedTime);
         m_currentTranslationMag = m_magLimiter.calculate(inputTranslationMag);
       } else if (angleDif > 0.85 * Math.PI) {
-        if (m_currentTranslationMag > 1e-4) { // some small number to avoid floating-point errors with equality checking
-          // keep currentTranslationDir unchanged
+        if (m_currentTranslationMag > 1e-4) { // Some small number to avoid floating-point errors with equality checking
+          // Keep currentTranslationDir unchanged
           m_currentTranslationMag = m_magLimiter.calculate(0.0);
         } else {
           m_currentTranslationDir = SwerveUtils.WrapAngle(m_currentTranslationDir + Math.PI);
@@ -405,12 +405,18 @@ public class Drivetrain extends SubsystemBase {
       m_currentRotation = rot;
     }
 
-    // Creates an interpolated value based on the min and max speed constants and the position of the slider (m_maxSpeed)
+    /*
+     * Creates an interpolated value based on the min and max speed constants and the commanded speed multiplier.
+     * If the speed multiplier is 0, lerpSpeed will equal the min speed set via constants.
+     * If the speed multiplier is 1, lerSpeed will equal the max speed.
+     */
     double lerpSpeed = DriveConstants.kMinSpeedMetersPerSecond + (DriveConstants.kMaxSpeedMetersPerSecond
                      - DriveConstants.kMinSpeedMetersPerSecond) * m_maxSpeed;
 
-    // Convert the commanded speeds into the correct units for the drivetrain,
-    // using the interpolated speed
+    /*
+     * Convert the commanded speeds into the correct units for the drivetrain,
+     * using the interpolated speed.
+     */
     double xSpeedDelivered = xSpeedCommanded * lerpSpeed;
     double ySpeedDelivered = ySpeedCommanded * lerpSpeed;
     double rotDelivered = m_currentRotation * DriveConstants.kMaxAngularSpeed;
@@ -426,6 +432,7 @@ public class Drivetrain extends SubsystemBase {
 
   /**
    * Sets the wheels into an X formation to prevent movement.
+   * This does not set the brake mode of the motors.
    */
   public void setX() {
     m_frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
@@ -562,13 +569,14 @@ public class Drivetrain extends SubsystemBase {
     return DriveConstants.kDriveKinematics.toChassisSpeeds(this.getModuleStates());
   }
 
-  /** Prints all values to dashboard */
+  /** Prints all values to the dashboard. */
   public void printToDashboard() {
+
     // Speed
-    SmartDashboard.putNumber("Vertical Speed", this.getChassisSpeeds().vyMetersPerSecond);
-    SmartDashboard.putNumber("Horizontal Speed", this.getChassisSpeeds().vxMetersPerSecond);
-    SmartDashboard.putNumber("Turn Speed", this.getChassisSpeeds().omegaRadiansPerSecond);
-    SmartDashboard.putNumber("Current Speed Percentage", m_maxSpeed);
+    SmartDashboard.putNumber("Vertical Speed", this.getChassisSpeeds().vyMetersPerSecond); // Field relative horizontal speed
+    SmartDashboard.putNumber("Horizontal Speed", this.getChassisSpeeds().vxMetersPerSecond); // Field relative vertical speed
+    SmartDashboard.putNumber("Turn Speed", this.getChassisSpeeds().omegaRadiansPerSecond); // Field relative turn speed
+    SmartDashboard.putNumber("Current Speed Percentage", m_maxSpeed); // Commanded speed multiplier [0 --> 1]
 
     // Position
     SmartDashboard.putNumber("X Position", this.getPose().getX());
