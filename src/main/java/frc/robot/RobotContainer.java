@@ -149,6 +149,18 @@ public class RobotContainer {
          * B -- ALIGN WITH NOTE
          * A -- CANCEL ALIGN
          * 
+         * -- Operator Controller --
+         * 
+         * POV UP - ELEVATOR TO SOURCE
+         * POV RIGHT - ELEVATOR TO AMP
+         * POV DOWN - ELEVATOR TO GROUND
+         * LEFT BUMPER - CANCEL ELEVATOR
+         * RIGHT BUMPER - SCORE SPEAKER
+         * B - SCORE AMP
+         * Y - SOURCE INTAKE
+         * X - GROUN INTAKE
+         * A - CANCEL INTAKE
+         * 
          * -- Flightstick Controller --
          * 
          * Button 5 - RESET GYRO
@@ -160,7 +172,7 @@ public class RobotContainer {
          */ 
 
         /*
-         * Xbox Controller Buttons
+         * Driver Controller Buttons
          */
 
         // Zero heading command (Y Button)
@@ -173,27 +185,38 @@ public class RobotContainer {
         this.m_driverXboxController.leftBumper().onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive));
         this.m_driverXboxController.leftBumper().onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
 
-       // this.m_driverXboxController.a().onTrue(this.m_mechanism.nlightShow());
-
-
-        this.m_operatorController.povUp().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.SOURCE));
-        this.m_operatorController.povRight().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.AMP));
-        this.m_operatorController.povDown().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE));
-        this.m_operatorController.leftBumper().onTrue(this.m_elevator.stopElevatorCommand());
-
-        //this.m_operatorController.povUp().onTrue(this.m_combinedCommands.pickupFromSource());
-
-        this.m_operatorController.b().onTrue(this.m_mechanism.scoreAmp(6));
-        this.m_operatorController.y().onTrue(this.m_mechanism.sourceIntake(6));
-        this.m_operatorController.x().onTrue(this.m_mechanism.groundIntake(12));
-        this.m_operatorController.rightBumper().onTrue(this.m_mechanism.scoreSpeaker(12));
-        this.m_operatorController.a().onTrue(this.m_mechanism.stopMechanism());
         // Align with tag
         this.m_driverXboxController.x().onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
         // Align with note
         this.m_driverXboxController.b().onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
         // Cancel Alignment
         this.m_driverXboxController.a().onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign()));
+
+        /*
+         * Operator Controller Buttons
+         */
+
+        // this.m_driverXboxController.a().onTrue(this.m_mechanism.nlightShow());
+
+        // Moving the elevator
+        this.m_operatorController.povUp().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.SOURCE));
+        this.m_operatorController.povRight().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.AMP));
+        this.m_operatorController.povDown().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE));
+        // Cancel elevator
+        this.m_operatorController.leftBumper().onTrue(this.m_elevator.stopElevatorCommand());
+
+        //this.m_operatorController.povUp().onTrue(this.m_combinedCommands.pickupFromSource());
+
+        // Scoring
+        this.m_operatorController.b().onTrue(this.m_mechanism.scoreAmp(6));
+        this.m_operatorController.rightBumper().onTrue(this.m_mechanism.scoreSpeaker(12));
+
+        // Intaking
+        this.m_operatorController.y().onTrue(this.m_mechanism.sourceIntake(6));
+        this.m_operatorController.x().onTrue(this.m_mechanism.groundIntake(12));
+        
+        // Cancel command
+        this.m_operatorController.a().onTrue(this.m_mechanism.stopMechanism());
 
         /*
          * Flightstick Controller Buttons
