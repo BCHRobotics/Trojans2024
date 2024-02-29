@@ -29,7 +29,6 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.utils.devices.Camera;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -42,21 +41,19 @@ public class RobotContainer {
     private final Drivetrain m_robotDrive = new Drivetrain();
     private final Elevator m_elevator = new Elevator();
     private final Mechanism m_mechanism = new Mechanism();
-    private final CombinedCommands m_combinedCommands = new CombinedCommands();
+    private final CombinedCommands m_combinedCommands = new CombinedCommands(m_elevator, m_mechanism);
 
     // Flightstick controller
     CommandJoystick m_driverFlightstickController = new CommandJoystick(OIConstants.kFlightstickPort);
     // XBox controller
-    CommandXboxController m_driverXboxController = new CommandXboxController(OIConstants.kXBoxPort);
-
+    CommandXboxController m_driverController = new CommandXboxController(OIConstants.kXBoxPort);
+    // Operator controller
     CommandXboxController m_operatorController = new CommandXboxController(1);
 
     // The auto chooser
     private final SendableChooser<Command> autoChooser;
     // The input method chooser
     private final SendableChooser<Boolean> inputChooser;
-
-    private final boolean xbox = true;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -124,9 +121,9 @@ public class RobotContainer {
                 // Turning is controlled by the X axis of the right stick.
                 new RunCommand(
                         () -> m_robotDrive.driveCommand(
-                                -MathUtil.applyDeadband(m_driverXboxController.getLeftY(), OIConstants.kDriveDeadband),
-                                -MathUtil.applyDeadband(m_driverXboxController.getLeftX(), OIConstants.kDriveDeadband),
-                                -MathUtil.applyDeadband(m_driverXboxController.getRightX(), OIConstants.kTurnDeadband),
+                                -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
+                                -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+                                -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kTurnDeadband),
                                 OIConstants.kFieldRelative, OIConstants.kRateLimited),
                         m_robotDrive));
         }
@@ -154,6 +151,18 @@ public class RobotContainer {
          * B -- ALIGN WITH NOTE
          * A -- CANCEL ALIGN
          * 
+         * -- Operator Controller --
+         * 
+         * POV UP - ELEVATOR TO SOURCE
+         * POV RIGHT - ELEVATOR TO AMP
+         * POV DOWN - ELEVATOR TO GROUND
+         * LEFT BUMPER - CANCEL ELEVATOR
+         * RIGHT BUMPER - SCORE SPEAKER
+         * B - SCORE AMP
+         * Y - SOURCE INTAKE
+         * X - GROUN INTAKE
+         * A - CANCEL INTAKE
+         * 
          * -- Flightstick Controller --
          * 
          * Button 5 - RESET GYRO
@@ -165,40 +174,47 @@ public class RobotContainer {
          */ 
 
         /*
-         * Xbox Controller Buttons
+         * Driver Controller Buttons
          */
 
         // Zero heading command (Y Button)
-        this.m_driverXboxController.y().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
-
+        this.m_driverController.y().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
         // Brake command (Right Bumper)
-        this.m_driverXboxController.rightBumper().whileTrue(new RunCommand(() -> m_robotDrive.setX(),m_robotDrive));
-
+        this.m_driverController.rightBumper().whileTrue(new RunCommand(() -> m_robotDrive.setX(),m_robotDrive));
         // Slow mode command (Left Bumper)
-        this.m_driverXboxController.leftBumper().onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive));
-        this.m_driverXboxController.leftBumper().onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
+        this.m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive));
+        this.m_driverController.leftBumper().onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
 
-       // this.m_driverXboxController.a().onTrue(this.m_mechanism.nlightShow());
+        // Align with tag
+        this.m_driverController.x().onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
+        // Align with note
+        this.m_driverController.b().onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
+        // Cancel Alignment
+        this.m_driverController.a().onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign()));
 
+        /*
+         * Operator Controller Buttons
+         */
 
+        // this.m_driverXboxController.a().onTrue(this.m_mechanism.nlightShow());
+
+        // Moving the elevator
         this.m_operatorController.povUp().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.SOURCE));
         this.m_operatorController.povRight().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.AMP));
         this.m_operatorController.povDown().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE));
+        // Cancel elevator
         this.m_operatorController.leftBumper().onTrue(this.m_elevator.stopElevatorCommand());
 
-        //this.m_operatorController.povUp().onTrue(this.m_combinedCommands.pickupFromSource());
+        this.m_operatorController.povUp().onTrue(this.m_combinedCommands.pickupFromSource());
 
+        // Scoring
         this.m_operatorController.b().onTrue(this.m_mechanism.scoreAmp(6));
+        this.m_operatorController.rightBumper().onTrue(this.m_mechanism.scoreSpeaker(12));
+        // Intaking
         this.m_operatorController.y().onTrue(this.m_mechanism.sourceIntake(6));
         this.m_operatorController.x().onTrue(this.m_mechanism.groundIntake(12));
-        this.m_operatorController.rightBumper().onTrue(this.m_mechanism.scoreSpeaker(12));
+        // Cancel command
         this.m_operatorController.a().onTrue(this.m_mechanism.stopMechanism());
-        // Align with tag
-        this.m_driverXboxController.x().onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
-        // Align with note
-        this.m_driverXboxController.b().onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
-        // Cancel Alignment
-        this.m_driverXboxController.a().onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign()));
 
         /*
          * Flightstick Controller Buttons
@@ -206,10 +222,8 @@ public class RobotContainer {
 
         // Zero heading command (Button 5)
         this.m_driverFlightstickController.button(5).onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
-
         // Brake command (Button 1)
         this.m_driverFlightstickController.button(1).onTrue(new RunCommand(() -> m_robotDrive.setX(),m_robotDrive));
-
         // Toggle slow mode (Button 2)
         this.m_driverFlightstickController.button(2).onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive));
         this.m_driverFlightstickController.button(2).onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
