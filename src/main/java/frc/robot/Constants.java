@@ -131,7 +131,7 @@ public final class Constants {
     public static boolean[] kLEDCyan = new boolean[] {false, true, true};
     public static boolean[] kLEDWhite = new boolean[] {true, true, true};
     public static boolean[] kLEDOff = new boolean[] {false, false, false};
-    
+  }
   public static final class VisionConstants{
     // Height of the camera (not used anywhere right now)
     public static final double kCameraHeight = 0.0;

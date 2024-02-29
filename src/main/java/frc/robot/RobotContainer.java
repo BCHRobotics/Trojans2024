@@ -49,8 +49,6 @@ public class RobotContainer {
     // XBox controller
     CommandXboxController m_driverXboxController = new CommandXboxController(OIConstants.kXBoxPort);
 
-    CommandXboxController m_driverXboxController = new CommandXboxController(OIConstants.kDriverControllerPort);
-
     CommandXboxController m_operatorController = new CommandXboxController(1);
 
     // The auto chooser
