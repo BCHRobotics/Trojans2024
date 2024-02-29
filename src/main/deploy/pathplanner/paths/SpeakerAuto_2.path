@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.4408703461281565,
-        "y": 6.5136440244390466
+        "x": 1.943718987153074,
+        "y": 5.601499977928731
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5344235816676761,
-        "y": 6.326537553360007
+        "x": 2.040161039942034,
+        "y": 5.830355413679948
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.943718987153074,
-        "y": 5.601499977928731
+        "x": 2.361903061098285,
+        "y": 6.395841390257602
       },
       "prevControl": {
-        "x": 1.8852482149408742,
-        "y": 5.83538306677753
+        "x": 2.1571581385443066,
+        "y": 6.093598885535063
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,7 +32,7 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Elevator Up",
+      "name": "Elevator Down",
       "waypointRelativePos": 0.25,
       "command": {
         "type": "parallel",
@@ -41,7 +41,7 @@
             {
               "type": "named",
               "data": {
-                "name": "ELEVATOR HIGH"
+                "name": "ELEVATOR LOW"
               }
             }
           ]
@@ -57,7 +57,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0,
+    "rotation": 45.0,
     "rotateFast": true
   },
   "reversed": false,
