@@ -149,7 +149,6 @@ public class Elevator extends SubsystemBase {
             if (!this.checkLimitSwitchPress(m_forwardLimit) 
              && !this.checkLimitSwitchPress(m_reverseLimit)) {
                 forcedGoal = false;
-                System.out.println("no switches hit");
             } 
         }
     }
