@@ -107,11 +107,11 @@ public class Mechanism extends SubsystemBase{
      * @param phase the phase that is checked
      */
     public boolean checkState(Phase phase) {
-        if (this.m_currentPhase == Phase.NONE) {
-            //this.powerLEDs("Off");
+        if (this.m_currentPhase != Phase.NONE) {
+            this.powerLEDs("Off");
         }
         else {
-            //this.powerLEDs("Purple");
+            this.powerLEDs("Purple");
         }
 
         return m_currentPhase == phase;

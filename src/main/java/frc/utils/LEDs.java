@@ -21,9 +21,9 @@ public class LEDs extends SubsystemBase{
      * @return
      */
     public void setLEDs(boolean red, boolean green, boolean blue) {
-        this.m_redLED.set(red); 
-        this.m_greenLED.set(green);
-        this.m_blueLED.set(blue);
+        this.m_redLED.set(!red); 
+        this.m_greenLED.set(!green);
+        this.m_blueLED.set(!blue);
     }
 }
 
