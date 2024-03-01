@@ -30,9 +30,9 @@ public class Elevator extends SubsystemBase {
                 ElevatorConstants.kMaxAccelerationMetersPerSecondSquared);
 
     private static BetterProfiledPIDController m_controller = new BetterProfiledPIDController(
-            10, // ElevatorConstants.kPThetaController  
-            0, // 0
-            0, // ElevatorConstants.kDThetaController
+            ElevatorConstants.kPThetaController,
+            ElevatorConstants.kIThetaController,
+            ElevatorConstants.kDThetaController,
             m_constraints);
 
     private final ElevatorFeedforward m_feedforward =
@@ -56,8 +56,8 @@ public class Elevator extends SubsystemBase {
 
         this.m_rightMotor.follow(m_leftMotor, true);
 
-        this.m_leftMotor.setIdleMode(IdleMode.kCoast);
-        this.m_rightMotor.setIdleMode(IdleMode.kCoast);
+        this.m_leftMotor.setIdleMode(IdleMode.kBrake);
+        this.m_rightMotor.setIdleMode(IdleMode.kBrake);
 
         this.m_leftMotor.setSmartCurrentLimit(60, 20);
         this.m_rightMotor.setSmartCurrentLimit(60, 20);
