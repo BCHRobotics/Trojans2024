@@ -37,7 +37,7 @@ public class Elevator extends SubsystemBase {
         ElevatorConstants.kBottomElevatorLimitSwitchPort
     );
 
-    private ElevatorLimit m_currentLimitSwitch = ElevatorLimit.TOP;
+    private ElevatorLimit m_currentLimitSwitch = ElevatorLimit.BOTTOM;
 
     private final CANSparkMax m_leftMotor;
     private final CANSparkMax m_rightMotor;
