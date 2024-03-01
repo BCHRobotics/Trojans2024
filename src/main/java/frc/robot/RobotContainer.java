@@ -190,11 +190,11 @@ public class RobotContainer {
         // Align with tag
         this.m_driverController.x().onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
         // Align with note
-        this.m_driverController.b().onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
+       // this.m_driverController.b().onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
         // Cancel Alignment
         this.m_driverController.a().onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign()));
         
-        this.m_driverController.povUp().onTrue(this.m_mechanism.nlightShow());
+       // this.m_driverController.povUp().onTrue(this.m_mechanism.nlightShow());
 
         /*
          * Operator Controller Buttons
@@ -209,7 +209,7 @@ public class RobotContainer {
         // Cancel elevator
         this.m_operatorController.leftBumper().onTrue(this.m_elevator.stopElevatorCommand());
 
-        this.m_operatorController.povUp().onTrue(this.m_combinedCommands.pickupFromSource());
+       // this.m_operatorController.povUp().onTrue(this.m_combinedCommands.pickupFromSource());
 
         // Scoring
         this.m_operatorController.b().onTrue(this.m_mechanism.scoreAmp(6));
@@ -225,19 +225,19 @@ public class RobotContainer {
          */
 
         // Zero heading command (Button 5)
-        this.m_driverFlightstickController.button(5).onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
-        // Brake command (Button 1)
-        this.m_driverFlightstickController.button(1).onTrue(new RunCommand(() -> m_robotDrive.setX(),m_robotDrive));
-        // Toggle slow mode (Button 2)
-        this.m_driverFlightstickController.button(2).onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive));
-        this.m_driverFlightstickController.button(2).onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
+        // this.m_driverFlightstickController.button(5).onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
+        // // Brake command (Button 1)
+        // this.m_driverFlightstickController.button(1).onTrue(new RunCommand(() -> m_robotDrive.setX(),m_robotDrive));
+        // // Toggle slow mode (Button 2)
+        // this.m_driverFlightstickController.button(2).onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive));
+        // this.m_driverFlightstickController.button(2).onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
 
-        // Align with apriltag command (Button 3)
-        this.m_driverFlightstickController.button(3).onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
-        // Align with note command (Button 4)
-        this.m_driverFlightstickController.button(4).onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
-        // Zero heading command (Button 6)
-        this.m_driverFlightstickController.button(6).onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign(), m_robotDrive));
+        // // Align with apriltag command (Button 3)
+        // this.m_driverFlightstickController.button(3).onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
+        // // Align with note command (Button 4)
+        // this.m_driverFlightstickController.button(4).onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
+        // // Zero heading command (Button 6)
+        // this.m_driverFlightstickController.button(6).onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign(), m_robotDrive));
     }
 
     /**

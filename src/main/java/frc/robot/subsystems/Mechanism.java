@@ -107,11 +107,11 @@ public class Mechanism extends SubsystemBase{
      * @param phase the phase that is checked
      */
     public boolean checkState(Phase phase) {
-        if (this.m_currentPhase == Phase.NONE) {
-            //this.powerLEDs("Off");
+        if (this.m_currentPhase != Phase.NONE) {
+            this.powerLEDs("Off");
         }
         else {
-            //this.powerLEDs("Purple");
+            this.powerLEDs("Purple");
         }
 
         return m_currentPhase == phase;
@@ -292,29 +292,30 @@ public class Mechanism extends SubsystemBase{
     }
 
     public void powerLEDs(String colour) {
+        colour = colour.toLowerCase();
         switch (colour) {
-            case "Red":
+            case "red":
                 this.m_LEDs.setLEDs(LEDConstants.kLEDRed[0], LEDConstants.kLEDRed[1], LEDConstants.kLEDRed[2]);
 
-            case "Green":
+            case "green":
                 this.m_LEDs.setLEDs(LEDConstants.kLEDGreen[0], LEDConstants.kLEDGreen[1], LEDConstants.kLEDGreen[2]);
             
-            case "Blue":
+            case "blue":
                 this.m_LEDs.setLEDs(LEDConstants.kLEDBlue[0], LEDConstants.kLEDBlue[1], LEDConstants.kLEDBlue[2]);
 
-            case "Yellow":
+            case "yellow":
                 this.m_LEDs.setLEDs(LEDConstants.kLEDYellow[0], LEDConstants.kLEDYellow[1], LEDConstants.kLEDYellow[2]);
 
-            case "Purple":
+            case "purple":
                 this.m_LEDs.setLEDs(LEDConstants.kLEDPurple[0], LEDConstants.kLEDPurple[1], LEDConstants.kLEDPurple[2]);
 
-            case "Cyan":
+            case "cyan":
                 this.m_LEDs.setLEDs(LEDConstants.kLEDCyan[0], LEDConstants.kLEDCyan[1], LEDConstants.kLEDCyan[2]);
 
-            case "White":
+            case "white":
                 this.m_LEDs.setLEDs(LEDConstants.kLEDWhite[0], LEDConstants.kLEDWhite[1], LEDConstants.kLEDWhite[2]);
 
-            case "Off":
+            case "off":
                 this.m_LEDs.setLEDs(LEDConstants.kLEDOff[0], LEDConstants.kLEDOff[1], LEDConstants.kLEDOff[2]);
         
             default:
