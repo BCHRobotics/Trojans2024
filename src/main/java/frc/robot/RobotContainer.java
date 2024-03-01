@@ -92,7 +92,7 @@ public class RobotContainer {
         SmartDashboard.putData("Input Chooser", inputChooser);
 
         // Build an auto chooser. This will use Commands.none() as the default option.
-        autoChooser = AutoBuilder.buildAutoChooser();
+        autoChooser = new SendableChooser<Command>(); // TODO: fix the autoChooser
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
         // Configure the button bindings
@@ -190,11 +190,9 @@ public class RobotContainer {
         // Align with tag
         this.m_driverController.x().onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
         // Align with note
-       // this.m_driverController.b().onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
+        // this.m_driverController.b().onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
         // Cancel Alignment
         this.m_driverController.a().onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign()));
-        
-       // this.m_driverController.povUp().onTrue(this.m_mechanism.nlightShow());
 
         /*
          * Operator Controller Buttons
@@ -208,6 +206,8 @@ public class RobotContainer {
         this.m_operatorController.povDown().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE));
         // Cancel elevator
         this.m_operatorController.leftBumper().onTrue(this.m_elevator.stopElevatorCommand());
+
+        this.m_operatorController.povLeft().onTrue(this.m_mechanism.lightShow());
 
         //this.m_operatorController.povUp().onTrue(this.m_combinedCommands.pickupFromSource());
 

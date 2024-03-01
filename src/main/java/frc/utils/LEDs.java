@@ -10,9 +10,9 @@ public class LEDs extends SubsystemBase{
     private final DigitalOutput m_blueLED;
 
     public LEDs() {
-        this.m_redLED = new DigitalOutput(LEDConstants.kRedLEDPort);
-        this.m_greenLED = new DigitalOutput(LEDConstants.kGreenLEDPort);
-        this.m_blueLED = new DigitalOutput(LEDConstants.kBlueLEDPort);
+        this.m_redLED = new DigitalOutput(LEDConstants.kGreenLEDPort);
+        this.m_greenLED = new DigitalOutput(LEDConstants.kBlueLEDPort);
+        this.m_blueLED = new DigitalOutput(LEDConstants.kRedLEDPort);
     }
 
     /**
