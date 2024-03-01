@@ -276,49 +276,20 @@ public class Mechanism extends SubsystemBase{
         ).repeatedly();
     }
 
-    public Command nlightShow() {
-        return this.runOnce(() -> this.powerLEDs("red"))
-        .andThen(() -> new WaitCommand(0.1))
-        .andThen(() -> this.runOnce(() -> this.powerLEDs("blue")))
-        .andThen(() -> new WaitCommand(0.2))
-        .andThen(() -> this.runOnce(() -> this.powerLEDs("green")))
-        .andThen(() -> new WaitCommand(0.1))
-        .andThen(() -> this.runOnce(() -> this.powerLEDs("yellow")))
-        .andThen(() -> new WaitCommand(0.2))
-        .andThen(() -> this.runOnce(() -> this.powerLEDs("purple")))
-        .andThen(() -> new WaitCommand(0.1))
-        .andThen(() -> this.runOnce(() -> this.powerLEDs("cyan")))
-        .andThen(() -> new WaitCommand(0.2));
-    }
-
     public void powerLEDs(String colour) {
+        colour = colour.toLowerCase();
+
         switch (colour) {
-            case "Red":
-                this.m_LEDs.setLEDs(LEDConstants.kLEDRed[0], LEDConstants.kLEDRed[1], LEDConstants.kLEDRed[2]);
-
-            case "Green":
-                this.m_LEDs.setLEDs(LEDConstants.kLEDGreen[0], LEDConstants.kLEDGreen[1], LEDConstants.kLEDGreen[2]);
-            
-            case "Blue":
-                this.m_LEDs.setLEDs(LEDConstants.kLEDBlue[0], LEDConstants.kLEDBlue[1], LEDConstants.kLEDBlue[2]);
-
-            case "Yellow":
-                this.m_LEDs.setLEDs(LEDConstants.kLEDYellow[0], LEDConstants.kLEDYellow[1], LEDConstants.kLEDYellow[2]);
-
-            case "Purple":
-                this.m_LEDs.setLEDs(LEDConstants.kLEDPurple[0], LEDConstants.kLEDPurple[1], LEDConstants.kLEDPurple[2]);
-
-            case "Cyan":
-                this.m_LEDs.setLEDs(LEDConstants.kLEDCyan[0], LEDConstants.kLEDCyan[1], LEDConstants.kLEDCyan[2]);
-
-            case "White":
-                this.m_LEDs.setLEDs(LEDConstants.kLEDWhite[0], LEDConstants.kLEDWhite[1], LEDConstants.kLEDWhite[2]);
-
-            case "Off":
-                this.m_LEDs.setLEDs(LEDConstants.kLEDOff[0], LEDConstants.kLEDOff[1], LEDConstants.kLEDOff[2]);
-        
-            default:
-                break;
+            case "red" -> this.m_LEDs.setLEDs(LEDConstants.kLEDRed[0], LEDConstants.kLEDRed[1], LEDConstants.kLEDRed[2]);
+            case "green" -> this.m_LEDs.setLEDs(LEDConstants.kLEDGreen[0], LEDConstants.kLEDGreen[1], LEDConstants.kLEDGreen[2]);
+            case "blue" -> this.m_LEDs.setLEDs(LEDConstants.kLEDBlue[0], LEDConstants.kLEDBlue[1], LEDConstants.kLEDBlue[2]);
+            case "yellow" -> this.m_LEDs.setLEDs(LEDConstants.kLEDYellow[0], LEDConstants.kLEDYellow[1], LEDConstants.kLEDYellow[2]);
+            case "purple" -> this.m_LEDs.setLEDs(LEDConstants.kLEDPurple[0], LEDConstants.kLEDPurple[1], LEDConstants.kLEDPurple[2]);
+            case "cyan" -> this.m_LEDs.setLEDs(LEDConstants.kLEDCyan[0], LEDConstants.kLEDCyan[1], LEDConstants.kLEDCyan[2]);
+            case "white" -> this.m_LEDs.setLEDs(LEDConstants.kLEDWhite[0], LEDConstants.kLEDWhite[1], LEDConstants.kLEDWhite[2]);
+            case "off" -> this.m_LEDs.setLEDs(LEDConstants.kLEDOff[0], LEDConstants.kLEDOff[1], LEDConstants.kLEDOff[2]);  
+            default -> System.out.println("That LED Color Doesn't Exist!");
+                
         }
     }
 

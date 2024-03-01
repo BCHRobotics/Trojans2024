@@ -209,7 +209,7 @@ public class RobotContainer {
         // Cancel elevator
         this.m_operatorController.leftBumper().onTrue(this.m_elevator.stopElevatorCommand());
 
-        this.m_operatorController.povUp().onTrue(this.m_combinedCommands.pickupFromSource());
+        //this.m_operatorController.povUp().onTrue(this.m_combinedCommands.pickupFromSource());
 
         // Scoring
         this.m_operatorController.b().onTrue(this.m_mechanism.scoreAmp(6));
