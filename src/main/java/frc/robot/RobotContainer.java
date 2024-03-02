@@ -62,17 +62,21 @@ public class RobotContainer {
     public RobotContainer() {
         // Apriltag alignment command
         NamedCommands.registerCommand("ALIGN TAG", new RunCommand(
-            () -> m_robotDrive.driveToTag(VisionConstants.kTagOffsetX, VisionConstants.kTagOffsetY)).until( // Run the alignwithtag function
+            () -> m_robotDrive.driveToTag(VisionConstants.kAmpOffsetX, VisionConstants.kAmpOffsetY)).until( // Run the alignwithtag function
                 () -> m_mechanism.checkState(Phase.GROUND_PICKUP)).beforeStarting( // Stop when checkAlignment is true
                     new InstantCommand(
-                        () -> m_robotDrive.alignWithTag()))); // Set alignmode to true before starting
+                        () -> m_robotDrive.alignWithTag())).alongWith(
+                            this.m_elevator.moveToPositionCommand(kElevatorPositions.AMP)).andThen(
+                                this.m_mechanism.scoreAmp(6))); // Set alignmode to true before starting
 
         // Note alignment command
         NamedCommands.registerCommand("ALIGN NOTE", new RunCommand(
             () -> m_robotDrive.driveToNote()).until( // Run the 'drive to note' function
                 () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true, i.e the robot is done aligning
                     new InstantCommand(
-                        () -> m_robotDrive.alignWithNote()))); // Set alignmode to true before starting, and set isAligned to false
+                        () -> m_robotDrive.alignWithNote())).alongWith(
+                            this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE)).alongWith(
+                                this.m_mechanism.groundIntake(12))); // Set alignmode to true before starting, and set isAligned to false
 
         // A command for canceling the current align command
         NamedCommands.registerCommand("CANCEL ALIGN", new InstantCommand(() -> m_robotDrive.cancelAlign()));
@@ -204,8 +208,9 @@ public class RobotContainer {
         this.m_operatorController.povUp().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.SOURCE));
         this.m_operatorController.povRight().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.AMP));
         this.m_operatorController.povDown().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE));
-        // Cancel elevator
-        this.m_operatorController.leftBumper().onTrue(this.m_elevator.stopElevatorCommand());
+        // Request intake (ground and source)
+        this.m_operatorController.leftBumper().onTrue(new InstantCommand(() -> m_mechanism.requestIntake(1)));
+        this.m_operatorController.rightBumper().onTrue(new InstantCommand(() -> m_mechanism.requestIntake(2)));
 
         this.m_operatorController.povLeft().onTrue(this.m_mechanism.lightShow());
 
@@ -213,7 +218,7 @@ public class RobotContainer {
 
         // Scoring
         this.m_operatorController.b().onTrue(this.m_mechanism.scoreAmp(6));
-        this.m_operatorController.rightBumper().onTrue(this.m_mechanism.scoreSpeaker(12));
+        //this.m_operatorController.rightBumper().onTrue(this.m_mechanism.scoreSpeaker(12));
         // Intaking
         this.m_operatorController.y().onTrue(this.m_mechanism.sourceIntake(6));
         this.m_operatorController.x().onTrue(this.m_mechanism.groundIntake(12));
@@ -225,19 +230,19 @@ public class RobotContainer {
          */
 
         // Zero heading command (Button 5)
-        // this.m_driverFlightstickController.button(5).onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
+        this.m_driverFlightstickController.button(5).onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
         // // Brake command (Button 1)
-        // this.m_driverFlightstickController.button(1).onTrue(new RunCommand(() -> m_robotDrive.setX(),m_robotDrive));
+        this.m_driverFlightstickController.button(1).onTrue(new RunCommand(() -> m_robotDrive.setX(),m_robotDrive));
         // // Toggle slow mode (Button 2)
-        // this.m_driverFlightstickController.button(2).onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive));
-        // this.m_driverFlightstickController.button(2).onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
+        this.m_driverFlightstickController.button(2).onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive));
+        this.m_driverFlightstickController.button(2).onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
 
         // // Align with apriltag command (Button 3)
-        // this.m_driverFlightstickController.button(3).onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
+        this.m_driverFlightstickController.button(3).onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
         // // Align with note command (Button 4)
-        // this.m_driverFlightstickController.button(4).onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
+        this.m_driverFlightstickController.button(4).onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
         // // Zero heading command (Button 6)
-        // this.m_driverFlightstickController.button(6).onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign(), m_robotDrive));
+        this.m_driverFlightstickController.button(6).onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign(), m_robotDrive));
     }
 
     /**
