@@ -333,9 +333,8 @@ public class Mechanism extends SubsystemBase{
     }
 
     public Command lightsOff() {
-        return Commands.sequence(
-            this.runOnce(() -> this.powerLEDs("off"))
-        );
+        return this.runOnce(() -> this.powerLEDs("off"));
+        
     }
 
     /**
