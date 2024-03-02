@@ -17,6 +17,8 @@ import frc.robot.Constants.ElevatorConstants.kElevatorPositions;
 import frc.utils.BetterProfiledPIDController;
 
 public class Elevator extends SubsystemBase {
+    private static Elevator instance = null;
+
     private final CANSparkMax m_leftMotor;
     private final CANSparkMax m_rightMotor;
 
@@ -84,6 +86,13 @@ public class Elevator extends SubsystemBase {
 
         m_leftEncoder.setPosition(0);
         m_controller.setGoal(0);
+    }
+
+    public static Elevator getInstance() {
+        if (instance == null) {
+            instance = new Elevator();
+        }
+        return instance;
     }
 
     /**
@@ -180,6 +189,7 @@ public class Elevator extends SubsystemBase {
                     ElevatorConstants.kElevatorPositions.SOURCE.ordinal()]));
 
             case INTAKE:
+            System.out.println("in elev");
                 return this.runOnce(() -> Elevator.m_controller.setGoal(
                     ElevatorConstants.kElevatorGoals[
                     ElevatorConstants.kElevatorPositions.INTAKE.ordinal()]));

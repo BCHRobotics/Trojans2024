@@ -105,7 +105,7 @@ public final class Constants {
     public static double[] kElevatorGoals = new double[] {
       0.39,
       0.32,
-      0
+      -0.01
     };
   }
   public static final class MechanismConstants {

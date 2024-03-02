@@ -74,7 +74,7 @@ public class Mechanism extends SubsystemBase{
     }
 
     /**
-     * updates the phase of the beam break sensor
+     * updates the phase of the beam break sensorF
      */
     private void updatePhase() {
         this.m_beamBreak.updatePhase();
