@@ -11,8 +11,6 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.MechanismConstants;
@@ -23,12 +21,10 @@ import frc.utils.LEDs;
 import frc.utils.BeamBreak.Phase;
 
 public class Mechanism extends SubsystemBase{
-    private static Mechanism instance = null;
-
     // The beam-break sensor that detects where a note is in the mechanism
     private final BeamBreak m_beamBreak = new BeamBreak();
 
-    private Elevator m_elevator;
+   // private Elevator m_elevator;
 
     private LEDs m_LEDs = new LEDs();
 
@@ -44,8 +40,6 @@ public class Mechanism extends SubsystemBase{
 
     /** Creates a new Mechanism. */
     public Mechanism() {
-        m_elevator = Elevator.getInstance();
-
         this.m_bottomBeltMotor.restoreFactoryDefaults();
         this.m_topBeltMotor.restoreFactoryDefaults();
         this.m_sourceMotor.restoreFactoryDefaults();
@@ -79,15 +73,8 @@ public class Mechanism extends SubsystemBase{
         requestIntakeType = 0;
     }
 
-    public static Mechanism getInstance() {
-        if (instance == null) {
-            instance = new Mechanism();
-        }
-        return instance;
-    }
-
     /**
-     * updates the phase of the beam break sensor
+     * updates the phase of the beam break sensorF
      */
     private void updatePhase() {
         this.m_beamBreak.updatePhase();
@@ -125,7 +112,9 @@ public class Mechanism extends SubsystemBase{
      */
     public boolean checkState(Phase phase) {
         if (this.m_currentPhase != Phase.NONE) {
-            confirmIntake().execute(); // Blink the lights green to confirm the intake of a note
+            confirmIntake().schedule(); // Blink the lights green to confirm the intake of a note
+        } else {
+            turnOffLEDs().schedule();
         }
 
         return m_currentPhase == phase;
@@ -223,8 +212,7 @@ public class Mechanism extends SubsystemBase{
                 this.setAmpSpeed(0.0);
             })
             .until(() -> this.checkState(Phase.LOADED))
-            .andThen(new InstantCommand(() -> this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE)))
-            .andThen(() -> System.out.println("here"))
+           // .andThen(() -> this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
         );
     }
 
@@ -282,7 +270,7 @@ public class Mechanism extends SubsystemBase{
             .beforeStarting(new WaitCommand(1))
         )
         .until(() -> this.checkState(Phase.NONE))
-        //.andThen(() -> this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
+       // .andThen(() -> this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
         .andThen(
             this.runOnce(
                 () -> {
@@ -335,6 +323,10 @@ public class Mechanism extends SubsystemBase{
             new WaitCommand(0.2),
             this.runOnce(() -> this.powerLEDs("green"))
         );
+    }
+
+    public Command turnOffLEDs() {
+        return this.runOnce(()-> this.powerLEDs("off"));
     }
 
     /**
