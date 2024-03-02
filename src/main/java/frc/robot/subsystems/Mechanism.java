@@ -336,9 +336,8 @@ public class Mechanism extends SubsystemBase{
      * A command for turning off all the LEDs
      */
     public Command lightsOff() {
-        return Commands.sequence(
-            this.runOnce(() -> this.powerLEDs("off"))
-        );
+        return this.runOnce(() -> this.powerLEDs("off"));
+        
     }
 
     /**
