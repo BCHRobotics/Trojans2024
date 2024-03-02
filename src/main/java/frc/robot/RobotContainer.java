@@ -41,7 +41,7 @@ public class RobotContainer {
     // The robot's subsystems
     private final Drivetrain m_robotDrive = new Drivetrain();
     private final Elevator m_elevator;
-    private final Mechanism m_mechanism = new Mechanism();
+    private final Mechanism m_mechanism;
 
     // Flightstick controller
     CommandJoystick m_driverFlightstickController = new CommandJoystick(OIConstants.kFlightstickPort);
@@ -60,6 +60,7 @@ public class RobotContainer {
      */
     public RobotContainer() {
         m_elevator = Elevator.getInstance();
+        m_mechanism = Mechanism.getInstance();
         // Apriltag alignment command
         NamedCommands.registerCommand("ALIGN TAG", new RunCommand(
             () -> m_robotDrive.driveToTag(VisionConstants.kAmpOffsetX, VisionConstants.kAmpOffsetY)).until( // Run the alignwithtag function

@@ -21,10 +21,12 @@ import frc.utils.LEDs;
 import frc.utils.BeamBreak.Phase;
 
 public class Mechanism extends SubsystemBase{
+    private static Mechanism instance = null;
+    
     // The beam-break sensor that detects where a note is in the mechanism
     private final BeamBreak m_beamBreak = new BeamBreak();
 
-   // private Elevator m_elevator;
+    private Elevator m_elevator;
 
     private LEDs m_LEDs = new LEDs();
 
@@ -40,6 +42,8 @@ public class Mechanism extends SubsystemBase{
 
     /** Creates a new Mechanism. */
     public Mechanism() {
+        m_elevator = Elevator.getInstance();
+
         this.m_bottomBeltMotor.restoreFactoryDefaults();
         this.m_topBeltMotor.restoreFactoryDefaults();
         this.m_sourceMotor.restoreFactoryDefaults();
@@ -73,8 +77,15 @@ public class Mechanism extends SubsystemBase{
         requestIntakeType = 0;
     }
 
+    public static Mechanism getInstance() {
+        if (instance == null) {
+            instance = new Mechanism();
+        }
+        return instance;
+    }
+
     /**
-     * updates the phase of the beam break sensorF
+     * updates the phase of the beam break sensor
      */
     private void updatePhase() {
         this.m_beamBreak.updatePhase();
