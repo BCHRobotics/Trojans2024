@@ -39,6 +39,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.AutoConstants;
@@ -319,6 +320,12 @@ public class Drivetrain extends SubsystemBase {
    * Starts aligning towards a note, if a note can be seen
    */
   public void alignWithNote() {
+
+    /* 
+    if(Timer.getFPGATimestamp() > 15 && this.getPose().getX() >= 50){
+      isAlignmentActive = false;
+    }
+    */
     isAlignmentSuccess = false; // Set this to false so the alignment doesn't finish instantly
 
     cameraMode = false; // Set the camera mode to target notes

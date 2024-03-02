@@ -273,6 +273,7 @@ public class RobotContainer {
      */
     public void enablePCMChannels() {
         BeamBreak.solenoidChannelActive(true);
+        
     }
 
     /**

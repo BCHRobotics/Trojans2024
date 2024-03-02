@@ -82,7 +82,7 @@
         {
           "type": "named",
           "data": {
-            "name": "AMPS SCORE"
+            "name": "AMP SCORE"
           }
         },
         {
@@ -119,7 +119,7 @@
         {
           "type": "named",
           "data": {
-            "name": "AMPS SCORE"
+            "name": "AMP SCORE"
           }
         }
       ]
