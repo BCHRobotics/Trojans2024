@@ -35,7 +35,7 @@
       "name": "Elevator Up",
       "waypointRelativePos": 0.25,
       "command": {
-        "type": "parallel",
+        "type": "sequential",
         "data": {
           "commands": [
             {

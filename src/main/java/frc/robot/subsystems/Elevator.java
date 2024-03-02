@@ -198,27 +198,27 @@ public class Elevator extends SubsystemBase {
     }
     
     private void putToDashboard() {
-        SmartDashboard.putNumber("Total output speed", totalSpeed);
-        SmartDashboard.putNumber("Velocity", m_leftEncoder.getVelocity());
-        SmartDashboard.putNumber("Raw PID output", m_controller.calculate(m_leftEncoder.getPosition()));
-        SmartDashboard.putNumber("Feedforward output", m_feedforward.calculate(m_controller.getSetpoint().velocity));
+        // SmartDashboard.putNumber("Total output speed", totalSpeed);
+        // SmartDashboard.putNumber("Velocity", m_leftEncoder.getVelocity());
+        // SmartDashboard.putNumber("Raw PID output", m_controller.calculate(m_leftEncoder.getPosition()));
+        // SmartDashboard.putNumber("Feedforward output", m_feedforward.calculate(m_controller.getSetpoint().velocity));
 
-        SmartDashboard.putNumber("Encoder Position: ", m_leftEncoder.getPosition());
-        SmartDashboard.putNumber("Proportional  Error: ", m_controller.getPositionError());
-        SmartDashboard.putNumber("Integral Error", m_controller.getTotalError());
-        SmartDashboard.putNumber("Derivative Error: ", m_controller.getVelocityError());
+        // SmartDashboard.putNumber("Encoder Position: ", m_leftEncoder.getPosition());
+        // SmartDashboard.putNumber("Proportional  Error: ", m_controller.getPositionError());
+        // SmartDashboard.putNumber("Integral Error", m_controller.getTotalError());
+        // SmartDashboard.putNumber("Derivative Error: ", m_controller.getVelocityError());
 
-        SmartDashboard.putNumber("kp * Error", m_controller.getP() * m_controller.getPositionError());
-        SmartDashboard.putNumber("ki * errorSum", m_controller.getI() * m_controller.getTotalError());
-        SmartDashboard.putNumber("kd * errorRate", m_controller.getD() * m_controller.getVelocityError());
+        // SmartDashboard.putNumber("kp * Error", m_controller.getP() * m_controller.getPositionError());
+        // SmartDashboard.putNumber("ki * errorSum", m_controller.getI() * m_controller.getTotalError());
+        // SmartDashboard.putNumber("kd * errorRate", m_controller.getD() * m_controller.getVelocityError());
 
-        SmartDashboard.putBoolean("At goal: ", m_controller.atGoal());
-        SmartDashboard.putBoolean("At setpoint: ", m_controller.atSetpoint());
-        SmartDashboard.putBoolean("Top limit switch hit: ", m_forwardLimit.isPressed());
-        SmartDashboard.putBoolean("Bottom limit switch hit: ", m_reverseLimit.isPressed());
-        SmartDashboard.putNumber("Current limit: ", m_leftMotor.getOutputCurrent());
+        // SmartDashboard.putBoolean("At goal: ", m_controller.atGoal());
+        // SmartDashboard.putBoolean("At setpoint: ", m_controller.atSetpoint());
+        // SmartDashboard.putBoolean("Top limit switch hit: ", m_forwardLimit.isPressed());
+        // SmartDashboard.putBoolean("Bottom limit switch hit: ", m_reverseLimit.isPressed());
+        // SmartDashboard.putNumber("Current limit: ", m_leftMotor.getOutputCurrent());
 
-        SmartDashboard.putData("Elevator PID Controller", m_controller);
+        // SmartDashboard.putData("Elevator PID Controller", m_controller);
     }
     
     @Override

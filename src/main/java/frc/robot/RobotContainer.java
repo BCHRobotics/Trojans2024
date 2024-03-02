@@ -91,12 +91,12 @@ public class RobotContainer {
         // Assigning values to the input method chooser
         inputChooser.addOption("XBoxController", Boolean.FALSE);
         inputChooser.addOption("Flightstick", Boolean.TRUE);
-        inputChooser.setDefaultOption("Flightstick", Boolean.TRUE);
+        inputChooser.setDefaultOption("XBoxController", Boolean.FALSE);
 
         SmartDashboard.putData("Input Chooser", inputChooser);
 
         // Build an auto chooser. This will use Commands.none() as the default option.
-        autoChooser = new SendableChooser<Command>(); // TODO: fix the autoChooser
+        autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
         // Configure the button bindings
@@ -162,11 +162,12 @@ public class RobotContainer {
          * POV UP - ELEVATOR TO SOURCE
          * POV RIGHT - ELEVATOR TO AMP
          * POV DOWN - ELEVATOR TO GROUND
-         * LEFT BUMPER - CANCEL ELEVATOR
-         * RIGHT BUMPER - SCORE SPEAKER
+         * POV LEFT - LIGHTSHOW (TEMPORARY)
+         * LEFT BUMPER - REQUEST GROUND INTAKE
+         * RIGHT BUMPER - REQUEST SOURCE INTAKE
          * B - SCORE AMP 
          * Y - SOURCE INTAKE
-         * X - GROUN INTAKE
+         * X - GROUND INTAKE
          * A - CANCEL INTAKE
          * 
          * -- Flightstick Controller --
