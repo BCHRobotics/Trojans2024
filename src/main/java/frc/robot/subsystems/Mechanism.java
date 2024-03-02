@@ -111,10 +111,6 @@ public class Mechanism extends SubsystemBase{
      * @param phase the phase that is checked
      */
     public boolean checkState(Phase phase) {
-        if (this.m_currentPhase != Phase.NONE) {
-            System.out.println("here");
-        }
-
         return m_currentPhase == phase;
     }
 
