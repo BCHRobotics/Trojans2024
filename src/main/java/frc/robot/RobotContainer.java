@@ -40,9 +40,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public class RobotContainer {
     // The robot's subsystems
     private final Drivetrain m_robotDrive = new Drivetrain();
-    private final Elevator m_elevator = new Elevator();
+    private final Elevator m_elevator;
     private final Mechanism m_mechanism = new Mechanism();
-    private final CombinedCommands m_combinedCommands = new CombinedCommands(m_elevator, m_mechanism);
 
     // Flightstick controller
     CommandJoystick m_driverFlightstickController = new CommandJoystick(OIConstants.kFlightstickPort);
@@ -60,6 +59,7 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
+        m_elevator = Elevator.getInstance();
         // Apriltag alignment command
         NamedCommands.registerCommand("ALIGN TAG", new RunCommand(
             () -> m_robotDrive.driveToTag(VisionConstants.kTagOffsetX, VisionConstants.kTagOffsetY)).until( // Run the alignwithtag function
@@ -278,4 +278,5 @@ public class RobotContainer {
     public void initLEDs() {
         this.m_mechanism.powerLEDs("Off");
     }
+
 }

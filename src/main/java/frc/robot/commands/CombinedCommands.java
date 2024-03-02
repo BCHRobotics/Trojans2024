@@ -28,12 +28,14 @@ public class CombinedCommands {
 
     public Command pickupFromSource() {
         return
-            Commands.runOnce(() -> m_elevator.moveToPositionCommand(kElevatorPositions.SOURCE))
+            Commands.run(() -> m_elevator.moveToPositionCommand(kElevatorPositions.SOURCE))
+                .andThen(() -> System.out.println("here1"))
                 .until(() -> m_elevator.checkAtGoal())
+                .andThen(() -> System.out.println("here2"))
                 .andThen(
-                    Commands.runOnce(() -> m_mechanism.sourceIntake(6)))
+                    Commands.run(() -> m_mechanism.sourceIntake(6)))
                     .andThen(
-                        Commands.runOnce(() -> m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE)));
+                        Commands.run(() -> m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE)));
     }
 
     public Command scoreIntoAmp() {
