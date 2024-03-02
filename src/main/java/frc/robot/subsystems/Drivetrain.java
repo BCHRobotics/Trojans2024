@@ -287,7 +287,7 @@ public class Drivetrain extends SubsystemBase {
 
     if (isAlignmentActive && cameraMode == true && targetPose != null) {
       // Apriltag alignment code
-      driveToTag(VisionConstants.kTagOffsetX, VisionConstants.kTagOffsetY);
+      driveToTag(VisionConstants.kAmpOffsetX, VisionConstants.kAmpOffsetX);
     }
   }
 

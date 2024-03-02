@@ -35,6 +35,8 @@ public class Mechanism extends SubsystemBase{
     // The phase of the beam-break sensor
     private Phase m_currentPhase = Phase.NONE;
 
+    private int requestIntakeType;
+
     private final CANSparkMax m_bottomBeltMotor = new CANSparkMax(MechanismConstants.kBottomBeltMotorCanId, MotorType.kBrushless);
     private final CANSparkMax m_topBeltMotor = new CANSparkMax(MechanismConstants.kTopBeltMotorCanId, MotorType.kBrushless);
     private final CANSparkMax m_sourceMotor = new CANSparkMax(MechanismConstants.kSourceMotorCanId, MotorType.kBrushless);
@@ -73,6 +75,8 @@ public class Mechanism extends SubsystemBase{
         this.m_topBeltMotor.enableVoltageCompensation(12);
         this.m_sourceMotor.enableVoltageCompensation(12);
         this.m_ampMotor.enableVoltageCompensation(12);
+
+        requestIntakeType = 0;
     }
 
     public static Mechanism getInstance() {
@@ -120,14 +124,39 @@ public class Mechanism extends SubsystemBase{
      * @param phase the phase that is checked
      */
     public boolean checkState(Phase phase) {
-        if (this.m_currentPhase == Phase.NONE) {
-            this.powerLEDs("Off");
-        }
-        else {
-            this.powerLEDs("Purple");
+        if (this.m_currentPhase != Phase.NONE) {
+            confirmIntake().execute(); // Blink the lights green to confirm the intake of a note
         }
 
         return m_currentPhase == phase;
+    }
+
+    /**
+     * A function for requesting ground/source intake using LEDs
+     * @param intakeType The requested intake type (1 is ground, 2 is source, 0 is nothing)
+     */
+    public void requestIntake(int intakeType) {
+        // Set the requested intake based on the input
+        if (requestIntakeType == intakeType) { // If you request the same intake twice the lights turn off
+            requestIntakeType = 0;
+        }
+        else {
+            requestIntakeType = intakeType;
+        }
+
+        // Set the LED color to the requested intake
+        if (this.m_currentPhase != Phase.NONE) {
+            requestIntakeType = 0;
+        }
+        else if (requestIntakeType == 2) {
+            this.powerLEDs("cyan");
+        }
+        else if (requestIntakeType == 1) {
+            this.powerLEDs("purple");
+        }
+        else {
+            this.powerLEDs("off");
+        }
     }
 
     /**
@@ -273,6 +302,9 @@ public class Mechanism extends SubsystemBase{
         });
     }
 
+    /*
+     * A command for the rainbow-light-thing
+     */
     public Command lightShow() {
         return Commands.sequence(
             this.runOnce(() -> this.powerLEDs("red")),
@@ -290,20 +322,38 @@ public class Mechanism extends SubsystemBase{
         ).repeatedly();
     }
 
+    /*
+     * A command for confirming an intake
+     */
+    public Command confirmIntake() {
+        return Commands.sequence(
+            this.runOnce(() -> this.powerLEDs("green")),
+            new WaitCommand(0.2),
+            this.runOnce(() -> this.powerLEDs("green")),
+            new WaitCommand(0.2),
+            this.runOnce(() -> this.powerLEDs("green")),
+            new WaitCommand(0.2),
+            this.runOnce(() -> this.powerLEDs("green"))
+        );
+    }
+
+    /**
+     * A function for changing the color of the LEDs using a string
+     * @param colour the desired color name
+     */
     public void powerLEDs(String colour) {
         colour = colour.toLowerCase();
 
         switch (colour) {
-            case "red" -> this.m_LEDs.setLEDs(LEDConstants.kLEDRed[0], LEDConstants.kLEDRed[1], LEDConstants.kLEDRed[2]);
-            case "green" -> this.m_LEDs.setLEDs(LEDConstants.kLEDGreen[0], LEDConstants.kLEDGreen[1], LEDConstants.kLEDGreen[2]);
-            case "blue" -> this.m_LEDs.setLEDs(LEDConstants.kLEDBlue[0], LEDConstants.kLEDBlue[1], LEDConstants.kLEDBlue[2]);
-            case "yellow" -> this.m_LEDs.setLEDs(LEDConstants.kLEDYellow[0], LEDConstants.kLEDYellow[1], LEDConstants.kLEDYellow[2]);
-            case "purple" -> this.m_LEDs.setLEDs(LEDConstants.kLEDPurple[0], LEDConstants.kLEDPurple[1], LEDConstants.kLEDPurple[2]);
-            case "cyan" -> this.m_LEDs.setLEDs(LEDConstants.kLEDCyan[0], LEDConstants.kLEDCyan[1], LEDConstants.kLEDCyan[2]);
-            case "white" -> this.m_LEDs.setLEDs(LEDConstants.kLEDWhite[0], LEDConstants.kLEDWhite[1], LEDConstants.kLEDWhite[2]);
-            case "off" -> this.m_LEDs.setLEDs(LEDConstants.kLEDOff[0], LEDConstants.kLEDOff[1], LEDConstants.kLEDOff[2]);  
+            case "red" -> this.m_LEDs.setLEDs(LEDConstants.kLEDRed);
+            case "green" -> this.m_LEDs.setLEDs(LEDConstants.kLEDGreen);
+            case "blue" -> this.m_LEDs.setLEDs(LEDConstants.kLEDBlue);
+            case "yellow" -> this.m_LEDs.setLEDs(LEDConstants.kLEDYellow);
+            case "purple" -> this.m_LEDs.setLEDs(LEDConstants.kLEDPurple);
+            case "cyan" -> this.m_LEDs.setLEDs(LEDConstants.kLEDCyan);
+            case "white" -> this.m_LEDs.setLEDs(LEDConstants.kLEDWhite);
+            case "off" -> this.m_LEDs.setLEDs(LEDConstants.kLEDOff);  
             default -> System.out.println("That LED Color Doesn't Exist!");
-                
         }
     }
 

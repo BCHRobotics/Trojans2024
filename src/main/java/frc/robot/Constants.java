@@ -120,9 +120,9 @@ public final class Constants {
   }
 
   public static final class LEDConstants {
-    public static final int kRedLEDPort = 7;
-    public static final int kGreenLEDPort = 8;
-    public static final int kBlueLEDPort = 9;
+    public static final int kRedLEDPort = 8;
+    public static final int kGreenLEDPort = 9;
+    public static final int kBlueLEDPort = 7;
 
     public static boolean[] kLEDRed = new boolean[] {true, false, false};
     public static boolean[] kLEDGreen = new boolean[] {false, true, false};
@@ -145,11 +145,15 @@ public final class Constants {
     public static final double kTagDistanceThreshold = 0.1;
     // The amount of rotational error alowed (degrees)
     public static final double kTagRotationThreshold = 7.5;
-
-    public static final double kTagOffsetX = 0.5; // (meters)
-    public static final double kTagOffsetY = 0; // (meters)
-
+    // How far away the bot is before it starts slowing down (farther than this it goes full speed as defined by kVisionSpeedLimit)
     public static final double kTagSlowdownDistance = 0.45;
+
+    // Desired offsets for the speaker and amp
+    public static final double kSpeakerOffsetX = 0; // (meters)
+    public static final double kSpeakerOffsetY = 0; // (meters)
+
+    public static final double kAmpOffsetX = 0.5; // (meters)
+    public static final double kAmpOffsetY = 0; // (meters)
 
     // Camera names (a and b are TEMPORARY NAMES)
     public static final String kNoteCameraName = "a";
