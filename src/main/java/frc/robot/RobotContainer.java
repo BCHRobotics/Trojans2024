@@ -200,6 +200,8 @@ public class RobotContainer {
         // Cancel Alignment
         this.m_driverController.a().onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign()));
 
+        this.m_driverController.povLeft().onTrue(this.m_mechanism.lightShow());
+
         /*
          * Operator Controller Buttons
          */
@@ -213,8 +215,6 @@ public class RobotContainer {
         // Request intake (ground and source)
         this.m_operatorController.leftBumper().onTrue(new InstantCommand(() -> m_mechanism.requestIntake(1)));
         this.m_operatorController.rightBumper().onTrue(new InstantCommand(() -> m_mechanism.requestIntake(2)));
-
-        this.m_operatorController.povLeft().onTrue(this.m_mechanism.lightShow());
 
         //this.m_operatorController.povUp().onTrue(this.m_combinedCommands.pickupFromSource());
 
