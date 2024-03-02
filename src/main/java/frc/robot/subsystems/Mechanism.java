@@ -112,7 +112,7 @@ public class Mechanism extends SubsystemBase{
      */
     public boolean checkState(Phase phase) {
         if (this.m_currentPhase != Phase.NONE) {
-            confirmIntake().execute(); // Blink the lights green to confirm the intake of a note
+            System.out.println("here");
         }
 
         return m_currentPhase == phase;
@@ -175,8 +175,8 @@ public class Mechanism extends SubsystemBase{
                 this.setBeltSpeed(0.0);
                 this.setSourceSpeed(0.0);
                 this.setAmpSpeed(0.0);
-            }).until(() -> this.checkState(Phase.LOADED))
-        );
+            }).until(() -> this.checkState(Phase.LOADED)))
+            .andThen(confirmIntake());
       }
 
     /**
@@ -211,7 +211,7 @@ public class Mechanism extends SubsystemBase{
             })
             .until(() -> this.checkState(Phase.LOADED))
            // .andThen(() -> this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
-        );
+        ).andThen(confirmIntake());
     }
 
     /**
@@ -244,7 +244,7 @@ public class Mechanism extends SubsystemBase{
             )
             .beforeStarting(new WaitCommand(1))
            // .andThen(() -> this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
-        );
+        ).andThen(lightsOff());
     }
 
     /**
@@ -277,7 +277,7 @@ public class Mechanism extends SubsystemBase{
                     this.setAmpSpeed(0);
                 }
             )
-        );
+        ).andThen(lightsOff());
     }
 
     public Command stopMechanism() {
@@ -315,11 +315,19 @@ public class Mechanism extends SubsystemBase{
         return Commands.sequence(
             this.runOnce(() -> this.powerLEDs("green")),
             new WaitCommand(0.2),
-            this.runOnce(() -> this.powerLEDs("green")),
+            this.runOnce(() -> this.powerLEDs("off")),
             new WaitCommand(0.2),
             this.runOnce(() -> this.powerLEDs("green")),
+            new WaitCommand(0.2),
+            this.runOnce(() -> this.powerLEDs("off")),
             new WaitCommand(0.2),
             this.runOnce(() -> this.powerLEDs("green"))
+        );
+    }
+
+    public Command lightsOff() {
+        return Commands.sequence(
+            this.runOnce(() -> this.powerLEDs("off"))
         );
     }
 

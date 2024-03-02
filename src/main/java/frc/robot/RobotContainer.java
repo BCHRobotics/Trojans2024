@@ -96,7 +96,7 @@ public class RobotContainer {
         SmartDashboard.putData("Input Chooser", inputChooser);
 
         // Build an auto chooser. This will use Commands.none() as the default option.
-        autoChooser = AutoBuilder.buildAutoChooser();
+        autoChooser = new SendableChooser<Command>();
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
         // Configure the button bindings
