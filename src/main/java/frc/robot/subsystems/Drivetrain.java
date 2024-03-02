@@ -40,6 +40,7 @@ import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.VisionConstants;
@@ -166,6 +167,12 @@ public class Drivetrain extends SubsystemBase {
    * @return whether or not the robot has finished aligning
    */
   public boolean checkAlignment() {
+    // TODO: "geofence" the robot
+    // if (getPose().getX() > 99999) { // Change this number later
+    //   isAlignmentActive = false;
+    //   isAlignmentSuccess = true;
+    // }
+
     return isAlignmentSuccess; // This boolean variable is true when the robot has finished aligning (to either a tag or note)
   }
 

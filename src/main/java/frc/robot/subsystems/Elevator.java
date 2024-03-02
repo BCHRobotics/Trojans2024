@@ -213,7 +213,7 @@ public class Elevator extends SubsystemBase {
         // SmartDashboard.putNumber("Raw PID output", m_controller.calculate(m_leftEncoder.getPosition()));
         // SmartDashboard.putNumber("Feedforward output", m_feedforward.calculate(m_controller.getSetpoint().velocity));
 
-        // SmartDashboard.putNumber("Encoder Position: ", m_leftEncoder.getPosition());
+        SmartDashboard.putNumber("Encoder Position: ", m_leftEncoder.getPosition());
         // SmartDashboard.putNumber("Proportional  Error: ", m_controller.getPositionError());
         // SmartDashboard.putNumber("Integral Error", m_controller.getTotalError());
         // SmartDashboard.putNumber("Derivative Error: ", m_controller.getVelocityError());
