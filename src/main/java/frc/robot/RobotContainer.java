@@ -65,7 +65,7 @@ public class RobotContainer {
         // Apriltag alignment command
         NamedCommands.registerCommand("ALIGN TAG", new RunCommand(
             () -> m_robotDrive.driveToTag(VisionConstants.kAmpOffsetX, VisionConstants.kAmpOffsetY)).until( // Run the alignwithtag function
-                () -> m_mechanism.checkState(Phase.GROUND_PICKUP)).beforeStarting( // Stop when checkAlignment is true
+                () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
                     new InstantCommand(
                         () -> m_robotDrive.alignWithTag())).alongWith(
                             this.m_elevator.moveToPositionCommand(kElevatorPositions.AMP)).andThen(
@@ -98,7 +98,7 @@ public class RobotContainer {
         SmartDashboard.putData("Input Chooser", inputChooser);
 
         // Build an auto chooser. This will use Commands.none() as the default option.
-        autoChooser = new SendableChooser<Command>();
+        autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
         // Configure the button bindings
@@ -201,7 +201,7 @@ public class RobotContainer {
         // Cancel Alignment
         this.m_driverController.a().onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign()));
 
-        this.m_driverController.povLeft().onTrue(this.m_mechanism.lightShow());
+        //this.m_driverController.povLeft().onTrue(this.m_mechanism.lightsOff().andThen(this.m_mechanism.lightShow()));
 
         /*
          * Operator Controller Buttons
@@ -210,8 +210,8 @@ public class RobotContainer {
         // this.m_driverXboxController.a().onTrue(this.m_mechanism.nlightShow());
 
         // Moving the elevator
-        this.m_operatorController.povUp().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.SOURCE));
-        this.m_operatorController.povRight().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.AMP));
+        this.m_operatorController.povUp().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.AMP));
+        this.m_operatorController.povRight().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.SOURCE));
         this.m_operatorController.povDown().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE));
         // Request intake (ground and source)
         this.m_operatorController.leftBumper().onTrue(new InstantCommand(() -> m_mechanism.requestIntake(1)));

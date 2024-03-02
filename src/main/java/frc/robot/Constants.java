@@ -97,8 +97,8 @@ public final class Constants {
                         (kElevatorMotorReduction * kElevatorMotorCPR);
       
     public enum kElevatorPositions {
-      SOURCE,
       AMP,
+      SOURCE,
       INTAKE
     }
 
@@ -138,11 +138,11 @@ public final class Constants {
     public static final double kCameraHeight = 0.0;
 
     // Speed and rotation caps for vision
-    public static final double kVisionSpeedLimit = 0.3;
+    public static final double kVisionSpeedLimit = 0.25;
     public static final double kVisionTurningLimit = 0.2;
 
     // How close to an apriltag the robot has to be before stopping (meters)
-    public static final double kTagDistanceThreshold = 0.1;
+    public static final double kTagDistanceThreshold = 0.16;
     // The amount of rotational error alowed (degrees)
     public static final double kTagRotationThreshold = 7.5;
     // How far away the bot is before it starts slowing down (farther than this it goes full speed as defined by kVisionSpeedLimit)
@@ -152,7 +152,7 @@ public final class Constants {
     public static final double kSpeakerOffsetX = 0; // (meters)
     public static final double kSpeakerOffsetY = 0; // (meters)
 
-    public static final double kAmpOffsetX = 0.5; // (meters)
+    public static final double kAmpOffsetX = 0.34; // (meters)
     public static final double kAmpOffsetY = 0; // (meters)
 
     // Camera names (a and b are TEMPORARY NAMES)

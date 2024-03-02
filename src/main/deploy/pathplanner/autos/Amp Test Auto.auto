@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.4854713072574635,
-      "y": 6.981410202136645
+      "x": 0.4351730640783217,
+      "y": 7.074963437676163
     },
-    "rotation": -92.12109639666146
+    "rotation": -90.0
   },
   "command": {
     "type": "sequential",
@@ -14,25 +14,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "StartToAmp"
+            "pathName": "ToAmp"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "ALIGN TAG"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ELEVATOR HIGH"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AMP SCORE"
           }
         }
       ]
