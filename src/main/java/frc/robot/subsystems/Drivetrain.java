@@ -154,7 +154,7 @@ public class Drivetrain extends SubsystemBase {
 
     // Update the target pose
     if (m_tagCamera.getResult().hasTargets()) {
-      targetPose = m_tagCamera.getApriltagPose(getPose(), getHeading());
+      targetPose = m_tagCamera.getApriltagPose(getPose(), this.m_odometry.getPoseMeters().getRotation().getDegrees());
     }
   }
 
@@ -199,7 +199,7 @@ public class Drivetrain extends SubsystemBase {
           tagRotation += 180;
         }
 
-        double rotCommand = tagRotation - getHeading();
+        double rotCommand = tagRotation - this.m_odometry.getPoseMeters().getRotation().getDegrees();
 
         if (xCommand < 0) {
           xCommand = Math.max(xCommand, -VisionConstants.kVisionSpeedLimit);
@@ -240,7 +240,7 @@ public class Drivetrain extends SubsystemBase {
           }
         }
 
-        boolean rotFinished = Math.abs(tagRotation - getHeading()) < VisionConstants.kTagRotationThreshold;
+        boolean rotFinished = Math.abs(tagRotation - this.m_odometry.getPoseMeters().getRotation().getDegrees()) < VisionConstants.kTagRotationThreshold;
         boolean xFinished = Math.abs(targetPose.getX() + desiredOffset.getX() - robotPose.getX()) < VisionConstants.kTagDistanceThreshold;
         boolean yFinished = Math.abs(targetPose.getY() + desiredOffset.getY() - robotPose.getY()) < VisionConstants.kTagDistanceThreshold;
 
@@ -294,7 +294,7 @@ public class Drivetrain extends SubsystemBase {
 
     if (isAlignmentActive && cameraMode == true && targetPose != null) {
       // Apriltag alignment code
-      driveToTag(VisionConstants.kAmpOffsetX, VisionConstants.kAmpOffsetX);
+      driveToTag(VisionConstants.kAmpOffsetX, VisionConstants.kAmpOffsetY);
     }
   }
 
@@ -432,7 +432,7 @@ public class Drivetrain extends SubsystemBase {
     SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
         fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
-                Rotation2d.fromDegrees(m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)))
+                Rotation2d.fromDegrees(this.m_odometry.getPoseMeters().getRotation().getDegrees() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)))
             : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
  
     this.setModuleStates(swerveModuleStates);

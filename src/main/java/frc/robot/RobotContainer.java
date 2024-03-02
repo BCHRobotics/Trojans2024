@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -54,6 +55,8 @@ public class RobotContainer {
     private final SendableChooser<Command> autoChooser;
     // The input method chooser
     private final SendableChooser<Boolean> inputChooser;
+
+    private final boolean isRed = DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -108,6 +111,8 @@ public class RobotContainer {
 
     // Configures default commands
     public void configureDefaultCommands() {
+        final double invert = isRed ? -1 : 1;
+        
         // Configure default commands
         if (inputChooser.getSelected().booleanValue() == true) {
             // Configure the drivetrain to use the flightstick
@@ -116,8 +121,8 @@ public class RobotContainer {
                 // Turning is controlled by the twist axis of the flightstick.
                 new RunCommand(
                     () -> m_robotDrive.driveCommand(
-                        -MathUtil.applyDeadband(m_driverFlightstickController.getY(), OIConstants.kDriveDeadband),
-                        -MathUtil.applyDeadband(m_driverFlightstickController.getX(), OIConstants.kDriveDeadband),
+                        -MathUtil.applyDeadband(m_driverFlightstickController.getY(), OIConstants.kDriveDeadband) * invert,
+                        -MathUtil.applyDeadband(m_driverFlightstickController.getX(), OIConstants.kDriveDeadband) * invert,
                         -MathUtil.applyDeadband(m_driverFlightstickController.getTwist(), OIConstants.kTwistDeadband),
                         OIConstants.kFieldRelative, OIConstants.kRateLimited),
                     m_robotDrive));
@@ -128,8 +133,8 @@ public class RobotContainer {
                 // Turning is controlled by the X axis of the right stick.
                 new RunCommand(
                         () -> m_robotDrive.driveCommand(
-                                -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-                                -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+                                -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband) * invert,
+                                -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband) * invert,
                                 -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kTurnDeadband),
                                 OIConstants.kFieldRelative, OIConstants.kRateLimited),
                         m_robotDrive));
@@ -220,7 +225,7 @@ public class RobotContainer {
 
         // Scoring
         this.m_operatorController.b().onTrue(this.m_mechanism.scoreAmp(6));
-        //this.m_operatorController.rightBumper().onTrue(this.m_mechanism.scoreSpeaker(12));
+        this.m_operatorController.povLeft().onTrue(this.m_mechanism.scoreSpeaker(12));
         // Intaking
         this.m_operatorController.y().onTrue(this.m_mechanism.sourceIntake(6));
         this.m_operatorController.x().onTrue(this.m_mechanism.groundIntake(12));
@@ -285,5 +290,4 @@ public class RobotContainer {
     public void initLEDs() {
         this.m_mechanism.powerLEDs("Off");
     }
-
 }

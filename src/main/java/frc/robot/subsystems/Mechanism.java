@@ -267,9 +267,12 @@ public class Mechanism extends SubsystemBase{
             }
         )
         .andThen(
-            this.runOnce(
+            this.startEnd(
                 () -> {
                     this.setBeltSpeed(-speed);
+                },
+                () -> {
+                    this.setBeltSpeed(0);
                 }
             )
             .beforeStarting(new WaitCommand(1))
@@ -279,7 +282,6 @@ public class Mechanism extends SubsystemBase{
         .andThen(
             this.runOnce(
                 () -> {
-                    this.setBeltSpeed(0);
                     this.setSourceSpeed(0);
                     this.setAmpSpeed(0);
                 }

@@ -100,12 +100,10 @@ public class Camera extends PhotonCamera {
         double sinHeading = Math.sin(heading * (Math.PI / 180));
         double cosHeading = Math.cos(heading * (Math.PI / 180));
 
-        // Here object transform is negative, because the apriltag camera is on the back of the robot
-        // For a front camera make it positive
-        double fieldX = -objectTransform.getX() * cosHeading + objectTransform.getY() * -sinHeading;
-        double fieldY = -objectTransform.getX() * sinHeading + objectTransform.getY() * cosHeading;
+        double fieldX = objectTransform.getX() * cosHeading + objectTransform.getY() * -sinHeading;
+        double fieldY = objectTransform.getX() * sinHeading + objectTransform.getY() * cosHeading;
 
-        Transform2d fieldTransform = new Transform2d(fieldX, fieldY, objectTransform.getRotation());
+        Transform2d fieldTransform = new Transform2d(-fieldX, -fieldY, objectTransform.getRotation());
 
         return fieldTransform;
     }
