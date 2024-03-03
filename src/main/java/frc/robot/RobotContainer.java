@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import org.ejml.equation.IntegerSequence.Combined;
-import com.fasterxml.jackson.core.sym.Name;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathConstraints;
@@ -24,7 +22,6 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Mechanism;
 import frc.utils.BeamBreak;
-import frc.utils.BeamBreak.Phase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -46,10 +43,10 @@ public class RobotContainer {
 
     // Flightstick controller
     CommandJoystick m_driverFlightstickController = new CommandJoystick(OIConstants.kFlightstickPort);
-    // XBox controller
-    CommandXboxController m_driverController = new CommandXboxController(OIConstants.kXBoxPort);
+    // Driving controller
+    CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDrivingControllerXBoxPort);
     // Operator controller
-    CommandXboxController m_operatorController = new CommandXboxController(1);
+    CommandXboxController m_operatorController = new CommandXboxController(OIConstants.kOperatingControllerXBoxPort);
 
     // The auto chooser
     private final SendableChooser<Command> autoChooser;
@@ -205,13 +202,11 @@ public class RobotContainer {
         // Cancel Alignment
         this.m_driverController.a().onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign()));
 
-        //this.m_driverController.povLeft().onTrue(this.m_mechanism.lightsOff().andThen(this.m_mechanism.lightShow()));
+        this.m_driverController.povLeft().onTrue(this.m_mechanism.lightsOff().andThen(this.m_mechanism.lightShow()));
 
         /*
          * Operator Controller Buttons
          */
-
-        // this.m_driverXboxController.a().onTrue(this.m_mechanism.nlightShow());
 
         // Moving the elevator
         this.m_operatorController.povUp().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.AMP));

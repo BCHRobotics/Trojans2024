@@ -67,8 +67,8 @@ public final class Constants {
   }
 
   public static final class ElevatorConstants {
-    public static final int kLeftElevatorMotorCanId = 20;  //30
-    public static final int kRightElevatorMotorCanId = 21;  //31
+    public static final int kLeftElevatorMotorCanId = 20;
+    public static final int kRightElevatorMotorCanId = 21;
 
     public static final int kTopElevatorLimitSwitchPort = 5;
     public static final int kBottomElevatorLimitSwitchPort = 6;
@@ -111,8 +111,8 @@ public final class Constants {
   public static final class MechanismConstants {
     public static final int kBottomBeltMotorCanId = 33;
     public static final int kTopBeltMotorCanId = 32;
-    public static final int kSourceMotorCanId = 30;
     public static final int kAmpMotorCanId = 31;
+    public static final int kSourceMotorCanId = 30;
 
     public static final int kBottomSensorChannel = 4;
     public static final int kMiddleSensorChannel = 5;
@@ -156,8 +156,8 @@ public final class Constants {
     public static final double kAmpOffsetY = 0; // (meters)
 
     // Camera names (a and b are TEMPORARY NAMES)
-    public static final String kNoteCameraName = "a";
-    public static final String kTagCameraName = "b";
+    public static final String kNoteCameraName = "Note Cam";
+    public static final String kTagCameraName = "Tag Cam";
 
     // PID values for aligning to a note
     public static final double kNoteP = 0.02;
@@ -222,7 +222,8 @@ public final class Constants {
 
   public static final class OIConstants {
     public static final int kFlightstickPort = 3;
-    public static final int kXBoxPort = 0;
+    public static final int kDrivingControllerXBoxPort = 0;
+    public static final int kOperatingControllerXBoxPort = 1;
     public static final double kDriveDeadband = 0.05;
     public static final double kTurnDeadband = 0.12;
     public static final double kTwistDeadband = 0.5;
@@ -252,5 +253,4 @@ public final class Constants {
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
   }
-
 }

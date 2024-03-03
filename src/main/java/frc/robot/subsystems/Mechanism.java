@@ -25,10 +25,8 @@ public class Mechanism extends SubsystemBase{
     
     // The beam-break sensor that detects where a note is in the mechanism
     private final BeamBreak m_beamBreak = new BeamBreak();
-
-    private Elevator m_elevator;
-
     private LEDs m_LEDs = new LEDs();
+    private Elevator m_elevator;
 
     // The phase of the beam-break sensor
     private Phase m_currentPhase = Phase.NONE;
@@ -77,6 +75,10 @@ public class Mechanism extends SubsystemBase{
         requestIntakeType = 0;
     }
 
+    /**
+     * Gets the instance of the mechanism
+     * @return the instance of the mechanism
+     */
     public static Mechanism getInstance() {
         if (instance == null) {
             instance = new Mechanism();
@@ -275,7 +277,7 @@ public class Mechanism extends SubsystemBase{
                     this.setBeltSpeed(0);
                 }
             )
-            .beforeStarting(new WaitCommand(1))
+            .beforeStarting(new WaitCommand(0.5))
         )
         .until(() -> this.checkState(Phase.NONE))
        // .andThen(() -> this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
@@ -289,6 +291,10 @@ public class Mechanism extends SubsystemBase{
         ).andThen(lightsOff());
     }
 
+    /**
+     * Stop the mechanism from running
+     * @return
+     */
     public Command stopMechanism() {
         return runOnce(() -> {
           this.setBeltSpeed(0);
@@ -297,7 +303,7 @@ public class Mechanism extends SubsystemBase{
         });
     }
 
-    /*
+    /**
      * A command for the rainbow-light-thing
      */
     public Command lightShow() {
@@ -317,29 +323,28 @@ public class Mechanism extends SubsystemBase{
         ).repeatedly();
     }
 
-    /*
+    /**
      * A command for confirming an intake
      */
     public Command confirmIntake() {
         return Commands.sequence(
             this.runOnce(() -> this.powerLEDs("green")),
-            new WaitCommand(0.2),
+            new WaitCommand(0.1),
             this.runOnce(() -> this.powerLEDs("off")),
-            new WaitCommand(0.2),
+            new WaitCommand(0.1),
             this.runOnce(() -> this.powerLEDs("green")),
-            new WaitCommand(0.2),
+            new WaitCommand(0.1),
             this.runOnce(() -> this.powerLEDs("off")),
-            new WaitCommand(0.2),
+            new WaitCommand(0.1),
             this.runOnce(() -> this.powerLEDs("green"))
         );
     }
 
-    /*
+    /**
      * A command for turning off all the LEDs
      */
     public Command lightsOff() {
         return this.runOnce(() -> this.powerLEDs("off"));
-        
     }
 
     /**

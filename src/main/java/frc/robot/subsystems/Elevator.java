@@ -31,7 +31,7 @@ public class Elevator extends SubsystemBase {
                 ElevatorConstants.kMaxSpeedMetersPerSecond,
                 ElevatorConstants.kMaxAccelerationMetersPerSecondSquared);
 
-    private static BetterProfiledPIDController m_controller = new BetterProfiledPIDController(
+    private BetterProfiledPIDController m_controller = new BetterProfiledPIDController(
             ElevatorConstants.kPThetaController,
             ElevatorConstants.kIThetaController,
             ElevatorConstants.kDThetaController,
@@ -39,7 +39,11 @@ public class Elevator extends SubsystemBase {
 
     private final ElevatorFeedforward m_feedforward =
         new ElevatorFeedforward(
-            ElevatorConstants.kSVolts, ElevatorConstants.kGVolts, ElevatorConstants.kVVolts, ElevatorConstants.kAVolts);
+            ElevatorConstants.kSVolts, 
+            ElevatorConstants.kGVolts, 
+            ElevatorConstants.kVVolts, 
+            ElevatorConstants.kAVolts
+        );
    
     double totalSpeed = 0;
 
@@ -88,6 +92,10 @@ public class Elevator extends SubsystemBase {
         m_controller.setGoal(0);
     }
 
+    /**
+     * Gets the instance of the elevator
+     * @return the instance of the elevator
+     */
     public static Elevator getInstance() {
         if (instance == null) {
             instance = new Elevator();
@@ -107,7 +115,6 @@ public class Elevator extends SubsystemBase {
      * Sets the speed of the drive motor
      * @param speed speed in volts [0 --> 12]
      */
-    // fix this commennt later
     private void setLeftMotorSpeed(double speed) {
         this.m_leftMotor.setVoltage(speed * 12);
     }
@@ -125,11 +132,9 @@ public class Elevator extends SubsystemBase {
      * Stops the elevator and sets the goal to the current setpoint
      */
     private void limitReached() {
-        System.out.println("in reached limit");
         cancelAllElevatorCommands();
         m_controller.forceAtGoal();
         forcedGoal = true;
-        System.out.println("forced goal");
     }
 
     /**
@@ -179,18 +184,18 @@ public class Elevator extends SubsystemBase {
     public Command moveToPositionCommand(ElevatorConstants.kElevatorPositions position) {
         switch (position) {
             case AMP:
-                return this.runOnce(() -> Elevator.m_controller.setGoal(
+                return this.runOnce(() -> m_controller.setGoal(
                     ElevatorConstants.kElevatorGoals[
                     ElevatorConstants.kElevatorPositions.AMP.ordinal()]));
 
             case SOURCE:
-                return this.runOnce(() -> Elevator.m_controller.setGoal(
+                return this.runOnce(() -> m_controller.setGoal(
                     ElevatorConstants.kElevatorGoals[
                     ElevatorConstants.kElevatorPositions.SOURCE.ordinal()]));
 
             case INTAKE:
             System.out.println("in elev");
-                return this.runOnce(() -> Elevator.m_controller.setGoal(
+                return this.runOnce(() -> m_controller.setGoal(
                     ElevatorConstants.kElevatorGoals[
                     ElevatorConstants.kElevatorPositions.INTAKE.ordinal()]));
 
