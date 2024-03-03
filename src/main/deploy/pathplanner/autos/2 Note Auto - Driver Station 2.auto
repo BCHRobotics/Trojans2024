@@ -1,0 +1,55 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.15,
+      "y": 3.8121554627907357
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "StartToAmp_D2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Score Amp"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "AmpToNoteOne"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Ground"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NoteOneToAmp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Score Amp"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Driver Station 2",
+  "choreoAuto": false
+}

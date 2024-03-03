@@ -1,0 +1,103 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.151,
+      "y": 7.13
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "StartToAmp_D1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Score Amp"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "AmpToNoteOne"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Ground"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NoteOneToAmp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Score Amp"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "AmpToNoteTwo"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Ground"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NoteTwoToAmp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Score Amp"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "AmpToNoteThree"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Ground"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NoteThreeToAmp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Score Amp"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Driver Station 1",
+  "choreoAuto": false
+}

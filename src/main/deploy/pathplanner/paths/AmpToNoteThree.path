@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.943718987153074,
-        "y": 5.601499977928731
+        "x": 1.83,
+        "y": 7.77
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.040161039942034,
-        "y": 5.830355413679948
+        "x": 2.157158138546377,
+        "y": 6.142347676623801
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.361903061098285,
-        "y": 6.395841390257602
+        "x": 2.771392906208311,
+        "y": 4.0948984510840205
       },
       "prevControl": {
-        "x": 2.1571581385443066,
-        "y": 6.093598885535063
+        "x": 1.2991794154630405,
+        "y": 3.8804037703131864
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,16 +32,16 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Elevator Down",
-      "waypointRelativePos": 0.25,
+      "name": "Elevator To Ground Position",
+      "waypointRelativePos": 0.1,
       "command": {
-        "type": "sequential",
+        "type": "parallel",
         "data": {
           "commands": [
             {
               "type": "named",
               "data": {
-                "name": "ELEVATOR LOW"
+                "name": "Elevator Ground"
               }
             }
           ]
@@ -50,21 +50,21 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 1.0,
-    "maxAcceleration": 1.0,
+    "maxVelocity": 4.1,
+    "maxAcceleration": 3.4,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": 45.0,
+    "velocity": 0,
+    "rotation": 0.0,
     "rotateFast": true
   },
   "reversed": false,
-  "folder": "Speaker",
+  "folder": "Scoring Paths",
   "previewStartingState": {
-    "rotation": 0.0,
-    "velocity": 0.0
+    "rotation": 90.0,
+    "velocity": 0
   },
   "useDefaultConstraints": true
 }

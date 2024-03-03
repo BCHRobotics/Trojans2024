@@ -3,11 +3,21 @@
   "robotLength": 0.89,
   "holonomicMode": true,
   "pathFolders": [
-    "New Folder",
+    "DS 1 Start",
+    "DS 2 Start",
+    "Final Paths",
+    "Scoring Paths",
     "New New Folder",
+    "Note Pickup",
+    "Note Placing",
+    "Speaker",
     "Vision Test"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "Driver Station 1",
+    "Driver Station 2",
+    "Driver Station 3"
+  ],
   "defaultMaxVel": 1.0,
   "defaultMaxAccel": 1.0,
   "defaultMaxAngVel": 540.0,

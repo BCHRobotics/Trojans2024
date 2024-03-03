@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.97,
+        "y": 7.46
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.97,
+        "y": 7.46
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.133759925477097,
+        "y": 7.46
+      },
+      "prevControl": {
+        "x": 7.133759925477097,
+        "y": 7.46
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.1,
+    "maxAcceleration": 3.4,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": true
+  },
+  "reversed": false,
+  "folder": "DS 1 Start",
+  "previewStartingState": {
+    "rotation": 90.0,
+    "velocity": 2.0
+  },
+  "useDefaultConstraints": true
+}
