@@ -133,25 +133,18 @@ public class Mechanism extends SubsystemBase{
      */
     public void requestIntake(int intakeType) {
         // Set the requested intake based on the input
-        if (requestIntakeType == intakeType) { // If you request the same intake twice the lights turn off
-            requestIntakeType = 0;
-        }
-        else {
-            requestIntakeType = intakeType;
-        }
+        // If you request the same intake twice the lights turn off
+        requestIntakeType = requestIntakeType == intakeType ? 0 : intakeType;
 
         // Set the LED color to the requested intake
         if (this.m_currentPhase != Phase.NONE) {
             requestIntakeType = 0;
         }
-        else if (requestIntakeType == 2) {
-            this.powerLEDs("cyan");
-        }
-        else if (requestIntakeType == 1) {
-            this.powerLEDs("purple");
-        }
-        else {
-            this.powerLEDs("off");
+
+        switch (requestIntakeType) {
+            case 1 -> this.powerLEDs("purple");
+            case 2 -> this.powerLEDs("cyan");
+            default -> this.powerLEDs("off");
         }
     }
 
@@ -219,7 +212,7 @@ public class Mechanism extends SubsystemBase{
                 this.setAmpSpeed(0.0);
             })
             .until(() -> this.checkState(Phase.LOADED))
-           // .andThen(() -> this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
+           // .andThen(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
         ).andThen(confirmIntake());
     }
 
@@ -242,7 +235,7 @@ public class Mechanism extends SubsystemBase{
                 this.setAmpSpeed(-speed * 0.7);
             }
         )
-        .until(() -> this.checkState(Phase.NONE)) //before it was Phase.SOURCE_INTAKE
+        .until(() -> this.checkState(Phase.NONE))
         .andThen(
             this.runOnce(
                 () -> {
@@ -252,7 +245,7 @@ public class Mechanism extends SubsystemBase{
                 }
             )
             .beforeStarting(new WaitCommand(1))
-           // .andThen(() -> this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
+           // .andThen(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
         ).andThen(lightsOff());
     }
 
@@ -280,7 +273,7 @@ public class Mechanism extends SubsystemBase{
             .beforeStarting(new WaitCommand(0.5))
         )
         .until(() -> this.checkState(Phase.NONE))
-       // .andThen(() -> this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
+       // .andThen(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
         .andThen(
             this.runOnce(
                 () -> {

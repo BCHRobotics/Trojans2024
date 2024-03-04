@@ -11,14 +11,7 @@ public class BeamBreak {
     private final DigitalInput m_middleSensor;
     private final DigitalInput m_topSensor;
 
-    private static Solenoid PCMChannel0;
-    private static Solenoid PCMChannel1;
-    private static Solenoid PCMChannel2;
-    private static Solenoid PCMChannel3;
-    private static Solenoid PCMChannel4;
-    private static Solenoid PCMChannel5;
-    private static Solenoid PCMChannel6;
-    private static Solenoid PCMChannel7;
+    private static Solenoid[] PCMChannels = new Solenoid[8];
 
     // Enum for the different phases
     public enum Phase {
@@ -33,14 +26,9 @@ public class BeamBreak {
         m_middleSensor = new DigitalInput(MechanismConstants.kMiddleSensorChannel);
         m_topSensor = new DigitalInput(MechanismConstants.kTopSensorChannel);
 
-        PCMChannel0 = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
-        PCMChannel1 = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
-        PCMChannel2 = new Solenoid(PneumaticsModuleType.CTREPCM, 2);
-        PCMChannel3 = new Solenoid(PneumaticsModuleType.CTREPCM, 3);
-        PCMChannel4 = new Solenoid(PneumaticsModuleType.CTREPCM, 4);
-        PCMChannel5 = new Solenoid(PneumaticsModuleType.CTREPCM,5);
-        PCMChannel6 = new Solenoid(PneumaticsModuleType.CTREPCM, 6);
-        PCMChannel7 = new Solenoid(PneumaticsModuleType.CTREPCM, 7);
+        for (int i = 0; i < 8; i++) {
+            PCMChannels[i] = new Solenoid(PneumaticsModuleType.CTREPCM, i);
+        }
 
         m_currentPhase = Phase.NONE; // Default phase
     }
@@ -50,14 +38,9 @@ public class BeamBreak {
      * @param activeChannel
      */
     public static void solenoidChannelActive(boolean activeChannel) {
-        PCMChannel0.set(activeChannel);
-        PCMChannel1.set(activeChannel);
-        PCMChannel2.set(activeChannel);
-        PCMChannel3.set(activeChannel);
-        PCMChannel4.set(activeChannel);
-        PCMChannel5.set(activeChannel);
-        PCMChannel6.set(activeChannel);
-        PCMChannel7.set(activeChannel);
+        for (int i = 0; i < 8; i++) {
+            PCMChannels[i].set(activeChannel);
+        }
     }
 
     /**
