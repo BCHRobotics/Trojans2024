@@ -61,32 +61,8 @@ public class RobotContainer {
     public RobotContainer() {
         m_elevator = Elevator.getInstance();
         m_mechanism = Mechanism.getInstance();
-        // Apriltag alignment command
-        NamedCommands.registerCommand("ALIGN TAG", new RunCommand(
-            () -> m_robotDrive.driveToTag(VisionConstants.kAmpOffsetX, VisionConstants.kAmpOffsetY)).until( // Run the alignwithtag function
-                () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
-                    new InstantCommand(
-                        () -> m_robotDrive.alignWithTag())).alongWith(
-                            this.m_elevator.moveToPositionCommand(kElevatorPositions.AMP)).andThen(
-                                this.m_mechanism.scoreAmp(6))); // Set alignmode to true before starting
 
-        // Note alignment command
-        NamedCommands.registerCommand("ALIGN NOTE", new RunCommand(
-            () -> m_robotDrive.driveToNote()).until( // Run the 'drive to note' function
-                () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true, i.e the robot is done aligning
-                    new InstantCommand(
-                        () -> m_robotDrive.alignWithNote())).alongWith(
-                            this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE)).alongWith(
-                                this.m_mechanism.groundIntake(12))); // Set alignmode to true before starting, and set isAligned to false
-
-        // A command for canceling the current align command
-        NamedCommands.registerCommand("CANCEL ALIGN", new InstantCommand(() -> m_robotDrive.cancelAlign()));
-
-        NamedCommands.registerCommand("INTAKE", m_mechanism.groundIntake(12));
-        NamedCommands.registerCommand("AMP SCORE", m_mechanism.scoreAmp(12));
-        NamedCommands.registerCommand("ELEVATOR LOW", m_elevator.moveToPositionCommand(kElevatorPositions.AMP));
-        NamedCommands.registerCommand("ELEVATOR HIGH", m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE));
-        NamedCommands.registerCommand("SPEAKER SCORE", m_mechanism.scoreSpeaker(12));
+        configureNamedCommands();
 
         inputChooser = new SendableChooser<>();
         // Assigning values to the input method chooser
@@ -136,6 +112,35 @@ public class RobotContainer {
                                 OIConstants.kFieldRelative, OIConstants.kRateLimited),
                         m_robotDrive));
         }
+    }
+
+    public void configureNamedCommands() {
+        // Apriltag alignment command
+        NamedCommands.registerCommand("ALIGN TAG", new RunCommand(
+            () -> m_robotDrive.driveToTag(VisionConstants.kAmpOffsetX, VisionConstants.kAmpOffsetY)).until( // Run the alignwithtag function
+                () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
+                    new InstantCommand(
+                        () -> m_robotDrive.alignWithTag())).alongWith(
+                            this.m_elevator.moveToPositionCommand(kElevatorPositions.AMP)).andThen(
+                                this.m_mechanism.scoreAmp(6))); // Set alignmode to true before starting
+
+        // Note alignment command
+        NamedCommands.registerCommand("ALIGN NOTE", new RunCommand(
+            () -> m_robotDrive.driveToNote()).until( // Run the 'drive to note' function
+                () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true, i.e the robot is done aligning
+                    new InstantCommand(
+                        () -> m_robotDrive.alignWithNote())).alongWith(
+                            this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE)).alongWith(
+                                this.m_mechanism.groundIntake(12))); // Set alignmode to true before starting, and set isAligned to false
+
+        // A command for canceling the current align command
+        NamedCommands.registerCommand("CANCEL ALIGN", new InstantCommand(() -> m_robotDrive.cancelAlign()));
+
+        NamedCommands.registerCommand("INTAKE", m_mechanism.groundIntake(12));
+        NamedCommands.registerCommand("AMP SCORE", m_mechanism.scoreAmp(12));
+        NamedCommands.registerCommand("ELEVATOR LOW", m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE));
+        NamedCommands.registerCommand("ELEVATOR HIGH", m_elevator.moveToPositionCommand(kElevatorPositions.AMP));
+        NamedCommands.registerCommand("SPEAKER SCORE", m_mechanism.scoreSpeaker(12));
     }
 
   /**

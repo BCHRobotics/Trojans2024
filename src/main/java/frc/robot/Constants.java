@@ -157,7 +157,7 @@ public final class Constants {
 
     // Camera names (a and b are TEMPORARY NAMES)
     public static final String kNoteCameraName = "a";
-    public static final String kTagCameraName = "b";
+    public static final String kTagCameraName = "Tag Cam";
 
     // PID values for aligning to a note
     public static final double kNoteP = 0.02;

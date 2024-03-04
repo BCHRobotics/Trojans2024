@@ -68,10 +68,7 @@ dependencies {
     simulationRelease wpi.sim.enableRelease()
 }
 
-test {
-    // useJUnitPlatform()
-    // systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
-}
+test {}
 
 // Simulation configuration (e.g. environment variables).
 wpi.sim.addGui().defaultEnabled = true
