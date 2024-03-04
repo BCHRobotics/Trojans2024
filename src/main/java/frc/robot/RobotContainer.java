@@ -165,7 +165,6 @@ public class RobotContainer {
          * POV UP - ELEVATOR TO SOURCE
          * POV RIGHT - ELEVATOR TO AMP
          * POV DOWN - ELEVATOR TO GROUND
-         * POV LEFT - LIGHTSHOW (TEMPORARY)
          * LEFT BUMPER - REQUEST GROUND INTAKE
          * RIGHT BUMPER - REQUEST SOURCE INTAKE
          * B - SCORE AMP 

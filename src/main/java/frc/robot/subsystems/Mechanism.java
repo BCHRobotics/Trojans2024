@@ -212,7 +212,7 @@ public class Mechanism extends SubsystemBase{
                 this.setAmpSpeed(0.0);
             })
             .until(() -> this.checkState(Phase.LOADED))
-           // .andThen(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
+            .andThen(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
         ).andThen(confirmIntake());
     }
 
@@ -245,7 +245,7 @@ public class Mechanism extends SubsystemBase{
                 }
             )
             .beforeStarting(new WaitCommand(1))
-           // .andThen(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
+            .andThen(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
         ).andThen(lightsOff());
     }
 
@@ -273,7 +273,7 @@ public class Mechanism extends SubsystemBase{
             .beforeStarting(new WaitCommand(0.5))
         )
         .until(() -> this.checkState(Phase.NONE))
-       // .andThen(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
+        .andThen(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
         .andThen(
             this.runOnce(
                 () -> {

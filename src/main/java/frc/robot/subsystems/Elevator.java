@@ -192,7 +192,6 @@ public class Elevator extends SubsystemBase {
                     ElevatorConstants.kElevatorPositions.SOURCE.ordinal()]));
 
             case INTAKE:
-            System.out.println("in elev");
                 return this.runOnce(() -> m_controller.setGoal(
                     ElevatorConstants.kElevatorGoals[
                     ElevatorConstants.kElevatorPositions.INTAKE.ordinal()]));
