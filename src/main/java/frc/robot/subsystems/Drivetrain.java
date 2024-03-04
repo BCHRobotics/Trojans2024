@@ -112,7 +112,7 @@ public class Drivetrain extends SubsystemBase {
 
   
   private final Velocity<Voltage> voltsPerSecond = Volts.per(Second);
-  private final Measure<Velocity<Voltage>> m_quasistaticVoltage = voltsPerSecond.of(0.5);
+  private final Measure<Velocity<Voltage>> m_quasistaticVoltage = voltsPerSecond.of(0.8);
   private final Measure<Voltage> m_dynamicVoltage = Volts.of(4);
   private final Measure<Time> m_timeout = Seconds.of(7);
 
@@ -158,10 +158,10 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void runVolts(Measure<Voltage> volts) {
-    m_frontLeftMotor.setVoltage(volts.in(Volts));
-    m_frontRightMotor.setVoltage(-volts.in(Volts));
+    m_frontLeftMotor.setVoltage(-volts.in(Volts));
+    m_frontRightMotor.setVoltage(volts.in(Volts));
     m_rearLeftMotor.setVoltage(volts.in(Volts));
-    m_rearRightMotor.setVoltage(-volts.in(Volts));
+    m_rearRightMotor.setVoltage(volts.in(Volts));
   }
 
   /**
