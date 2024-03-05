@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.359011265031077,
-      "y": 2.1985010351787078
+      "x": 1.386927239412675,
+      "y": 7.263569871557796
     },
     "rotation": -90.0
   },
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start-Amp_DS1"
+            "pathName": "Start-Amp_DS3"
           }
         },
         {
@@ -76,10 +76,34 @@
           "data": {
             "name": "ALIGN TAG"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp-Note3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note3-Amp"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN TAG"
+          }
         }
       ]
     }
   },
-  "folder": "Driver Station 1",
+  "folder": "Driver Station 3",
   "choreoAuto": false
 }

@@ -78,12 +78,12 @@ public class RobotContainer {
         // Configure the button bindings
         this.configureButtonBindings();
         // Configure the default commands for the input method chosen
-        this.configureDefaultCommands();
+        this.configureDefaultCommands(false);
     }
 
     // Configures default commands
-    public void configureDefaultCommands() {
-        final double invert = Robot.isRed ? -1 : 1;
+    public void configureDefaultCommands(boolean isRedAlliance) {
+        final double invert = isRedAlliance ? -1 : 1;
         
         // Configure default commands
         if (inputChooser.getSelected().booleanValue() == true) {
