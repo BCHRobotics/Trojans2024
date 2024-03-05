@@ -1,7 +1,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.ElevatorConstants.kElevatorPositions;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Mechanism;
@@ -16,7 +15,7 @@ public class CombinedCommands {
     }
 
     public Command pickupFromSource() {
-        return  m_elevator.moveToPositionCommand(kElevatorPositions.SOURCE)
+        return m_elevator.moveToPositionCommand(kElevatorPositions.SOURCE)
                     .andThen(m_mechanism.sourceIntake(6));
     }
 
