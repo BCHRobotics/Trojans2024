@@ -141,6 +141,9 @@ public class Drivetrain extends SubsystemBase {
     m_noteCamera.refreshResult();
     m_tagCamera.refreshResult();
 
+    // Set the max speed of the bot
+    setSpeedPercent();
+
     // Update the odometry in the periodic block
     m_odometry.update(
         Rotation2d.fromDegrees(m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)),
@@ -422,19 +425,11 @@ public class Drivetrain extends SubsystemBase {
     }
 
     /*
-     * Creates an interpolated value based on the min and max speed constants and the commanded speed multiplier.
-     * If the speed multiplier is 0, lerpSpeed will equal the min speed set via constants.
-     * If the speed multiplier is 1, lerSpeed will equal the max speed.
-     */
-    double lerpSpeed = DriveConstants.kMinSpeedMetersPerSecond + (DriveConstants.kMaxSpeedMetersPerSecond
-                     - DriveConstants.kMinSpeedMetersPerSecond) * m_maxSpeed;
-
-    /*
      * Convert the commanded speeds into the correct units for the drivetrain,
      * using the interpolated speed.
      */
-    double xSpeedDelivered = xSpeedCommanded * lerpSpeed;
-    double ySpeedDelivered = ySpeedCommanded * lerpSpeed;
+    double xSpeedDelivered = xSpeedCommanded * m_maxSpeed;
+    double ySpeedDelivered = ySpeedCommanded * m_maxSpeed;
     double rotDelivered = m_currentRotation * DriveConstants.kMaxAngularSpeed;
 
     SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
@@ -545,9 +540,9 @@ public class Drivetrain extends SubsystemBase {
   }
 
   /**
-   * Sets the speed of the robot to a percentage [0 --> 1]
+   * Sets the speed of the robot to a desired m/s value
    *
-   * @param percent The desired speed percentage
+   * @param percent The desired speed in metres per second
    */
   public void setSpeedPercent() {
     if (m_slowMode) {

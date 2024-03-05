@@ -279,15 +279,6 @@ public class RobotContainer {
     }
 
     /**
-     * Sets the speed percentage to use based on the slider on the joystick
-     */
-    public void setSpeedPercent() {
-        // THIS IS COMMENTED OUT FOR XBOX FOR NOW
-        //m_robotDrive.setSpeedPercent(1 - ((m_driverController.getThrottle() + 1) / 2));
-        m_robotDrive.setSpeedPercent();
-    }
-
-    /**
      * Initializes the LEDs
      */
     public void initLEDs() {
