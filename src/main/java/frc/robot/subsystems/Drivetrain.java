@@ -88,6 +88,7 @@ public class Drivetrain extends SubsystemBase {
   private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
   private boolean m_slowMode = false;
+  private boolean m_fastMode = false;
 
   // If you switch the camera you have to change the name property of this
   private final Camera m_noteCamera = new Camera(VisionConstants.kNoteCameraName); // These names might need to be changed
@@ -463,7 +464,7 @@ public class Drivetrain extends SubsystemBase {
    */
   public void setModuleStates(SwerveModuleState[] desiredStates) {
     SwerveDriveKinematics.desaturateWheelSpeeds(
-        desiredStates, m_slowMode ? DriveConstants.kMinSpeedMetersPerSecond : DriveConstants.kMaxSpeedMetersPerSecond);
+        desiredStates, getMaxSpeed());
     m_frontLeft.setDesiredState(desiredStates[0]);
     m_frontRight.setDesiredState(desiredStates[1]);
     m_rearLeft.setDesiredState(desiredStates[2]);
@@ -533,12 +534,36 @@ public class Drivetrain extends SubsystemBase {
   }
 
   /**
+   * Enables and disables fast mode.
+   *
+   * @param mode Whether to enable fast mode on or off.
+   */
+  public void setFastMode(boolean mode) {
+    this.m_fastMode = mode;
+  }
+
+  /**
+   * Gets the speed of the robot.
+   *
+   * @return The current speed percentage [0 --> 1]
+   */
+  public double getMaxSpeed() {
+    return m_maxSpeed;
+  }
+
+  /**
    * Sets the speed of the robot to a percentage [0 --> 1]
    *
    * @param percent The desired speed percentage
    */
   public void setSpeedPercent(double percent) {
+    if (m_slowMode) {
+      m_maxSpeed = 0;
+    } else if (m_fastMode) {
+      m_maxSpeed = 1;
+    } else {
       m_maxSpeed = percent;
+    }
   }
 
   /**
