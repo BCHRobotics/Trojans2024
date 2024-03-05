@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.15,
-      "y": 2.359441488479177
+      "x": 1.386927239412675,
+      "y": 7.263569871557796
     },
-    "rotation": 0
+    "rotation": -90.0
   },
   "command": {
     "type": "sequential",
@@ -14,61 +14,67 @@
         {
           "type": "path",
           "data": {
-            "pathName": "StartToAmp_D3"
+            "pathName": "StartAmp_DS3"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Score Amp"
+            "name": "ALIGN TAG"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "AmpToNoteOne"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Intake Ground"
+            "pathName": "2NoteAmp_2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "NoteOneToAmp"
+            "pathName": "2NoteAmp_3"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Score Amp"
+            "name": "ALIGN TAG"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "AmpToNoteTwo"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Intake Ground"
+            "pathName": "3NoteAmp_4"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "NoteTwoToAmp"
+            "pathName": "3NoteAmp_5"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Score Amp"
+            "name": "ALIGN TAG"
           }
         }
       ]

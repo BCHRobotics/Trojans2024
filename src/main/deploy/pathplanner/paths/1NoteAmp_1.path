@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.235156204279156,
-        "y": 4.085148692862707
+        "x": 0.5638087629451612,
+        "y": 7.133434209888363
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.313154270014006,
-        "y": 3.919402803176154
+        "x": 0.9029392417759192,
+        "y": 6.829386194384925
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.8646653920386238,
-        "y": 6.727333169630711
+        "x": 1.8852482149408742,
+        "y": 6.712444649960525
       },
       "prevControl": {
-        "x": 1.767168070898737,
-        "y": 6.805331561650283
+        "x": 1.3590112650310773,
+        "y": 6.712444649960525
       },
       "nextControl": null,
       "isLocked": false,
@@ -38,12 +38,12 @@
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 2.0,
-    "rotation": 90.0,
+    "velocity": 0,
+    "rotation": -90.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Vision Test",
+  "folder": "1NoteAmp",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

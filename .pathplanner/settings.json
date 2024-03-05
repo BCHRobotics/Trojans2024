@@ -3,15 +3,9 @@
   "robotLength": 0.89,
   "holonomicMode": true,
   "pathFolders": [
-    "DS 1 Start",
-    "DS 2 Start",
-    "Final Paths",
-    "Scoring Paths",
-    "New New Folder",
-    "Note Pickup",
-    "Note Placing",
-    "Speaker",
-    "Vision Test"
+    "1NoteAmp",
+    "2NoteAmp",
+    "3NoteAmp"
   ],
   "autoFolders": [
     "Driver Station 1",

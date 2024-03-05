@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.2254064460623,
-        "y": 6.980826883268969
+        "x": 2.8981397630253705,
+        "y": 5.52811290895741
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.303404511797149,
-        "y": 6.8150809935824155
+        "x": 2.517899192567983,
+        "y": 5.469614359656273
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.8646653920386238,
-        "y": 6.795581477148703
+        "x": 1.896942369383314,
+        "y": 6.385008325572207
       },
       "prevControl": {
-        "x": 1.767168070898737,
-        "y": 6.8735798691682755
+        "x": 1.8646653920386238,
+        "y": 5.888853962981085
       },
       "nextControl": null,
       "isLocked": false,
@@ -38,14 +38,14 @@
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 2.5,
-    "rotation": 90.0,
+    "velocity": 0.0,
+    "rotation": -90.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Vision Test",
+  "folder": "3NoteAmp",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 90.0,
     "velocity": 0
   },
   "useDefaultConstraints": true

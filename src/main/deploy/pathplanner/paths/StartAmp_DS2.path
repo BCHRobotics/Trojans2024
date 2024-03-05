@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.86,
-        "y": 7.74
+        "x": 1.3674277229789629,
+        "y": 3.763406671706455
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9366434665393788,
-        "y": 7.577132633603822
+        "x": 1.8354161173880557,
+        "y": 3.6854086059716056
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.488649917917414,
-        "y": 7.010076157919538
+        "x": 2.0255780682501534,
+        "y": 6.338231707802447
       },
       "prevControl": {
-        "x": 2.44477607119873,
-        "y": 7.0100762394907195
+        "x": 1.9816624906408973,
+        "y": 6.727333169630711
       },
       "nextControl": null,
       "isLocked": false,
@@ -38,14 +38,14 @@
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0.8,
-    "rotation": 180.0,
-    "rotateFast": true
+    "velocity": 0.0,
+    "rotation": -90.0,
+    "rotateFast": false
   },
   "reversed": false,
-  "folder": "Vision Test",
+  "folder": null,
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 90.0,
     "velocity": 0
   },
   "useDefaultConstraints": true

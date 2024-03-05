@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.4351730640783217,
-      "y": 7.074963437676163
+      "x": 0.5638087629451612,
+      "y": 7.133434209888363
     },
-    "rotation": -90.0
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -14,13 +14,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "ToAmp"
+            "pathName": "1NoteAmp_1"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 2.0
+            "waitTime": 0.25
           }
         },
         {
@@ -32,6 +32,6 @@
       ]
     }
   },
-  "folder": null,
+  "folder": "Driver Station 3",
   "choreoAuto": false
 }

@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.4351730640783217,
-        "y": 7.074963437676163
+        "x": 2.9026396514331485,
+        "y": 6.993104356579084
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.008186631757879,
-        "y": 7.063269283233724
+        "x": 2.797392261451189,
+        "y": 7.484258843161562
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.0255780682501534,
-        "y": 6.338231707802447
+        "x": 1.896942369383314,
+        "y": 6.385008325572207
       },
       "prevControl": {
-        "x": 1.6162826627647555,
-        "y": 6.595503105536125
+        "x": 1.4993411183403558,
+        "y": 6.560420642208806
       },
       "nextControl": null,
       "isLocked": false,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "3NoteAmp",
   "previewStartingState": {
     "rotation": 90.0,
     "velocity": 0

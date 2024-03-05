@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.151,
-      "y": 7.13
+      "x": 1.15,
+      "y": 2.359441488479177
     },
     "rotation": 0
   },
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "StartToAmp_D1"
+            "pathName": "StartToAmp_D3"
           }
         },
         {
