@@ -464,7 +464,7 @@ public class Drivetrain extends SubsystemBase {
    */
   public void setModuleStates(SwerveModuleState[] desiredStates) {
     SwerveDriveKinematics.desaturateWheelSpeeds(
-        desiredStates, getMaxSpeed());
+        desiredStates, m_maxSpeed);
     m_frontLeft.setDesiredState(desiredStates[0]);
     m_frontRight.setDesiredState(desiredStates[1]);
     m_rearLeft.setDesiredState(desiredStates[2]);
@@ -543,26 +543,17 @@ public class Drivetrain extends SubsystemBase {
   }
 
   /**
-   * Gets the speed of the robot.
-   *
-   * @return The current speed percentage [0 --> 1]
-   */
-  public double getMaxSpeed() {
-    return m_maxSpeed;
-  }
-
-  /**
    * Sets the speed of the robot to a percentage [0 --> 1]
    *
    * @param percent The desired speed percentage
    */
-  public void setSpeedPercent(double percent) {
+  public void setSpeedPercent() {
     if (m_slowMode) {
-      m_maxSpeed = 0;
+      m_maxSpeed = DriveConstants.kMinSpeedMetersPerSecond;
     } else if (m_fastMode) {
-      m_maxSpeed = 1;
+      m_maxSpeed = DriveConstants.kMaxSpeedMetersPerSecond;
     } else {
-      m_maxSpeed = percent;
+      m_maxSpeed = DriveConstants.kDriveSpeedMetersPerSecond;
     }
   }
 

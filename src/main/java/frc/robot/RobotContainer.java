@@ -284,7 +284,7 @@ public class RobotContainer {
     public void setSpeedPercent() {
         // THIS IS COMMENTED OUT FOR XBOX FOR NOW
         //m_robotDrive.setSpeedPercent(1 - ((m_driverController.getThrottle() + 1) / 2));
-        m_robotDrive.setSpeedPercent(0.7);
+        m_robotDrive.setSpeedPercent();
     }
 
     /**
