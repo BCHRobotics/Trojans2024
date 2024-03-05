@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "StartAmp_DS3"
+            "pathName": "Start-Amp_DS3"
           }
         },
         {
@@ -32,13 +32,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "2NoteAmp_2"
+            "pathName": "Amp-Note1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "2NoteAmp_3"
+            "pathName": "Note1-Amp"
           }
         },
         {
@@ -56,13 +56,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "3NoteAmp_4"
+            "pathName": "Amp-Note2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "3NoteAmp_5"
+            "pathName": "Note2-Amp"
           }
         },
         {

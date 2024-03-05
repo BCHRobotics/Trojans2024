@@ -3,14 +3,13 @@
   "robotLength": 0.89,
   "holonomicMode": true,
   "pathFolders": [
-    "1NoteAmp",
-    "2NoteAmp",
-    "3NoteAmp"
+    "Amp"
   ],
   "autoFolders": [
     "Driver Station 1",
     "Driver Station 2",
-    "Driver Station 3"
+    "Driver Station 3",
+    "Misc."
   ],
   "defaultMaxVel": 1.0,
   "defaultMaxAccel": 1.0,

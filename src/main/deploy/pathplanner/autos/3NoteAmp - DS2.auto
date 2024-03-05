@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.15,
-      "y": 2.359441488479177
+      "x": 1.3674277229789629,
+      "y": 3.763406671706455
     },
-    "rotation": 0
+    "rotation": -90.0
   },
   "command": {
     "type": "sequential",
@@ -14,66 +14,72 @@
         {
           "type": "path",
           "data": {
-            "pathName": "StartToAmp_D3"
+            "pathName": "Start-Amp_DS2"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Score Amp"
+            "name": "ALIGN TAG"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "AmpToNoteOne"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Intake Ground"
+            "pathName": "Amp-Note1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "NoteOneToAmp"
+            "pathName": "Note1-Amp"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Score Amp"
+            "name": "ALIGN TAG"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "AmpToNoteTwo"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Intake Ground"
+            "pathName": "Amp-Note2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "NoteTwoToAmp"
+            "pathName": "Note2-Amp"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Score Amp"
+            "name": "ALIGN TAG"
           }
         }
       ]
     }
   },
-  "folder": "Driver Station 1",
+  "folder": "Driver Station 2",
   "choreoAuto": false
 }

@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.15,
-      "y": 2.359441488479177
+      "x": 1.359011265031077,
+      "y": 2.1985010351787078
     },
     "rotation": 0
   },
@@ -14,85 +14,67 @@
         {
           "type": "path",
           "data": {
-            "pathName": "StartToAmp_D3"
+            "pathName": "Start-Amp_DS1"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Score Amp"
+            "name": "ALIGN TAG"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "AmpToNoteOne"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Intake Ground"
+            "pathName": "Amp-Note1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "NoteOneToAmp"
+            "pathName": "Note1-Amp"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Score Amp"
+            "name": "ALIGN TAG"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "AmpToNoteTwo"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Intake Ground"
+            "pathName": "Amp-Note2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "NoteTwoToAmp"
+            "pathName": "Note2-Amp"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Score Amp"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "AmpToNoteThree"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Intake Ground"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "NoteThreeToAmp"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Score Amp"
+            "name": "ALIGN TAG"
           }
         }
       ]

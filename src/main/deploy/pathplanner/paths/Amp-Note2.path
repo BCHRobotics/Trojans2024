@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.15,
-        "y": 3.8121554627907357
+        "x": 1.861859906055994,
+        "y": 7.636282850913281
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.602713974311559,
-        "y": 3.519662716285053
+        "x": 1.861859906055994,
+        "y": 6.829386194384925
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.8267774427286747,
-        "y": 7.774273873334073
+        "x": 2.8981397630253705,
+        "y": 5.547612425391122
       },
       "prevControl": {
-        "x": 1.8267774427286747,
-        "y": 7.76491854978012
+        "x": 1.5526731290992286,
+        "y": 5.567111941824834
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,8 +32,8 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Elevator To Amp Position",
-      "waypointRelativePos": 0.1,
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.45,
       "command": {
         "type": "parallel",
         "data": {
@@ -41,7 +41,13 @@
             {
               "type": "named",
               "data": {
-                "name": "Elevator Amp"
+                "name": "INTAKE"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "ELEVATOR LOW"
               }
             }
           ]
@@ -50,21 +56,21 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.1,
-    "maxAcceleration": 3.4,
+    "maxVelocity": 1.0,
+    "maxAcceleration": 1.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 90.0,
+    "velocity": 0.0,
+    "rotation": 0.0,
     "rotateFast": true
   },
   "reversed": false,
-  "folder": "Scoring Paths",
+  "folder": "Amp",
   "previewStartingState": {
     "rotation": 90.0,
-    "velocity": 0.0
+    "velocity": 0
   },
   "useDefaultConstraints": true
 }

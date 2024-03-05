@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.15,
-      "y": 3.8121554627907357
+      "x": 1.359011265031077,
+      "y": 2.1985010351787078
     },
     "rotation": 0
   },
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "StartToAmp_D2"
+            "pathName": "Start-Amp_DS1"
           }
         },
         {
@@ -98,6 +98,6 @@
       ]
     }
   },
-  "folder": "Driver Station 2",
+  "folder": "Driver Station 1",
   "choreoAuto": false
 }
