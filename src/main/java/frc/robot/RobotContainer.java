@@ -54,8 +54,6 @@ public class RobotContainer {
     // The input method chooser
     private final SendableChooser<Boolean> inputChooser;
 
-    private final boolean isRed = DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
-
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -85,7 +83,7 @@ public class RobotContainer {
 
     // Configures default commands
     public void configureDefaultCommands() {
-        final double invert = isRed ? -1 : 1;
+        final double invert = Robot.isRed ? -1 : 1;
         
         // Configure default commands
         if (inputChooser.getSelected().booleanValue() == true) {
