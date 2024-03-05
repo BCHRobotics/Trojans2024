@@ -1,0 +1,109 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.3674277229789629,
+      "y": 3.763406671706455
+    },
+    "rotation": -90.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Start-Amp_DS2"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN TAG"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp-Note1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note1-Amp"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN TAG"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp-Note2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note2-Amp"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN TAG"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp-Note3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note3-Amp"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN TAG"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Driver Station 2",
+  "choreoAuto": false
+}

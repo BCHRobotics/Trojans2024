@@ -6,15 +6,31 @@ package frc.robot.subsystems;
 
 import java.util.Optional;
 
+import javax.xml.crypto.dsig.Transform;
+
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -23,13 +39,18 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.utils.SwerveUtils;
+import frc.utils.devices.Camera;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Drivetrain extends SubsystemBase {
+
   // Create MAXSwerveModules
   private final MAXSwerveModule m_frontLeft = new MAXSwerveModule(
       DriveConstants.kFrontLeftDrivingCanId,
@@ -67,6 +88,20 @@ public class Drivetrain extends SubsystemBase {
   private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
   private boolean m_slowMode = false;
+  private boolean m_fastMode = false;
+
+  // If you switch the camera you have to change the name property of this
+  private final Camera m_noteCamera = new Camera(VisionConstants.kNoteCameraName); // These names might need to be changed
+  private final Camera m_tagCamera = new Camera(VisionConstants.kTagCameraName); // this too
+
+  // Whether or not to try and align with a target
+  private boolean isAlignmentActive = false;
+  // Is true when the robot has finished a vision command
+  private boolean isAlignmentSuccess = false;
+  private boolean cameraMode = false;
+
+  // The stored field position of the target apriltag
+  private Pose2d targetPose;
 
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
@@ -79,13 +114,36 @@ public class Drivetrain extends SubsystemBase {
           m_rearRight.getPosition()
       });
 
+  AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+
+  Transform3d robotToCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
+
+  // Construct PhotonPoseEstimator
+  //PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, m_tagCamera.getInstance(), robotToCam); // I'm using getInstance here as a temporary solution
+
+  /*
+  public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
+        photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
+        return photonPoseEstimator.update();
+  }
+  */
+
   /** Creates a new DriveSubsystem. */
   public Drivetrain() {
     this.initializeAuto();
+
+    cameraMode = false;
   }
 
   @Override
   public void periodic() {
+    // Refresh the data gathered by the camera
+    m_noteCamera.refreshResult();
+    m_tagCamera.refreshResult();
+
+    // Set the max speed of the bot
+    setSpeedPercent();
+
     // Update the odometry in the periodic block
     m_odometry.update(
         Rotation2d.fromDegrees(m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)),
@@ -96,7 +154,161 @@ public class Drivetrain extends SubsystemBase {
             m_rearRight.getPosition()
         });
 
+    // Print debug values to smartDashboard
     this.printToDashboard();
+
+    // Update the target pose
+    if (m_tagCamera.getResult().hasTargets()) {
+      targetPose = m_tagCamera.getApriltagPose(getPose(), this.m_odometry.getPoseMeters().getRotation().getDegrees());
+    }
+  }
+
+  /**
+   * Checks whether the robot has finished aligning with a target
+   * 
+   * (ONLY USED DURING AUTO)
+   * this functions as the end condition for the alignment functions
+   * 
+   * @return whether or not the robot has finished aligning
+   */
+  public boolean checkAlignment() {
+    // TODO: "geofence" the robot
+    // if (getPose().getX() > 99999) { // Change this number later
+    //   isAlignmentActive = false;
+    //   isAlignmentSuccess = true;
+    // }
+
+    return isAlignmentSuccess; // This boolean variable is true when the robot has finished aligning (to either a tag or note)
+  }
+
+  /**
+   * A function for driving to the targeted apriltag, runs periodically 
+   */
+  public void driveToTag(double offsetX, double offsetY) {
+      // Apriltag alignment code
+      if (isAlignmentActive && targetPose != null && cameraMode == true) {
+        Pose2d robotPose = getPose();
+
+        Transform2d desiredOffset = m_tagCamera.toFieldTransform(new Transform2d(offsetX, offsetY, new Rotation2d(0)), targetPose.getRotation().getDegrees());
+
+        // The desired offset is how far from the tag you want to be (y axis shouldn't realy be used)
+        double xCommand = targetPose.getX() + desiredOffset.getX() - robotPose.getX();
+        double yCommand = targetPose.getY() + desiredOffset.getY() - robotPose.getY();
+
+        double tagRotation = targetPose.getRotation().getDegrees();
+
+        if (tagRotation > 0) {
+          tagRotation -= 180;
+        }
+        else {
+          tagRotation += 180;
+        }
+
+        double rotCommand = tagRotation - this.m_odometry.getPoseMeters().getRotation().getDegrees();
+
+        if (xCommand < 0) {
+          xCommand = Math.max(xCommand, -VisionConstants.kVisionSpeedLimit);
+        }
+        else {
+          xCommand = Math.min(xCommand, VisionConstants.kVisionSpeedLimit);
+        }
+
+        if (yCommand < 0) {
+          yCommand = Math.max(yCommand, -VisionConstants.kVisionSpeedLimit);
+        }
+        else {
+          yCommand = Math.min(yCommand, VisionConstants.kVisionSpeedLimit);
+        }
+        
+        if (rotCommand < 0) {
+          rotCommand = Math.max(rotCommand, -VisionConstants.kVisionTurningLimit);
+        } 
+        else {
+          rotCommand = Math.min(rotCommand, VisionConstants.kVisionTurningLimit);
+        }
+
+        if (Math.abs(xCommand) > VisionConstants.kTagSlowdownDistance) {
+          if (xCommand < 0) {
+            xCommand = -VisionConstants.kVisionSpeedLimit;
+          }
+          else {
+            xCommand = VisionConstants.kVisionSpeedLimit;
+          }
+        }
+
+        if (Math.abs(yCommand) > VisionConstants.kTagSlowdownDistance) {
+          if (yCommand < 0) {
+            yCommand = -VisionConstants.kVisionSpeedLimit;
+          }
+          else {
+            yCommand = VisionConstants.kVisionSpeedLimit;
+          }
+        }
+
+        boolean rotFinished = Math.abs(tagRotation - this.m_odometry.getPoseMeters().getRotation().getDegrees()) < VisionConstants.kTagRotationThreshold;
+        boolean xFinished = Math.abs(targetPose.getX() + desiredOffset.getX() - robotPose.getX()) < VisionConstants.kTagDistanceThreshold;
+        boolean yFinished = Math.abs(targetPose.getY() + desiredOffset.getY() - robotPose.getY()) < VisionConstants.kTagDistanceThreshold;
+
+        if (rotFinished) { rotCommand = 0; }
+        if (xFinished) { xCommand = 0; }
+        if (yFinished) { yCommand = 0; }
+
+        if (rotFinished && xFinished && yFinished) {
+          isAlignmentSuccess = true;
+          isAlignmentActive = false; // Stop the alignment when the target is reached
+          setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
+        }
+        else {
+          isAlignmentSuccess = false;
+          drive(xCommand, yCommand, rotCommand * 0.3, true, true);
+        }
+      }
+  }
+
+  /**
+   * A function for driving to the targeted note, runs periodically 
+   * 
+   * (ONLY USED DURING AUTO)
+   */
+  public void driveToNote() {
+    // Note alignment code
+      if (isAlignmentActive && !cameraMode) {
+        drive(-VisionConstants.kVisionSpeedLimit, 0, m_noteCamera.getRotationSpeed(), false, true);
+
+        if (!m_noteCamera.getResult().hasTargets()) {
+          isAlignmentSuccess = true;
+          isAlignmentActive = false; // Stop the alignment when the target is reached
+        }
+        else {
+          isAlignmentSuccess = false;
+        }
+      }
+  }
+
+  // TODO: replace this function with one that makes more sense and go back to calling drive in robotcontainer
+  public void driveCommand(double xSpeed, double ySpeed, double rotSpeed, boolean fieldRelative, boolean rateLimit) {
+
+    if (!isAlignmentActive) {
+      drive(xSpeed, ySpeed, rotSpeed, fieldRelative, rateLimit);
+    }
+    
+    if (isAlignmentActive && cameraMode == false) {
+      // Align to the note while driving normally
+      drive(xSpeed, ySpeed, rotSpeed + m_noteCamera.getRotationSpeed(), fieldRelative, rateLimit);
+    }
+
+    if (isAlignmentActive && cameraMode == true && targetPose != null) {
+      // Apriltag alignment code
+      driveToTag(VisionConstants.kAmpOffsetX, VisionConstants.kAmpOffsetY);
+    }
+  }
+
+  /*
+   * A function that cancels the alignment, 
+   * if the robot is trying to align to something
+   */
+  public void cancelAlign() {
+    isAlignmentActive = false;
   }
 
   /**
@@ -106,6 +318,32 @@ public class Drivetrain extends SubsystemBase {
    */
   public Pose2d getPose() {
     return m_odometry.getPoseMeters();
+  }
+
+  /*
+   * Starts aligning towards a note, if a note can be seen
+   */
+  public void alignWithNote() {
+
+    /* 
+    if(Timer.getFPGATimestamp() > 15 && this.getPose().getX() >= 50){
+      isAlignmentActive = false;
+    }
+    */
+    isAlignmentSuccess = false; // Set this to false so the alignment doesn't finish instantly
+
+    cameraMode = false; // Set the camera mode to target notes
+    isAlignmentActive = true; // Start aligning
+  }
+
+  /*
+   * Starts aligning towards a tag, if a tag can be seen
+   */
+  public void alignWithTag() {
+    isAlignmentSuccess = false; // Set this to false so the alignment doesn't finish instantly
+
+    cameraMode = true; // Set the camera mode to target apriltags
+    isAlignmentActive = true; // Start aligning
   }
 
   /**
@@ -124,7 +362,7 @@ public class Drivetrain extends SubsystemBase {
         },
         pose);
   }
-
+  
   /**
    * Method to drive the robot using joystick info.
    *
@@ -137,10 +375,9 @@ public class Drivetrain extends SubsystemBase {
    * @param rateLimit     Whether to enable rate limiting for smoother control.
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {
-
     double xSpeedCommanded;
     double ySpeedCommanded;
-
+    
     if (rateLimit) {
       // Convert XY to polar for rate limiting
       double inputTranslationDir = Math.atan2(ySpeed, xSpeed);
@@ -163,8 +400,8 @@ public class Drivetrain extends SubsystemBase {
             directionSlewRate * elapsedTime);
         m_currentTranslationMag = m_magLimiter.calculate(inputTranslationMag);
       } else if (angleDif > 0.85 * Math.PI) {
-        if (m_currentTranslationMag > 1e-4) { // some small number to avoid floating-point errors with equality checking
-          // keep currentTranslationDir unchanged
+        if (m_currentTranslationMag > 1e-4) { // Some small number to avoid floating-point errors with equality checking
+          // Keep currentTranslationDir unchanged
           m_currentTranslationMag = m_magLimiter.calculate(0.0);
         } else {
           m_currentTranslationDir = SwerveUtils.WrapAngle(m_currentTranslationDir + Math.PI);
@@ -187,20 +424,18 @@ public class Drivetrain extends SubsystemBase {
       m_currentRotation = rot;
     }
 
-    // Creates an interpolated value based on the min and max speed constants and the position of the slider (m_maxSpeed)
-    double lerpSpeed = DriveConstants.kMinSpeedMetersPerSecond + (DriveConstants.kMaxSpeedMetersPerSecond
-                     - DriveConstants.kMinSpeedMetersPerSecond) * m_maxSpeed;
-
-    // Convert the commanded speeds into the correct units for the drivetrain,
-    // using the interpolated speed
-    double xSpeedDelivered = xSpeedCommanded * lerpSpeed;
-    double ySpeedDelivered = ySpeedCommanded * lerpSpeed;
+    /*
+     * Convert the commanded speeds into the correct units for the drivetrain,
+     * using the interpolated speed.
+     */
+    double xSpeedDelivered = xSpeedCommanded * m_maxSpeed;
+    double ySpeedDelivered = ySpeedCommanded * m_maxSpeed;
     double rotDelivered = m_currentRotation * DriveConstants.kMaxAngularSpeed;
 
     SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
         fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
-                Rotation2d.fromDegrees(m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)))
+                Rotation2d.fromDegrees(-this.m_odometry.getPoseMeters().getRotation().getDegrees() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)))
             : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
  
     this.setModuleStates(swerveModuleStates);
@@ -208,6 +443,7 @@ public class Drivetrain extends SubsystemBase {
 
   /**
    * Sets the wheels into an X formation to prevent movement.
+   * This does not set the brake mode of the motors.
    */
   public void setX() {
     m_frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
@@ -223,7 +459,7 @@ public class Drivetrain extends SubsystemBase {
    */
   public void setModuleStates(SwerveModuleState[] desiredStates) {
     SwerveDriveKinematics.desaturateWheelSpeeds(
-        desiredStates, m_slowMode ? DriveConstants.kMinSpeedMetersPerSecond : DriveConstants.kMaxSpeedMetersPerSecond);
+        desiredStates, m_maxSpeed);
     m_frontLeft.setDesiredState(desiredStates[0]);
     m_frontRight.setDesiredState(desiredStates[1]);
     m_rearLeft.setDesiredState(desiredStates[2]);
@@ -267,15 +503,20 @@ public class Drivetrain extends SubsystemBase {
   /** Zeroes the heading of the robot. */
   public void zeroHeading() {
     m_gyro.reset();
+    resetOdometry(new Pose2d(getPose().getX(), getPose().getY(), new Rotation2d()));
   }
 
   /**
    * Returns the heading of the robot.
    *
-   * @return the robot's heading in degrees, from -180 to 180
+   * @return the robot's heading in degrees, from -Infinity to Infinity
    */
   public double getHeading() {
-    return Rotation2d.fromDegrees(m_gyro.getAngle()).getDegrees();
+    /* I'm multiplying the navx heading by -1 
+    * because WPILib uses CCW as the positive direction
+    * and NavX uses CW as the positive direction
+    */ 
+    return Rotation2d.fromDegrees(-m_gyro.getAngle()).getDegrees();
   }
 
   /**
@@ -285,10 +526,32 @@ public class Drivetrain extends SubsystemBase {
    */
   public void setSlowMode(boolean mode) {
     this.m_slowMode = mode;
+    setSpeedPercent();
   }
 
-  public void setSpeedPercent(double percent) {
-      m_maxSpeed = percent;
+  /**
+   * Enables and disables fast mode.
+   *
+   * @param mode Whether to enable fast mode on or off.
+   */
+  public void setFastMode(boolean mode) {
+    this.m_fastMode = mode;
+    setSpeedPercent();
+  }
+
+  /**
+   * Sets the speed of the robot to a desired m/s value
+   *
+   * @param percent The desired speed in metres per second
+   */
+  public void setSpeedPercent() {
+    if (m_slowMode) {
+      m_maxSpeed = DriveConstants.kMinSpeedMetersPerSecond;
+    } else if (m_fastMode) {
+      m_maxSpeed = DriveConstants.kMaxSpeedMetersPerSecond;
+    } else {
+      m_maxSpeed = DriveConstants.kDriveSpeedMetersPerSecond;
+    }
   }
 
   /**
@@ -334,18 +597,20 @@ public class Drivetrain extends SubsystemBase {
     return DriveConstants.kDriveKinematics.toChassisSpeeds(this.getModuleStates());
   }
 
-  /** Prints all values to dashboard */
+  /** Prints all values to the dashboard. */
   public void printToDashboard() {
+
     // Speed
-    SmartDashboard.putNumber("Vertical Speed", this.getChassisSpeeds().vyMetersPerSecond);
-    SmartDashboard.putNumber("Horizontal Speed", this.getChassisSpeeds().vxMetersPerSecond);
-    SmartDashboard.putNumber("Turn Speed", this.getChassisSpeeds().omegaRadiansPerSecond);
-    SmartDashboard.putNumber("Current Speed Percentage", m_maxSpeed);
+    SmartDashboard.putNumber("Vertical Speed", this.getChassisSpeeds().vyMetersPerSecond); // Field relative horizontal speed
+    SmartDashboard.putNumber("Horizontal Speed", this.getChassisSpeeds().vxMetersPerSecond); // Field relative vertical speed
+    SmartDashboard.putNumber("Turn Speed", this.getChassisSpeeds().omegaRadiansPerSecond); // Field relative turn speed
+    SmartDashboard.putNumber("Current Speed Percentage", m_maxSpeed); // Commanded speed multiplier [0 --> 1]
 
     // Position
     SmartDashboard.putNumber("X Position", this.getPose().getX());
     SmartDashboard.putNumber("Y Position", this.getPose().getY());
     SmartDashboard.putNumber("Gyro Heading: ", this.getHeading());
+    SmartDashboard.putNumber("Odometry Heading: ", this.m_odometry.getPoseMeters().getRotation().getDegrees());
 
     // Slew rate filter variables
     SmartDashboard.putNumber("slewCurrentRotation: ", m_currentRotation);
@@ -358,5 +623,20 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putString("Rear left Encoder", m_rearLeft.getState().toString());
     SmartDashboard.putString("Rear right Encoder", m_rearRight.getState().toString());
 
+    SmartDashboard.putBoolean("Align", isAlignmentActive);
+    SmartDashboard.putBoolean("Alignment Success", isAlignmentSuccess);
+    SmartDashboard.putBoolean("Camera Mode", cameraMode);
+
+    // Apriltag target location/rotation (field relative space)
+    if (targetPose != null) {
+      SmartDashboard.putNumber("Target X", targetPose.getX());
+      SmartDashboard.putNumber("Target Y", targetPose.getY());
+
+      SmartDashboard.putNumber("Target Rotation", targetPose.getRotation().getDegrees());
+    }
+
+    // Do the cameras have targets?
+    SmartDashboard.putBoolean("Note Cam", m_noteCamera.getResult().hasTargets());
+    SmartDashboard.putBoolean("Tag Cam", m_tagCamera.getResult().hasTargets());
   }
 }

@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -28,12 +29,13 @@ public final class Constants {
     // Driving Parameters - Note that these are not the maximum and minimum capable speeds of
     // the robot, rather the allowed maximum and minimum speeds.
     public static final double kMaxSpeedMetersPerSecond = 4.1;
+    public static final double kDriveSpeedMetersPerSecond = 3.0;
     public static final double kMinSpeedMetersPerSecond = 1.6;
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
     public static final double kDirectionSlewRate = 1.4; // radians per second
-    public static final double kMagnitudeSlewRate = 3.6; // percent per second (1 = 100%)
-    public static final double kRotationalSlewRate = 3.0; // percent per second (1 = 100%)
+    public static final double kMagnitudeSlewRate = 2.8; // percent per second (1 = 100%) // 3.6
+    public static final double kRotationalSlewRate = 2.6; // percent per second (1 = 100%) // 3.0
 
     // Chassis configuration
     public static final double kTrackWidth = Units.inchesToMeters(24.5);
@@ -53,17 +55,116 @@ public final class Constants {
     public static final double kBackRightChassisAngularOffset = Math.PI / 2;
 
     // SPARK MAX CAN IDs
-    public static final int kFrontLeftDrivingCanId = 13;
-    public static final int kRearLeftDrivingCanId = 15;
-    public static final int kFrontRightDrivingCanId = 17;
-    public static final int kRearRightDrivingCanId = 11;
+    public static final int kFrontLeftDrivingCanId = 12; //13
+    public static final int kRearLeftDrivingCanId = 10; //15
+    public static final int kFrontRightDrivingCanId = 14; //17
+    public static final int kRearRightDrivingCanId = 16;  //11
 
-    public static final int kFrontLeftTurningCanId = 12;
-    public static final int kRearLeftTurningCanId = 14;
-    public static final int kFrontRightTurningCanId = 16;
-    public static final int kRearRightTurningCanId = 10;
+    public static final int kFrontLeftTurningCanId = 13; //12
+    public static final int kRearLeftTurningCanId = 11;  //14
+    public static final int kFrontRightTurningCanId = 15; //16
+    public static final int kRearRightTurningCanId = 17;  //10
 
     public static final boolean kGyroReversed = true;
+  }
+
+  public static final class ElevatorConstants {
+    public static final int kLeftElevatorMotorCanId = 20;
+    public static final int kRightElevatorMotorCanId = 21;
+
+    public static final int kTopElevatorLimitSwitchPort = 5;
+    public static final int kBottomElevatorLimitSwitchPort = 6;
+
+    public static final double kPThetaController = 10;
+    public static final double kIThetaController = 0;
+    public static final double kDThetaController = 0;
+
+    public static final double kMaxSpeedMetersPerSecond = 3.0;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 3.0;
+
+    public static final double kSVolts = 0.096656;
+    public static final double kGVolts = 0.1647;
+    public static final double kVVolts = 0.0021784;
+    public static final double kAVolts = 0.00019749;
+
+    //20:1 from gearbox to output reduction
+    //18 tooth
+    //1.432in
+    public static final double kElevatorMotorReduction = 20;
+    public static final double kElevatorWheelPitchDiameterInches = 1.432;
+    public static final double kElevatorMotorCPR = 42;
+
+    public static final double kElevatorPositionConversionFactor = 
+                        (kElevatorWheelPitchDiameterInches * Math.PI) / 
+                        (kElevatorMotorReduction * kElevatorMotorCPR);
+      
+    public enum kElevatorPositions {
+      AMP,
+      SOURCE,
+      INTAKE
+    }
+
+    public static double[] kElevatorGoals = new double[] {
+      0.39,
+      0.32,
+      -0.01
+    };
+  }
+  public static final class MechanismConstants {
+    public static final int kBottomBeltMotorCanId = 33;
+    public static final int kTopBeltMotorCanId = 32;
+    public static final int kAmpMotorCanId = 31;
+    public static final int kSourceMotorCanId = 30;
+
+    public static final int kBottomSensorChannel = 4;
+    public static final int kMiddleSensorChannel = 5;
+    public static final int kTopSensorChannel = 6;
+  }
+
+  public static final class LEDConstants {
+    public static final int kRedLEDPort = 8;
+    public static final int kGreenLEDPort = 9;
+    public static final int kBlueLEDPort = 7;
+
+    public static boolean[] kLEDRed = new boolean[] {true, false, false};
+    public static boolean[] kLEDGreen = new boolean[] {false, true, false};
+    public static boolean[] kLEDBlue = new boolean[] {false, false, true};
+    public static boolean[] kLEDYellow = new boolean[] {true, true, false};
+    public static boolean[] kLEDPurple = new boolean[] {true, false, true};
+    public static boolean[] kLEDCyan = new boolean[] {false, true, true};
+    public static boolean[] kLEDWhite = new boolean[] {true, true, true};
+    public static boolean[] kLEDOff = new boolean[] {false, false, false};
+  }
+  public static final class VisionConstants{
+    // Height of the camera (not used anywhere right now)
+    public static final double kCameraHeight = 0.0;
+
+    // Speed and rotation caps for vision
+    public static final double kVisionSpeedLimit = 0.25;
+    public static final double kVisionTurningLimit = 0.4;
+
+    // How close to an apriltag the robot has to be before stopping (meters)
+    public static final double kTagDistanceThreshold = 0.15;
+    // The amount of rotational error alowed (degrees)
+    public static final double kTagRotationThreshold = 5;
+    // How far away the bot is before it starts slowing down (farther than this it goes full speed as defined by kVisionSpeedLimit)
+    public static final double kTagSlowdownDistance = 0.5;
+
+    // Desired offsets for the speaker and amp
+    public static final double kSpeakerOffsetX = 0; // (meters)
+    public static final double kSpeakerOffsetY = 0; // (meters)
+
+    public static final double kAmpOffsetX = 0.43; // (meters)
+    public static final double kAmpOffsetY = 0; // (meters)
+
+    // Camera names (a and b are TEMPORARY NAMES)
+    public static final String kNoteCameraName = "a";
+    public static final String kTagCameraName = "Tag Cam";
+
+    // PID values for aligning to a note
+    public static final double kNoteP = 0.02;
+    public static final double kNoteI = 0.004;
+    public static final double kNoteD = 0.0003;
   }
 
   public static final class ModuleConstants {
@@ -100,14 +201,14 @@ public final class Constants {
     public static final double kTurningEncoderPositionPIDMinInput = 0; // radians
     public static final double kTurningEncoderPositionPIDMaxInput = kTurningEncoderPositionFactor; // radians
 
-    public static final double kDrivingP = 0.04;
+    public static final double kDrivingP = 0.00013359;
     public static final double kDrivingI = 0;
     public static final double kDrivingD = 0;
     public static final double kDrivingFF = 1 / kDriveWheelFreeSpeedRps;
     public static final double kDrivingMinOutput = -1;
     public static final double kDrivingMaxOutput = 1;
 
-    public static final double kTurningP = 1;
+    public static final double kTurningP = 0.8;
     public static final double kTurningI = 0;
     public static final double kTurningD = 0;
     public static final double kTurningFF = 0;
@@ -122,9 +223,11 @@ public final class Constants {
   }
 
   public static final class OIConstants {
-    public static final int kDriverControllerPort = 0;
+    public static final int kFlightstickPort = 3;
+    public static final int kDrivingControllerXBoxPort = 0;
+    public static final int kOperatingControllerXBoxPort = 1;
     public static final double kDriveDeadband = 0.05;
-    public static final double kTurnDeadband = 0.15;
+    public static final double kTurnDeadband = 0.12;
     public static final double kTwistDeadband = 0.5;
     public static final boolean kFieldRelative = true;
     public static final boolean kRateLimited = true;

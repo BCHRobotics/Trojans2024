@@ -1,0 +1,55 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.3,
+      "y": 3.0
+    },
+    "rotation": 0.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Driver Station 2 To Mid Note One + Note Release"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mid Note One Snake To Place"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Snaked Mid Note One To Mid Note Two"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mid Note Two Snake To Place"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Snaked Mid Note Two To Mid Note Three"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mid Note Three Snake To Amp Score"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Driver Station 1",
+  "choreoAuto": false
+}

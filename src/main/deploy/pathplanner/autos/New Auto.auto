@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.42,
-      "y": 7.02
+      "x": 2.0,
+      "y": 7.0
     },
-    "rotation": 0.0
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -14,18 +14,12 @@
         {
           "type": "path",
           "data": {
-            "pathName": "StartToNote"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "NoteToAmp"
+            "pathName": "New Path"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "Driver Station 3",
   "choreoAuto": false
 }

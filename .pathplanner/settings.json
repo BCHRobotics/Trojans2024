@@ -1,11 +1,18 @@
 {
-  "robotWidth": 0.7112,
-  "robotLength": 0.7112,
+  "robotWidth": 0.89,
+  "robotLength": 0.89,
   "holonomicMode": true,
-  "pathFolders": [],
-  "autoFolders": [],
-  "defaultMaxVel": 4.1,
-  "defaultMaxAccel": 3.4,
+  "pathFolders": [
+    "Amp"
+  ],
+  "autoFolders": [
+    "Driver Station 1",
+    "Driver Station 2",
+    "Driver Station 3",
+    "Misc."
+  ],
+  "defaultMaxVel": 2.0,
+  "defaultMaxAccel": 2.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "maxModuleSpeed": 4.1
