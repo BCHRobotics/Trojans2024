@@ -531,6 +531,7 @@ public class Drivetrain extends SubsystemBase {
    */
   public void setSlowMode(boolean mode) {
     this.m_slowMode = mode;
+    setSpeedPercent();
   }
 
   /**
@@ -540,6 +541,7 @@ public class Drivetrain extends SubsystemBase {
    */
   public void setFastMode(boolean mode) {
     this.m_fastMode = mode;
+    setSpeedPercent();
   }
 
   /**
