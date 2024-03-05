@@ -245,8 +245,9 @@ public class Mechanism extends SubsystemBase{
                 }
             )
             .beforeStarting(new WaitCommand(1))
+            .andThen(lightsOff())
             .andThen(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
-        ).andThen(lightsOff());
+        );
     }
 
     /**
@@ -337,7 +338,7 @@ public class Mechanism extends SubsystemBase{
      * A command for turning off all the LEDs
      */
     public Command lightsOff() {
-        return this.runOnce(() -> this.powerLEDs("off"));
+        return Commands.runOnce(() -> this.powerLEDs("off"));
     }
 
     /**

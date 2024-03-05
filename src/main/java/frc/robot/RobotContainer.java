@@ -40,6 +40,7 @@ public class RobotContainer {
     private final Drivetrain m_robotDrive = new Drivetrain();
     private final Elevator m_elevator;
     private final Mechanism m_mechanism;
+    private final CombinedCommands m_combinedCommands = new CombinedCommands();
 
     // Flightstick controller
     CommandJoystick m_driverFlightstickController = new CommandJoystick(OIConstants.kFlightstickPort);
@@ -207,6 +208,9 @@ public class RobotContainer {
         this.m_driverController.a().onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign()));
 
         this.m_driverController.povLeft().onTrue(this.m_mechanism.lightsOff().andThen(this.m_mechanism.lightShow()));
+        
+        this.m_driverController.povRight().onTrue(this.m_combinedCommands.pickupFromSource());
+        this.m_driverController.povUp().onTrue(this.m_combinedCommands.scoreIntoSpeaker());
 
         /*
          * Operator Controller Buttons
@@ -219,8 +223,6 @@ public class RobotContainer {
         // Request intake (ground and source)
         this.m_operatorController.leftBumper().onTrue(new InstantCommand(() -> m_mechanism.requestIntake(1)));
         this.m_operatorController.rightBumper().onTrue(new InstantCommand(() -> m_mechanism.requestIntake(2)));
-
-        //this.m_operatorController.povUp().onTrue(this.m_combinedCommands.pickupFromSource());
 
         // Scoring
         this.m_operatorController.b().onTrue(this.m_mechanism.scoreAmp(6));
