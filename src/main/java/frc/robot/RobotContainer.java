@@ -186,10 +186,37 @@ public class RobotContainer {
          * Button 6 - CANCEL ALIGN
          */ 
 
-        /*
-         * Driver Controller Buttons
-         */
+        driverControllerButtons();
 
+        operatorControllerButtons();
+
+        flightStickControllerButtons();
+    }
+
+    /**
+     * Binding for flightstick controller buttons
+     */
+    private void flightStickControllerButtons() {
+        // // Zero heading command (Button 5)
+        this.m_driverFlightstickController.button(5).onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
+        // // Brake command (Button 1)
+        this.m_driverFlightstickController.button(1).onTrue(new RunCommand(() -> m_robotDrive.setX(),m_robotDrive));
+        // // Toggle slow mode (Button 2)
+        this.m_driverFlightstickController.button(2).onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive));
+        this.m_driverFlightstickController.button(2).onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
+
+        // // Align with apriltag command (Button 3)
+        this.m_driverFlightstickController.button(3).onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
+        // // Align with note command (Button 4)
+        this.m_driverFlightstickController.button(4).onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
+        // // Zero heading command (Button 6)
+        this.m_driverFlightstickController.button(6).onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign(), m_robotDrive));
+    }
+
+    /**
+     * Binding for driver xbox controller buttons
+     */
+    private void driverControllerButtons() {
         // Zero heading command (Y Button)
         this.m_driverController.y().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
         // Brake command (Right Bumper)
@@ -212,11 +239,12 @@ public class RobotContainer {
         
         this.m_driverController.povRight().onTrue(this.m_combinedCommands.pickupFromSource());
         this.m_driverController.povUp().onTrue(this.m_combinedCommands.scoreIntoSpeaker());
+    }
 
-        /*
-         * Operator Controller Buttons
-         */
-
+    /**
+     * Binding for operator xbox controller buttons
+     */
+    private void operatorControllerButtons() {
         // Moving the elevator
         this.m_operatorController.povUp().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.AMP));
         this.m_operatorController.povRight().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.SOURCE));
@@ -233,25 +261,6 @@ public class RobotContainer {
         this.m_operatorController.x().onTrue(this.m_mechanism.groundIntake(12));
         // Cancel command
         this.m_operatorController.a().onTrue(this.m_mechanism.stopMechanism());
-
-        /*
-         * Flightstick Controller Buttons
-         */
-
-         // // Zero heading command (Button 5)
-        this.m_driverFlightstickController.button(5).onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
-        // // Brake command (Button 1)
-        this.m_driverFlightstickController.button(1).onTrue(new RunCommand(() -> m_robotDrive.setX(),m_robotDrive));
-        // // Toggle slow mode (Button 2)
-        this.m_driverFlightstickController.button(2).onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive));
-        this.m_driverFlightstickController.button(2).onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
-
-        // // Align with apriltag command (Button 3)
-        this.m_driverFlightstickController.button(3).onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
-        // // Align with note command (Button 4)
-        this.m_driverFlightstickController.button(4).onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
-        // // Zero heading command (Button 6)
-        this.m_driverFlightstickController.button(6).onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign(), m_robotDrive));
     }
 
     /**
