@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -28,6 +29,7 @@ public final class Constants {
     // Driving Parameters - Note that these are not the maximum and minimum capable speeds of
     // the robot, rather the allowed maximum and minimum speeds.
     public static final double kMaxSpeedMetersPerSecond = 4.1;
+    public static final double kDriveSpeedMetersPerSecond = 3.0;
     public static final double kMinSpeedMetersPerSecond = 1.6;
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 

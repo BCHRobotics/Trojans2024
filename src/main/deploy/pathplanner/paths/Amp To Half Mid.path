@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 1.82,
-        "y": 7.72
+        "y": 7.63
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.1418837184467727,
-        "y": 7.770557298834313
+        "x": 3.161383234880486,
+        "y": 7.673059716665752
       },
       "isLocked": false,
       "linkedName": null
@@ -20,8 +20,8 @@
         "y": 7.458565035894918
       },
       "prevControl": {
-        "x": 3.756118486108709,
-        "y": 7.361067453726357
+        "x": 3.7463687278918525,
+        "y": 7.712058749533177
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,13 +39,13 @@
   },
   "goalEndState": {
     "velocity": 2.0,
-    "rotation": 90.0,
+    "rotation": -90.0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "DS 1 Start",
   "previewStartingState": {
-    "rotation": 90.0,
+    "rotation": -90.0,
     "velocity": 0
   },
   "useDefaultConstraints": true

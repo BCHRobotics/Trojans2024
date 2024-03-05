@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.1880333784420545,
-        "y": 8.219046176809695
+        "x": 6.437301995744135,
+        "y": 7.468314794111773
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.133759925477097,
-        "y": 5.898603721197941
+        "x": 7.626772498200579,
+        "y": 6.42509066490817
       },
       "prevControl": {
-        "x": 7.314780235261185,
-        "y": 6.727333169630711
+        "x": 6.807792807984667,
+        "y": 7.25382011334094
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,7 +45,7 @@
   "reversed": false,
   "folder": "DS 1 Start",
   "previewStartingState": {
-    "rotation": 90.0,
+    "rotation": -90.0,
     "velocity": 2.0
   },
   "useDefaultConstraints": true

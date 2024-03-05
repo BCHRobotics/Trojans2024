@@ -88,6 +88,7 @@ public class Drivetrain extends SubsystemBase {
   private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
   private boolean m_slowMode = false;
+  private boolean m_fastMode = false;
 
   // If you switch the camera you have to change the name property of this
   private final Camera m_noteCamera = new Camera(VisionConstants.kNoteCameraName); // These names might need to be changed
@@ -463,7 +464,7 @@ public class Drivetrain extends SubsystemBase {
    */
   public void setModuleStates(SwerveModuleState[] desiredStates) {
     SwerveDriveKinematics.desaturateWheelSpeeds(
-        desiredStates, m_slowMode ? DriveConstants.kMinSpeedMetersPerSecond : DriveConstants.kMaxSpeedMetersPerSecond);
+        desiredStates, m_maxSpeed);
     m_frontLeft.setDesiredState(desiredStates[0]);
     m_frontRight.setDesiredState(desiredStates[1]);
     m_rearLeft.setDesiredState(desiredStates[2]);
@@ -530,6 +531,17 @@ public class Drivetrain extends SubsystemBase {
    */
   public void setSlowMode(boolean mode) {
     this.m_slowMode = mode;
+    setSpeedPercent();
+  }
+
+  /**
+   * Enables and disables fast mode.
+   *
+   * @param mode Whether to enable fast mode on or off.
+   */
+  public void setFastMode(boolean mode) {
+    this.m_fastMode = mode;
+    setSpeedPercent();
   }
 
   /**
@@ -537,8 +549,14 @@ public class Drivetrain extends SubsystemBase {
    *
    * @param percent The desired speed percentage
    */
-  public void setSpeedPercent(double percent) {
-      m_maxSpeed = percent;
+  public void setSpeedPercent() {
+    if (m_slowMode) {
+      m_maxSpeed = DriveConstants.kMinSpeedMetersPerSecond;
+    } else if (m_fastMode) {
+      m_maxSpeed = DriveConstants.kMaxSpeedMetersPerSecond;
+    } else {
+      m_maxSpeed = DriveConstants.kDriveSpeedMetersPerSecond;
+    }
   }
 
   /**

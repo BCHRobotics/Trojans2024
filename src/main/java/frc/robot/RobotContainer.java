@@ -40,6 +40,7 @@ public class RobotContainer {
     private final Drivetrain m_robotDrive = new Drivetrain();
     private final Elevator m_elevator;
     private final Mechanism m_mechanism;
+    private final CombinedCommands m_combinedCommands = new CombinedCommands();
 
     // Flightstick controller
     CommandJoystick m_driverFlightstickController = new CommandJoystick(OIConstants.kFlightstickPort);
@@ -52,8 +53,6 @@ public class RobotContainer {
     private final SendableChooser<Command> autoChooser;
     // The input method chooser
     private final SendableChooser<Boolean> inputChooser;
-
-    private final boolean isRed = DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -84,7 +83,7 @@ public class RobotContainer {
 
     // Configures default commands
     public void configureDefaultCommands() {
-        final double invert = isRed ? -1 : 1;
+        final double invert = Robot.isRed ? -1 : 1;
         
         // Configure default commands
         if (inputChooser.getSelected().booleanValue() == true) {
@@ -194,10 +193,13 @@ public class RobotContainer {
         // Zero heading command (Y Button)
         this.m_driverController.y().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
         // Brake command (Right Bumper)
-        this.m_driverController.rightBumper().whileTrue(new RunCommand(() -> m_robotDrive.setX(),m_robotDrive));
+        this.m_driverController.leftTrigger().whileTrue(new RunCommand(() -> m_robotDrive.setX(),m_robotDrive));
         // Slow mode command (Left Bumper)
         this.m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive));
         this.m_driverController.leftBumper().onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
+
+        this.m_driverController.rightBumper().onTrue(new InstantCommand(() -> m_robotDrive.setFastMode(true), m_robotDrive));
+        this.m_driverController.rightBumper().onFalse(new InstantCommand(() -> m_robotDrive.setFastMode(false), m_robotDrive));
 
         // Align with tag
         this.m_driverController.x().onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
@@ -207,6 +209,9 @@ public class RobotContainer {
         this.m_driverController.a().onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign()));
 
         this.m_driverController.povLeft().onTrue(this.m_mechanism.lightsOff().andThen(this.m_mechanism.lightShow()));
+        
+        this.m_driverController.povRight().onTrue(this.m_combinedCommands.pickupFromSource());
+        this.m_driverController.povUp().onTrue(this.m_combinedCommands.scoreIntoSpeaker());
 
         /*
          * Operator Controller Buttons
@@ -219,8 +224,6 @@ public class RobotContainer {
         // Request intake (ground and source)
         this.m_operatorController.leftBumper().onTrue(new InstantCommand(() -> m_mechanism.requestIntake(1)));
         this.m_operatorController.rightBumper().onTrue(new InstantCommand(() -> m_mechanism.requestIntake(2)));
-
-        //this.m_operatorController.povUp().onTrue(this.m_combinedCommands.pickupFromSource());
 
         // Scoring
         this.m_operatorController.b().onTrue(this.m_mechanism.scoreAmp(6));
@@ -235,7 +238,7 @@ public class RobotContainer {
          * Flightstick Controller Buttons
          */
 
-        // Zero heading command (Button 5)
+         // // Zero heading command (Button 5)
         this.m_driverFlightstickController.button(5).onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
         // // Brake command (Button 1)
         this.m_driverFlightstickController.button(1).onTrue(new RunCommand(() -> m_robotDrive.setX(),m_robotDrive));
@@ -281,7 +284,7 @@ public class RobotContainer {
     public void setSpeedPercent() {
         // THIS IS COMMENTED OUT FOR XBOX FOR NOW
         //m_robotDrive.setSpeedPercent(1 - ((m_driverController.getThrottle() + 1) / 2));
-        m_robotDrive.setSpeedPercent(1);
+        m_robotDrive.setSpeedPercent();
     }
 
     /**
