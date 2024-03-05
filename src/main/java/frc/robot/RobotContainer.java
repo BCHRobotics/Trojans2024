@@ -43,7 +43,7 @@ public class RobotContainer {
     private final CombinedCommands m_combinedCommands = new CombinedCommands();
 
     // Flightstick controller
-    CommandJoystick m_driverFlightstickController = new CommandJoystick(OIConstants.kDrivingControllerXBoxPort);
+    CommandJoystick m_driverFlightstickController = new CommandJoystick(OIConstants.kFlightstickPort);
     // Driving controller
     CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDrivingControllerXBoxPort);
     // Operator controller

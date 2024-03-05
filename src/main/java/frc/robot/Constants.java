@@ -221,6 +221,7 @@ public final class Constants {
   }
 
   public static final class OIConstants {
+    public static final int kFlightstickPort = 3;
     public static final int kDrivingControllerXBoxPort = 0;
     public static final int kOperatingControllerXBoxPort = 1;
     public static final double kDriveDeadband = 0.05;
