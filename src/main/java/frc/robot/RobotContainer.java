@@ -62,8 +62,6 @@ public class RobotContainer {
         m_elevator = Elevator.getInstance();
         m_mechanism = Mechanism.getInstance();
 
-        configureNamedCommands();
-
         inputChooser = new SendableChooser<>();
         // Assigning values to the input method chooser
         inputChooser.addOption("XBoxController", Boolean.FALSE);
@@ -75,6 +73,8 @@ public class RobotContainer {
         // Build an auto chooser. This will use Commands.none() as the default option.
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
+
+        configureNamedCommands();
 
         // Configure the button bindings
         this.configureButtonBindings();
@@ -115,7 +115,7 @@ public class RobotContainer {
     }
 
     public void configureNamedCommands() {
-        // Apriltag alignment command
+        // Apriltag alignment command for amp
         NamedCommands.registerCommand("ALIGN TAG", new RunCommand(
             () -> m_robotDrive.driveToTag(VisionConstants.kAmpOffsetX, VisionConstants.kAmpOffsetY)).until( // Run the alignwithtag function
                 () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
@@ -123,6 +123,15 @@ public class RobotContainer {
                         () -> m_robotDrive.alignWithTag())).alongWith(
                             this.m_elevator.moveToPositionCommand(kElevatorPositions.AMP)).andThen(
                                 this.m_mechanism.scoreAmp(6))); // Set alignmode to true before starting
+
+        // Apriltag alignment command for speaker
+        NamedCommands.registerCommand("ALIGN SPEAKER", new RunCommand(
+            () -> m_robotDrive.driveToTag(VisionConstants.kSpeakerOffsetX, VisionConstants.kSpeakerOffsetY)).until( // Run the alignwithtag function
+                () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
+                    new InstantCommand(
+                        () -> m_robotDrive.alignWithTag())).alongWith(
+                            this.m_elevator.moveToPositionCommand(kElevatorPositions.AMP)).andThen(
+                                this.m_mechanism.scoreSpeaker(12))); // Set alignmode to true before starting
 
         // Note alignment command
         NamedCommands.registerCommand("ALIGN NOTE", new RunCommand(
