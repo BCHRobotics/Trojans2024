@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 1.8939146666891922,
-        "y": 6.668834620329574
+        "x": 1.768306670516475,
+        "y": 6.4902557155541665
       },
       "prevControl": {
-        "x": 1.8929527757427305,
-        "y": 6.666884668686204
+        "x": 1.7673447795700132,
+        "y": 6.488305763910796
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,27 +30,9 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [
-    {
-      "name": "New Event Marker",
-      "waypointRelativePos": 0.0,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "ELEVATOR HIGH"
-              }
-            }
-          ]
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 3.5,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
