@@ -221,8 +221,6 @@ public class Mechanism extends SubsystemBase{
      * @return
      */
     public Command groundRelease(double speed) {
-        System.out.println("RELEASE COMMAND");
-
         return this.startEnd(
                 () -> {
                 this.setBeltSpeed(speed);

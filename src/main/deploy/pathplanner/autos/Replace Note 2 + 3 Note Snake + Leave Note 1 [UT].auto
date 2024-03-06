@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3,
-      "y": 3.0
+      "x": 1.397382607825094,
+      "y": 3.2782687171659255
     },
     "rotation": 90.0
   },
@@ -18,39 +18,57 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "RELEASE"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Note Two Replace To Mid Note Two Snake"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Mid Note Two Snake To Place"
+            "name": "ALIGN NOTE"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Snaked Mid Note Two To Mid Note Three"
+            "pathName": "!"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN NOTE"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Mid Note Three Snake To Place"
+            "pathName": "!!"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Snaked Mid Note Three To Mid Note Four"
+            "name": "ALIGN NOTE"
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "Snaked Note Four To Amp Score"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN TAG"
           }
         }
       ]

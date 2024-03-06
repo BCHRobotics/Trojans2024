@@ -3,59 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.17,
-        "y": 5.38
+        "x": 8.15,
+        "y": 4.17
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.555532977729178,
-        "y": 4.573296079920325
+        "x": 7.236474472948946,
+        "y": 4.221810176953688
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.761612056554,
-        "y": 4.187350774696381
+        "x": 7.684446702226738,
+        "y": 3.381000762001524
       },
       "prevControl": {
-        "x": 5.067058706234992,
-        "y": 4.254295675931948
-      },
-      "nextControl": {
-        "x": 6.333638133939489,
-        "y": 4.132215731092961
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 7.705122343574576,
-        "y": 5.138430276855385
-      },
-      "prevControl": {
-        "x": 6.7264753196138605,
-        "y": 3.6911353822655957
+        "x": 7.215798831597663,
+        "y": 3.9668106002878667
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.5,
-      "rotationDegrees": 147.88,
-      "rotateFast": false
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Note Intake Setup",
-      "waypointRelativePos": 1.0,
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.7,
       "command": {
         "type": "parallel",
         "data": {
@@ -63,13 +41,13 @@
             {
               "type": "named",
               "data": {
-                "name": "INTAKE"
+                "name": "ELEVATOR LOW"
               }
             },
             {
               "type": "named",
               "data": {
-                "name": "ELEVATOR LOW"
+                "name": "INTAKE"
               }
             }
           ]
@@ -84,14 +62,14 @@
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 2.0,
-    "rotation": 49.11818970398883,
+    "velocity": 0,
+    "rotation": -56.72511201516512,
     "rotateFast": true
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": 147.88,
+    "rotation": -16.69999999999999,
     "velocity": 0
   },
   "useDefaultConstraints": true
