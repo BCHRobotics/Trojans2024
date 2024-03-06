@@ -142,8 +142,8 @@ public class Mechanism extends SubsystemBase{
         }
 
         switch (requestIntakeType) {
-            case 1 -> this.powerLEDs("purple");
-            case 2 -> this.powerLEDs("cyan");
+            case 1 -> this.powerLEDs("blue");
+            case 2 -> this.powerLEDs("yellow");
             default -> this.powerLEDs("off");
         }
     }
@@ -177,8 +177,7 @@ public class Mechanism extends SubsystemBase{
                 this.setBeltSpeed(0.0);
                 this.setSourceSpeed(0.0);
                 this.setAmpSpeed(0.0);
-            }).until(() -> this.checkState(Phase.LOADED)))
-            .andThen(confirmIntake());
+            }).until(() -> this.checkState(Phase.LOADED)));
       }
 
     /**
@@ -217,6 +216,30 @@ public class Mechanism extends SubsystemBase{
     }
 
     /**
+     * ejecting a note onto the ground command
+     * @param speed the speed to run the source intake at in volts [0 --> 12]
+     * @return
+     */
+    public Command groundRelease(double speed) {
+        System.out.println("RELEASE COMMAND");
+
+        return this.startEnd(
+                () -> {
+                this.setBeltSpeed(speed);
+                this.setSourceSpeed(-speed);
+                this.setAmpSpeed(-speed);
+            },
+            () -> {
+                this.setBeltSpeed(0.0);
+                this.setSourceSpeed(0.0);
+                this.setAmpSpeed(0.0);
+            })
+            .until(() -> this.checkState(Phase.NONE))
+            .andThen(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
+        .andThen(lightsOff());
+    }
+
+    /**
      * score amp command
      * @param speed the speed to run the amp at in volts [0 --> 12]
      * @return
@@ -243,10 +266,9 @@ public class Mechanism extends SubsystemBase{
                     this.setSourceSpeed(0);
                     this.setAmpSpeed(0);
                 }
-            )
-            .beforeStarting(new WaitCommand(1))
-            .andThen(lightsOff())
+            ).andThen(lightsOff())
             .andThen(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
+            .beforeStarting(new WaitCommand(0.25))
         );
     }
 
@@ -302,17 +324,17 @@ public class Mechanism extends SubsystemBase{
      */
     public Command lightShow() {
         return Commands.sequence(
-            this.runOnce(() -> this.powerLEDs("red")),
-            new WaitCommand(0.25),
             this.runOnce(() -> this.powerLEDs("blue")),
-            new WaitCommand(0.35),
-            this.runOnce(() -> this.powerLEDs("green")),
             new WaitCommand(0.25),
             this.runOnce(() -> this.powerLEDs("yellow")),
             new WaitCommand(0.35),
-            this.runOnce(() -> this.powerLEDs("purple")),
+            this.runOnce(() -> this.powerLEDs("blue")),
             new WaitCommand(0.25),
-            this.runOnce(() -> this.powerLEDs("cyan")),
+            this.runOnce(() -> this.powerLEDs("yellow")),
+            new WaitCommand(0.35),
+            this.runOnce(() -> this.powerLEDs("blue")),
+            new WaitCommand(0.25),
+            this.runOnce(() -> this.powerLEDs("yellow")),
             new WaitCommand(0.35)
         ).repeatedly();
     }

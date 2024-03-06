@@ -22,6 +22,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Mechanism;
 import frc.utils.BeamBreak;
+import frc.utils.BeamBreak.Phase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -126,7 +127,7 @@ public class RobotContainer {
         // Note alignment command
         NamedCommands.registerCommand("ALIGN NOTE", new RunCommand(
             () -> m_robotDrive.driveToNote()).until( // Run the 'drive to note' function
-                () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true, i.e the robot is done aligning
+                () -> m_mechanism.checkState(Phase.GROUND_PICKUP)).beforeStarting( // Stop when checkAlignment is true, i.e the robot is done aligning
                     new InstantCommand(
                         () -> m_robotDrive.alignWithNote())).alongWith(
                             this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE)).alongWith(
@@ -136,6 +137,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("CANCEL ALIGN", new InstantCommand(() -> m_robotDrive.cancelAlign()));
 
         NamedCommands.registerCommand("INTAKE", m_mechanism.groundIntake(12));
+        NamedCommands.registerCommand("RELEASE", m_mechanism.groundRelease(12));
         NamedCommands.registerCommand("AMP SCORE", m_mechanism.scoreAmp(12));
         NamedCommands.registerCommand("ELEVATOR LOW", m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE));
         NamedCommands.registerCommand("ELEVATOR HIGH", m_elevator.moveToPositionCommand(kElevatorPositions.AMP));
@@ -204,7 +206,7 @@ public class RobotContainer {
         // Align with tag
         this.m_driverController.x().onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
         // Align with note
-        // this.m_driverController.b().onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
+        this.m_driverController.b().onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
         // Cancel Alignment
         this.m_driverController.a().onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign()));
 
@@ -227,7 +229,7 @@ public class RobotContainer {
 
         // Scoring
         this.m_operatorController.b().onTrue(this.m_mechanism.scoreAmp(6));
-        this.m_operatorController.povLeft().onTrue(this.m_mechanism.scoreSpeaker(12));
+        this.m_operatorController.povLeft().onTrue(this.m_mechanism.groundRelease(6));
         // Intaking
         this.m_operatorController.y().onTrue(this.m_mechanism.sourceIntake(6));
         this.m_operatorController.x().onTrue(this.m_mechanism.groundIntake(12));

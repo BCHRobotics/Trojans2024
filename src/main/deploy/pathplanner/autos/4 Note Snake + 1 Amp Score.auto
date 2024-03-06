@@ -1,0 +1,133 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.4201810963517767,
+      "y": 7.312773438364859
+    },
+    "rotation": -90.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Driver Station 3 To Amp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN TAG"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp To Half Mid"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Half To Mid Note One"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN NOTE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mid Note One Snake To Place"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "RELEASE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Snaked Mid Note One To Mid Note Two"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN NOTE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mid Note Two Snake To Place"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "RELEASE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Snaked Mid Note Two To Mid Note Three"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN NOTE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mid Note Three Snake To Place"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "RELEASE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Snaked Mid Note Three To Mid Note Four"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN NOTE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Snaked Note Four To Amp Score"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN TAG"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Driver Station 3",
+  "choreoAuto": false
+}

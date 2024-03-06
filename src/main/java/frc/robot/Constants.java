@@ -33,8 +33,8 @@ public final class Constants {
     public static final double kMinSpeedMetersPerSecond = 1.6;
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
-    public static final double kDirectionSlewRate = 1.4; // radians per second
-    public static final double kMagnitudeSlewRate = 2.8; // percent per second (1 = 100%) // 3.6
+    public static final double kDirectionSlewRate = 1.0; // radians per second
+    public static final double kMagnitudeSlewRate = 2.2; // percent per second (1 = 100%) // 3.6
     public static final double kRotationalSlewRate = 2.6; // percent per second (1 = 100%) // 3.0
 
     // Chassis configuration
@@ -140,7 +140,7 @@ public final class Constants {
     public static final double kCameraHeight = 0.0;
 
     // Speed and rotation caps for vision
-    public static final double kVisionSpeedLimit = 0.25;
+    public static final double kVisionSpeedLimit = 0.4;
     public static final double kVisionTurningLimit = 0.4;
 
     // How close to an apriltag the robot has to be before stopping (meters)
@@ -148,17 +148,17 @@ public final class Constants {
     // The amount of rotational error alowed (degrees)
     public static final double kTagRotationThreshold = 5;
     // How far away the bot is before it starts slowing down (farther than this it goes full speed as defined by kVisionSpeedLimit)
-    public static final double kTagSlowdownDistance = 0.5;
+    public static final double kTagSlowdownDistance = 0.6;
 
     // Desired offsets for the speaker and amp
     public static final double kSpeakerOffsetX = 0; // (meters)
     public static final double kSpeakerOffsetY = 0; // (meters)
 
-    public static final double kAmpOffsetX = 0.43; // (meters)
+    public static final double kAmpOffsetX = 0.53; // (meters)
     public static final double kAmpOffsetY = 0; // (meters)
 
     // Camera names (a and b are TEMPORARY NAMES)
-    public static final String kNoteCameraName = "a";
+    public static final String kNoteCameraName = "Note Cam";
     public static final String kTagCameraName = "Tag Cam";
 
     // PID values for aligning to a note

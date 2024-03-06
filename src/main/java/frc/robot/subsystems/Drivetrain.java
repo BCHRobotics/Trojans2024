@@ -251,7 +251,7 @@ public class Drivetrain extends SubsystemBase {
 
         if (rotFinished) { rotCommand = 0; }
         if (xFinished) { xCommand = 0; }
-        if (yFinished) { yCommand = 0; }
+        //if (yFinished) { yCommand = 0; }
 
         if (rotFinished && xFinished && yFinished) {
           isAlignmentSuccess = true;
@@ -273,7 +273,7 @@ public class Drivetrain extends SubsystemBase {
   public void driveToNote() {
     // Note alignment code
       if (isAlignmentActive && !cameraMode) {
-        drive(-VisionConstants.kVisionSpeedLimit, 0, m_noteCamera.getRotationSpeed(), false, true);
+        drive(VisionConstants.kVisionSpeedLimit, 0, m_noteCamera.getRotationSpeed(), false, true);
 
         if (!m_noteCamera.getResult().hasTargets()) {
           isAlignmentSuccess = true;

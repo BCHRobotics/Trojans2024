@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.4201810963517767,
-      "y": 7.312773438364859
+      "x": 1.3966769976295312,
+      "y": 2.2521941480937606
     },
-    "rotation": 90.0
+    "rotation": -90.0
   },
   "command": {
     "type": "sequential",
@@ -15,6 +15,12 @@
           "type": "path",
           "data": {
             "pathName": "Driver Station 1 To Amp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AMP SCORE"
           }
         },
         {
@@ -33,6 +39,12 @@
           "type": "path",
           "data": {
             "pathName": "Mid Note One Snake To Place"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.3
           }
         },
         {
@@ -56,24 +68,18 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Mid Note Three Snake To Place"
+            "pathName": "Mid Note Three Snake To Amp Score"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Snaked Mid Note Three To Mid Note Four"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Snaked Note Four To Amp Score"
+            "name": "ALIGN TAG"
           }
         }
       ]
     }
   },
-  "folder": "Driver Station 3",
+  "folder": "Driver Station 1",
   "choreoAuto": false
 }

@@ -8,37 +8,61 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.5835483689969765,
-        "y": 1.8134550283352364
+        "x": 6.222807314973301,
+        "y": 2.2131951152263354
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.133759925477097,
-        "y": 2.3496917302623217
+        "x": 7.72427008036914,
+        "y": 1.7452067208172428
       },
       "prevControl": {
-        "x": 7.539024674248874,
-        "y": 1.3747159085767113
+        "x": 7.129534829140917,
+        "y": 0.7702308991316325
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.2,
+      "rotationDegrees": 180.0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Note Intake Setup",
+      "waypointRelativePos": 0.5,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "ELEVATOR LOW"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 2.5,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 2.0,
     "rotation": 50.90614111377057,
     "rotateFast": true
   },

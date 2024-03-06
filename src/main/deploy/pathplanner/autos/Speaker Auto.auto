@@ -36,12 +36,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "ALIGN NOTE"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "SpeakerAuto_3"
@@ -57,12 +51,6 @@
           "type": "named",
           "data": {
             "name": "SPEAKER SCORE"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ALIGN NOTE"
           }
         },
         {

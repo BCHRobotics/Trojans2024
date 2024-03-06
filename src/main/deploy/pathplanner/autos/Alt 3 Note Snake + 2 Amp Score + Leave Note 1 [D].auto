@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3,
-      "y": 3.0
+      "x": 1.4201810963517767,
+      "y": 7.312773438364859
     },
     "rotation": 0.0
   },
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Driver Station 1 To Amp"
+            "pathName": "Driver Station 3 To Amp"
           }
         },
         {

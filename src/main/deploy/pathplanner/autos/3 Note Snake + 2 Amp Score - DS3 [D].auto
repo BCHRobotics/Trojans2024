@@ -5,7 +5,7 @@
       "x": 1.4201810963517767,
       "y": 7.312773438364859
     },
-    "rotation": 90.0
+    "rotation": -90.0
   },
   "command": {
     "type": "sequential",
@@ -14,7 +14,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Driver Station 1 To Amp"
+            "pathName": "Driver Station 3 To Amp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AMP SCORE"
           }
         },
         {
@@ -57,6 +63,12 @@
           "type": "path",
           "data": {
             "pathName": "Mid Note Three Snake To Amp Score"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN TAG"
           }
         }
       ]

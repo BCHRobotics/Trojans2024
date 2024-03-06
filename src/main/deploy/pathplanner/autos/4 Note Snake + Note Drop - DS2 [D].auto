@@ -44,12 +44,30 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Mid Note Three Snake To Amp Score"
+            "pathName": "Mid Note Three Snake To Place"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Snaked Mid Note Three To Mid Note Four"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Snaked Note Four To Amp Score"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN TAG"
           }
         }
       ]
     }
   },
-  "folder": "Driver Station 1",
+  "folder": "Driver Station 2",
   "choreoAuto": false
 }
