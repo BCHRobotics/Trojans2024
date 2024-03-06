@@ -178,7 +178,7 @@ public class Mechanism extends SubsystemBase{
                 this.setSourceSpeed(0.0);
                 this.setAmpSpeed(0.0);
             }).until(() -> this.checkState(Phase.LOADED))
-        );
+        .andThen(confirmIntake()));
     }
 
     public Command groundIntakeAuto(double speed) {
