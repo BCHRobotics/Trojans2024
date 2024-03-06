@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.4201810963517767,
-      "y": 7.312773438364859
+      "x": 1.4128354923376514,
+      "y": 4.042621285242571
     },
     "rotation": 0.0
   },
@@ -14,43 +14,37 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Driver Station 3 To Amp"
+            "pathName": "Driver Station 2 To Mid Note Two + Note Release"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN NOTE"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Amp To Half Mid"
+            "pathName": "!"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN NOTE"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Half To Mid Note Two"
+            "pathName": "!!"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Mid Note Two Snake To Place"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Snaked Mid Note Two To Mid Note Three"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Mid Note Three Snake To Place"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Snaked Mid Note Three To Mid Note Four"
+            "name": "ALIGN NOTE"
           }
         },
         {
@@ -58,10 +52,16 @@
           "data": {
             "pathName": "Snaked Note Four To Amp Score"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN TAG"
+          }
         }
       ]
     }
   },
-  "folder": "Driver Station 3",
+  "folder": "Driver Station 2",
   "choreoAuto": false
 }
