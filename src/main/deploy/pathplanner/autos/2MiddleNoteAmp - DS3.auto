@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3674277229789629,
-      "y": 3.763406671706455
+      "x": 1.386927239412675,
+      "y": 7.263569871557796
     },
     "rotation": -90.0
   },
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start-Amp_DS2"
+            "pathName": "Start-Amp_DS3"
           }
         },
         {
@@ -26,13 +26,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp-Note1"
+            "pathName": "Amp-MiddleNote1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN NOTE"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Note1-Amp"
+            "pathName": "MiddleNote1-Amp"
           }
         },
         {
@@ -44,6 +50,6 @@
       ]
     }
   },
-  "folder": "Driver Station 2",
+  "folder": "Driver Station 3",
   "choreoAuto": false
 }

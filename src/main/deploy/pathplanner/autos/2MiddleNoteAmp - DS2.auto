@@ -22,6 +22,30 @@
           "data": {
             "name": "ALIGN TAG"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp-MiddleNote1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN NOTE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MiddleNote1-Amp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN TAG"
+          }
         }
       ]
     }
