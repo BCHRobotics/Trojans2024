@@ -177,8 +177,38 @@ public class Mechanism extends SubsystemBase{
                 this.setBeltSpeed(0.0);
                 this.setSourceSpeed(0.0);
                 this.setAmpSpeed(0.0);
-            }).until(() -> this.checkState(Phase.LOADED)));
-      }
+            }).until(() -> this.checkState(Phase.LOADED))
+        );
+    }
+
+    public Command groundIntakeAuto(double speed) {
+        return this.startEnd(
+            () -> {
+                this.setBeltSpeed(-speed);
+                this.setSourceSpeed(speed * 0.5);
+                this.setAmpSpeed(speed * 0.5);
+            },
+
+            () -> {
+                this.setBeltSpeed(-speed * 0.75);
+                this.setSourceSpeed(speed * 0.75 * 0.5);
+                this.setAmpSpeed(speed * 0.75 * 0.5);
+            })
+            .until(() -> this.checkState(Phase.GROUND_PICKUP))
+            .andThen(startEnd(
+                () -> {
+                this.setBeltSpeed(-speed * 0.75);
+                this.setSourceSpeed(speed * 0.75 * 0.5);
+                this.setAmpSpeed(speed * 0.75 * 0.5);
+            },
+            () -> {
+                this.setBeltSpeed(0.0);
+                this.setSourceSpeed(0.0);
+                this.setAmpSpeed(0.0);
+            }).until(() -> this.checkState(Phase.LOADED))
+        );
+    }
+    
 
     /**
      * source intake command
@@ -220,7 +250,7 @@ public class Mechanism extends SubsystemBase{
      * @param speed the speed to run the source intake at in volts [0 --> 12]
      * @return
      */
-    public Command groundRelease(double speed) {
+    public Command groundReleaseAuto(double speed) {
         return this.startEnd(
                 () -> {
                 this.setBeltSpeed(speed);
