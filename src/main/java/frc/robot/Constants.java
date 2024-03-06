@@ -140,8 +140,8 @@ public final class Constants {
     public static final double kCameraHeight = 0.0;
 
     // Speed and rotation caps for vision
-    public static final double kVisionSpeedLimit = 0.4;
-    public static final double kVisionTurningLimit = 0.4;
+    public static final double kVisionSpeedLimit = 0.65; //0.4
+    public static final double kVisionTurningLimit = 0.5;  //0.4
 
     // How close to an apriltag the robot has to be before stopping (meters)
     public static final double kTagDistanceThreshold = 0.15;

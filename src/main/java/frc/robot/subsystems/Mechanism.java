@@ -258,13 +258,11 @@ public class Mechanism extends SubsystemBase{
                 this.setAmpSpeed(-speed);
             },
             () -> {
-                this.setBeltSpeed(0.0);
-                this.setSourceSpeed(0.0);
-                this.setAmpSpeed(0.0);
+                this.setBeltSpeed(speed);
+                this.setSourceSpeed(-speed);
+                this.setAmpSpeed(-speed);
             })
-            .until(() -> this.checkState(Phase.NONE))
-            .andThen(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
-        .andThen(lightsOff());
+            .andThen(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE));
     }
 
     /**

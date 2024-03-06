@@ -44,19 +44,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Mid Note One Snake To Place"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "RELEASE"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Snaked Mid Note One To Mid Note Two"
+            "pathName": ".!"
           }
         },
         {
