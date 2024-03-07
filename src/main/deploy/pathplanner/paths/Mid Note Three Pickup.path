@@ -3,43 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.77,
-        "y": 4.09
+        "x": 8.15,
+        "y": 5.9
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3424035446645726,
-        "y": 5.294118711752863
+        "x": 7.198201730929401,
+        "y": 6.256100669625311
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.83,
-        "y": 7.77
+        "x": 7.682829247590518,
+        "y": 4.890332213580349
       },
       "prevControl": {
-        "x": 2.147408380327451,
-        "y": 5.635360249342828
+        "x": 7.036659225375696,
+        "y": 5.419016777210657
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.2,
-      "rotationDegrees": 0,
-      "rotateFast": false
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Elevator To Amp Position",
-      "waypointRelativePos": 0.1,
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.4,
       "command": {
         "type": "parallel",
         "data": {
@@ -47,7 +41,13 @@
             {
               "type": "named",
               "data": {
-                "name": "Elevator Amp"
+                "name": "Elevator Ground"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "INTAKE"
               }
             }
           ]
@@ -63,13 +63,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 90.0,
-    "rotateFast": true
+    "rotation": -55.84030545433055,
+    "rotateFast": false
   },
   "reversed": false,
-  "folder": "Amp",
+  "folder": "Mid Paths",
   "previewStartingState": {
-    "rotation": 0.0,
+    "rotation": 0,
     "velocity": 0
   },
   "useDefaultConstraints": true

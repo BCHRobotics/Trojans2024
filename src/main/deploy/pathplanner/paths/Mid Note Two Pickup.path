@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.15,
-        "y": 5.9
+        "x": 8.020599941020992,
+        "y": 7.401583890824312
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.198201730929401,
-        "y": 6.256100669625311
+        "x": 7.4038012834522995,
+        "y": 7.342841161532055
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.682829247590518,
-        "y": 4.890332213580349
+        "x": 7.653457882944388,
+        "y": 6.314843398917567
       },
       "prevControl": {
-        "x": 7.036659225375696,
-        "y": 5.419016777210657
+        "x": 7.3010015071908505,
+        "y": 6.35890044588676
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.4,
+      "waypointRelativePos": 0.35,
       "command": {
         "type": "parallel",
         "data": {
@@ -41,7 +41,7 @@
             {
               "type": "named",
               "data": {
-                "name": "Elevator Ground"
+                "name": "ELEVATOR LOW"
               }
             },
             {
@@ -63,11 +63,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -55.84030545433055,
-    "rotateFast": false
+    "rotation": -43.26429541107168,
+    "rotateFast": true
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Mid Paths",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

@@ -4,7 +4,10 @@
   "holonomicMode": true,
   "pathFolders": [
     "Amp",
-    "Speaker"
+    "Mid Paths",
+    "Return Paths",
+    "Speaker",
+    "Start Paths"
   ],
   "autoFolders": [
     "Driver Station 1",
