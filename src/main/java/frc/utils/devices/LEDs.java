@@ -1,8 +1,9 @@
-package frc.utils;
+package frc.utils.devices;
 
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LEDConstants;
+import frc.robot.Constants.LEDConstants.LEDColor;
 
 public class LEDs extends SubsystemBase{
     private final DigitalOutput m_redLED;
@@ -31,27 +32,11 @@ public class LEDs extends SubsystemBase{
      * Set the color of the LEDs using a predefined array
      * @param inputs the LED RGB values (on/off)
      */
-    public void setLEDs(boolean[] inputs) {
-        if (inputs.length == 3) {
-            this.m_redLED.set(!inputs[0]); 
-            this.m_greenLED.set(!inputs[1]);
-            this.m_blueLED.set(!inputs[2]);
-        }
-        else {
-            System.out.println("LED Error: Wrong Number of Colors");
-        }
+    public void setLEDs(LEDColor color) {
+        boolean[] inputs = color.getArray();
+
+        this.m_redLED.set(!inputs[0]); 
+        this.m_greenLED.set(!inputs[1]);
+        this.m_blueLED.set(!inputs[2]); 
     }
 }
-
-/*
- * LED Colour Table
- * 
- *          R       G       B
- * White:   255,    255,    255
- * Red:     255,    0,      0
- * Green:   0,      255,    0
- * Blue:    0,      0,      255
- * Yellow:  255,    255,    0
- * Purple:  255,    0,      255
- * Cyan:    0,      255,    255
- */

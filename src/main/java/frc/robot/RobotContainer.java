@@ -15,14 +15,15 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
-import frc.robot.Constants.ElevatorConstants.kElevatorPositions;
+import frc.robot.Constants.ElevatorConstants.ElevatorPositions;
+import frc.robot.Constants.LEDConstants.LEDColor;
 import frc.robot.commands.CombinedCommands;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Mechanism;
-import frc.utils.BeamBreak;
-import frc.utils.BeamBreak.Phase;
+import frc.utils.devices.BeamBreak;
+import frc.utils.devices.BeamBreak.Phase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -123,7 +124,7 @@ public class RobotContainer {
                 () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
                     new InstantCommand(
                         () -> m_robotDrive.alignWithTag())).alongWith(
-                            this.m_elevator.moveToPositionCommand(kElevatorPositions.AMP)).andThen(
+                            this.m_elevator.moveToPositionCommand(ElevatorPositions.AMP)).andThen(
                                 this.m_mechanism.scoreAmp(6))); // Set alignmode to true before starting
 
         // Apriltag alignment command for speaker
@@ -141,7 +142,7 @@ public class RobotContainer {
                 () -> m_mechanism.checkState(Phase.GROUND_PICKUP)).beforeStarting( // Stop when checkAlignment is true, i.e the robot is done aligning
                     new InstantCommand(
                         () -> m_robotDrive.alignWithNote())).alongWith(
-                            this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE)).alongWith(
+                            this.m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE)).alongWith(
                                 this.m_mechanism.groundIntakeAuto(12))); // Set alignmode to true before starting, and set isAligned to false
 
         // A command for canceling the current align command
@@ -150,8 +151,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("INTAKE", m_mechanism.groundIntakeAuto(12));
         NamedCommands.registerCommand("RELEASE", m_mechanism.groundReleaseAuto(12));
         NamedCommands.registerCommand("AMP SCORE", m_mechanism.scoreAmp(12));
-        NamedCommands.registerCommand("ELEVATOR LOW", m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE));
-        NamedCommands.registerCommand("ELEVATOR HIGH", m_elevator.moveToPositionCommand(kElevatorPositions.AMP));
+        NamedCommands.registerCommand("ELEVATOR LOW", m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE));
+        NamedCommands.registerCommand("ELEVATOR HIGH", m_elevator.moveToPositionCommand(ElevatorPositions.AMP));
         NamedCommands.registerCommand("SPEAKER SCORE", m_mechanism.scoreSpeaker(12));
     }
 
@@ -234,9 +235,9 @@ public class RobotContainer {
 
     private void configureButtonBindingsOperator() {
         // Moving the elevator
-        this.m_operatorController.povUp().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.AMP));
-        this.m_operatorController.povRight().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.SOURCE));
-        this.m_operatorController.povDown().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE));
+        this.m_operatorController.povUp().onTrue(this.m_elevator.moveToPositionCommand(ElevatorPositions.AMP));
+        this.m_operatorController.povRight().onTrue(this.m_elevator.moveToPositionCommand(ElevatorPositions.SOURCE));
+        this.m_operatorController.povDown().onTrue(this.m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE));
         // Request intake (ground and source)
         this.m_operatorController.leftBumper().onTrue(new InstantCommand(() -> m_mechanism.requestIntake(1)));
         this.m_operatorController.rightBumper().onTrue(new InstantCommand(() -> m_mechanism.requestIntake(2)));
@@ -295,6 +296,6 @@ public class RobotContainer {
      * Initializes the LEDs
      */
     public void initLEDs() {
-        this.m_mechanism.powerLEDs("Off");
+        this.m_mechanism.powerLEDs(LEDColor.OFF);
     }
 }
