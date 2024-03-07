@@ -3,7 +3,8 @@
   "robotLength": 0.89,
   "holonomicMode": true,
   "pathFolders": [
-    "Amp"
+    "Amp",
+    "Speaker"
   ],
   "autoFolders": [
     "Driver Station 1",

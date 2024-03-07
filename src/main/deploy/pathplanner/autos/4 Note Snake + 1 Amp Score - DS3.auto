@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3,
-      "y": 3.0
+      "x": 1.4201810963517767,
+      "y": 7.312773438364859
     },
-    "rotation": 0.0
+    "rotation": -90.0
   },
   "command": {
     "type": "sequential",
@@ -14,43 +14,67 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Driver Station 2 To Mid Note One + Note Release"
+            "pathName": "Driver Station 3 To Amp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN TAG"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Mid Note One Snake To Place"
+            "pathName": "Amp To Half Mid"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Snaked Mid Note One To Mid Note Two"
+            "pathName": "Half To Mid Note One"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN NOTE"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Mid Note Two Snake To Place"
+            "pathName": ".!"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN NOTE"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Snaked Mid Note Two To Mid Note Three"
+            "pathName": "!"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN NOTE"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Mid Note Three Snake To Place"
+            "pathName": "!!"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Snaked Mid Note Three To Mid Note Four"
+            "name": "ALIGN NOTE"
           }
         },
         {
@@ -68,6 +92,6 @@
       ]
     }
   },
-  "folder": "Driver Station 2",
+  "folder": "Driver Station 3",
   "choreoAuto": false
 }
