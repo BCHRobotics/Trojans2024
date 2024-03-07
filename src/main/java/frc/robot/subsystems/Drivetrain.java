@@ -103,6 +103,8 @@ public class Drivetrain extends SubsystemBase {
   // The stored field position of the target apriltag
   private Pose2d targetPose;
 
+  private boolean isRedAlliance;
+
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
       DriveConstants.kDriveKinematics,
@@ -157,9 +159,10 @@ public class Drivetrain extends SubsystemBase {
     // Print debug values to smartDashboard
     this.printToDashboard();
 
-    // Update the target pose
-    if (m_tagCamera.getResult().hasTargets()) {
-      targetPose = m_tagCamera.getApriltagPose(getPose(), this.m_odometry.getPoseMeters().getRotation().getDegrees());
+    // Update the amp target pose
+    int desiredTagId = isRedAlliance ? 5 : 6; // Which amp tag to target (blue or red)
+    if (m_tagCamera.hasTargetOfId(desiredTagId)) {
+      targetPose = m_tagCamera.getApriltagPose(getPose(), this.m_odometry.getPoseMeters().getRotation().getDegrees(), desiredTagId);
     }
   }
 
@@ -172,11 +175,13 @@ public class Drivetrain extends SubsystemBase {
    * @return whether or not the robot has finished aligning
    */
   public boolean checkAlignment() {
-    // TODO: "geofence" the robot
-    // if (getPose().getX() > 99999) { // Change this number later
-    //   isAlignmentActive = false;
-    //   isAlignmentSuccess = true;
-    // }
+    // Canceling the vision command if the robot wanders over the middle line
+    if (Timer.getFPGATimestamp() <= 15) {
+      if ((getPose().getX() > 8.75 && !isRedAlliance) || (getPose().getX() < 7.75 && isRedAlliance)) {
+        isAlignmentActive = false;
+        isAlignmentSuccess = true;
+      }
+    }
 
     return isAlignmentSuccess; // This boolean variable is true when the robot has finished aligning (to either a tag or note)
   }
@@ -324,12 +329,6 @@ public class Drivetrain extends SubsystemBase {
    * Starts aligning towards a note, if a note can be seen
    */
   public void alignWithNote() {
-
-    /* 
-    if(Timer.getFPGATimestamp() > 15 && this.getPose().getX() >= 50){
-      isAlignmentActive = false;
-    }
-    */
     isAlignmentSuccess = false; // Set this to false so the alignment doesn't finish instantly
 
     cameraMode = false; // Set the camera mode to target notes
@@ -361,6 +360,13 @@ public class Drivetrain extends SubsystemBase {
             m_rearRight.getPosition()
         },
         pose);
+  }
+
+  /*
+   * A function for setting the alliance of the robot
+   */
+  public void setAlliance(boolean isRed) {
+    isRedAlliance = isRed;
   }
   
   /**

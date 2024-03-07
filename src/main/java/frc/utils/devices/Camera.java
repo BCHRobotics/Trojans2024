@@ -1,5 +1,6 @@
 package frc.utils.devices;
 
+import java.util.List;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
@@ -65,12 +66,44 @@ public class Camera extends PhotonCamera {
     }
 
     /**
+     * Finds the offset of a target with a specific id
+     * @return The offset of the specified target
+     */
+    public Transform3d findTagWithId(int desiredId) {
+        List<PhotonTrackedTarget> targetData = result.getTargets();
+        
+        for (PhotonTrackedTarget currentTarget : targetData) {
+            if (currentTarget.getFiducialId() == desiredId) {
+                return currentTarget.getBestCameraToTarget();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Determines whether the camera sees an apriltag of a specific id
+     * @return Whether there is a target with the desired id
+     */
+    public boolean hasTargetOfId(int desiredId) {
+        List<PhotonTrackedTarget> targetData = result.getTargets();
+        
+        for (PhotonTrackedTarget currentTarget : targetData) {
+            if (currentTarget.getFiducialId() == desiredId) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Gets the transform of the target
      * @param robotHeading the heading of the robot
      * @return the transform of the target
      */
-    public Transform2d getTargetTransform(double robotHeading) {
-        Transform3d rawOffset = result.getBestTarget().getBestCameraToTarget();
+    public Transform2d getTargetTransform(double robotHeading, int tagToTarget) {
+        Transform3d rawOffset = findTagWithId(tagToTarget);
 
         // Only return the pose if there is actually a target
         if (result.hasTargets()) {
@@ -91,8 +124,8 @@ public class Camera extends PhotonCamera {
      * @param robotHeading the heading of the robot
      * @return the pose of the apriltag
      */
-    public Pose2d getApriltagPose(Pose2d robotPose, double robotHeading) {
-        Transform2d robotToTag = getTargetTransform(robotHeading);
+    public Pose2d getApriltagPose(Pose2d robotPose, double robotHeading, int tagId) {
+        Transform2d robotToTag = getTargetTransform(robotHeading, tagId);
 
         // Add the robot to tag offset to the robot pose to get the tag pose in field space
         Pose2d tagPose = new Pose2d(robotPose.getX() + 

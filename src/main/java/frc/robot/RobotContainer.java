@@ -85,6 +85,8 @@ public class RobotContainer {
     // Configures default commands
     public void configureDefaultCommands(boolean isRedAlliance) {
         final double invert = isRedAlliance ? -1 : 1;
+
+        m_robotDrive.setAlliance(isRedAlliance);
         
         // Configure default commands
         if (inputChooser.getSelected().booleanValue() == true) {
@@ -118,6 +120,15 @@ public class RobotContainer {
         // Apriltag alignment command for amp
         NamedCommands.registerCommand("ALIGN TAG", new RunCommand(
             () -> m_robotDrive.driveToTag(VisionConstants.kAmpOffsetX, VisionConstants.kAmpOffsetY)).until( // Run the alignwithtag function
+                () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
+                    new InstantCommand(
+                        () -> m_robotDrive.alignWithTag())).alongWith(
+                            this.m_elevator.moveToPositionCommand(kElevatorPositions.AMP)).andThen(
+                                this.m_mechanism.scoreAmp(6))); // Set alignmode to true before starting
+
+        // Apriltag alignment command for speaker
+        NamedCommands.registerCommand("ALIGN SPEAKER", new RunCommand(
+            () -> m_robotDrive.driveToTag(VisionConstants.kSpeakerOffsetX, VisionConstants.kSpeakerOffsetY)).until( // Run the alignwithtag function
                 () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
                     new InstantCommand(
                         () -> m_robotDrive.alignWithTag())).alongWith(
