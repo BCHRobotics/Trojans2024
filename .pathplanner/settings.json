@@ -12,8 +12,7 @@
   "autoFolders": [
     "Driver Station 1",
     "Driver Station 2",
-    "Driver Station 3",
-    "Misc."
+    "Driver Station 3"
   ],
   "defaultMaxVel": 4.1,
   "defaultMaxAccel": 3.4,

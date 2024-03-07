@@ -5,7 +5,7 @@
       "x": 1.4201810963517767,
       "y": 7.312773438364859
     },
-    "rotation": 0.0
+    "rotation": -90.0
   },
   "command": {
     "type": "sequential",
@@ -32,7 +32,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Half To Mid Note Two"
+            "pathName": "Half To Mid Note One"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN NOTE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mid Note Two Pickup"
           }
         },
         {
@@ -68,13 +80,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Snaked Note Four To Amp Score"
+            "pathName": "Mid Note 4 To Trap"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ALIGN TAG"
+            "name": "SPEAKER SCORE"
           }
         }
       ]

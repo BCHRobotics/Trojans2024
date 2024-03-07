@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3966769976295312,
-      "y": 5.537862667174266
+      "x": 1.4201810963517767,
+      "y": 7.312773438364859
     },
-    "rotation": 0
+    "rotation": 0.0
   },
   "command": {
     "type": "sequential",
@@ -14,50 +14,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "SpeakerAuto_1"
+            "pathName": "Driver Station 3 To Amp"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "SPEAKER SCORE"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "ALIGN NOTE"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "INTAKE"
-                }
-              }
-            ]
+            "name": "ALIGN TAG"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "SpeakerAuto_2"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SPEAKER SCORE"
+            "pathName": "Amp To Half Mid"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "SpeakerAuto_3"
+            "pathName": "Half To Mid Note Two"
           }
         },
         {
@@ -69,19 +44,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "SpeakerAuto_4"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SPEAKER SCORE"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "SpeakerAuto_5"
+            "pathName": "Mid Note Three Pickup"
           }
         },
         {
@@ -93,18 +56,30 @@
         {
           "type": "path",
           "data": {
-            "pathName": "SpeakerAuto_6"
+            "pathName": "Mid Note Four Pickup"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "SPEAKER SCORE"
+            "name": "ALIGN NOTE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mid Note 4 To Amp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN TAG"
           }
         }
       ]
     }
   },
-  "folder": "Driver Station 2",
+  "folder": "Driver Station 3",
   "choreoAuto": false
 }
