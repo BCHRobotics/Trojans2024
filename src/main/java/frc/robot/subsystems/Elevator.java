@@ -13,8 +13,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.ElevatorConstants.kElevatorPositions;
-import frc.utils.BetterProfiledPIDController;
+import frc.robot.Constants.ElevatorConstants.ElevatorPositions;
+import frc.utils.controllers.BetterProfiledPIDController;
 
 public class Elevator extends SubsystemBase {
     private static Elevator instance = null;
@@ -169,9 +169,9 @@ public class Elevator extends SubsystemBase {
      * Cancels all elevator commands
      */
     private void cancelAllElevatorCommands() {
-        CommandScheduler.getInstance().cancel(this.moveToPositionCommand(kElevatorPositions.SOURCE));
-        CommandScheduler.getInstance().cancel(this.moveToPositionCommand(kElevatorPositions.AMP));
-        CommandScheduler.getInstance().cancel(this.moveToPositionCommand(kElevatorPositions.INTAKE));
+        CommandScheduler.getInstance().cancel(this.moveToPositionCommand(ElevatorPositions.SOURCE));
+        CommandScheduler.getInstance().cancel(this.moveToPositionCommand(ElevatorPositions.AMP));
+        CommandScheduler.getInstance().cancel(this.moveToPositionCommand(ElevatorPositions.INTAKE));
     }
 
     /**
@@ -179,26 +179,8 @@ public class Elevator extends SubsystemBase {
      * @param position the position to be set
      * @return the command to get to the position
      */
-    public Command moveToPositionCommand(ElevatorConstants.kElevatorPositions position) {
-        switch (position) {
-            case AMP:
-                return this.runOnce(() -> m_controller.setGoal(
-                    ElevatorConstants.kElevatorGoals[
-                    ElevatorConstants.kElevatorPositions.AMP.ordinal()]));
-
-            case SOURCE:
-                return this.runOnce(() -> m_controller.setGoal(
-                    ElevatorConstants.kElevatorGoals[
-                    ElevatorConstants.kElevatorPositions.SOURCE.ordinal()]));
-
-            case INTAKE:
-                return this.runOnce(() -> m_controller.setGoal(
-                    ElevatorConstants.kElevatorGoals[
-                    ElevatorConstants.kElevatorPositions.INTAKE.ordinal()]));
-
-            default:
-                return null;
-        }
+    public Command moveToPositionCommand(ElevatorPositions position) {
+        return this.runOnce(() -> m_controller.setGoal(position.getGoal()));
     }
 
     /**

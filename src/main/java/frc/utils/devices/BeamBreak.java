@@ -1,4 +1,7 @@
-package frc.utils;
+package frc.utils.devices;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -11,7 +14,7 @@ public class BeamBreak {
     private final DigitalInput m_middleSensor;
     private final DigitalInput m_topSensor;
 
-    private static Solenoid[] PCMChannels = new Solenoid[8];
+    private static List<Solenoid> solenoids;
 
     // Enum for the different phases
     public enum Phase {
@@ -26,8 +29,9 @@ public class BeamBreak {
         m_middleSensor = new DigitalInput(MechanismConstants.kMiddleSensorChannel);
         m_topSensor = new DigitalInput(MechanismConstants.kTopSensorChannel);
 
+        solenoids = new ArrayList<>();
         for (int i = 0; i < 8; i++) {
-            PCMChannels[i] = new Solenoid(PneumaticsModuleType.CTREPCM, i);
+            solenoids.add(new Solenoid(PneumaticsModuleType.CTREPCM, i));
         }
 
         m_currentPhase = Phase.NONE; // Default phase
@@ -38,9 +42,7 @@ public class BeamBreak {
      * @param activeChannel
      */
     public static void solenoidChannelActive(boolean activeChannel) {
-        for (int i = 0; i < 8; i++) {
-            PCMChannels[i].set(activeChannel);
-        }
+        solenoids.forEach(solenoid -> solenoid.set(activeChannel));
     }
 
     /**

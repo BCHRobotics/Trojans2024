@@ -98,18 +98,22 @@ public final class Constants {
                         (kElevatorWheelPitchDiameterInches * Math.PI) / 
                         (kElevatorMotorReduction * kElevatorMotorCPR);
       
-    public enum kElevatorPositions {
-      AMP,
-      SOURCE,
-      INTAKE
+    public enum ElevatorPositions {
+      AMP(0.39),
+      SOURCE(0.32),
+      INTAKE(-0.01);
+  
+      private final double goal;
+      ElevatorPositions(double goal) {
+          this.goal = goal;
+      }
+  
+      public double getGoal() {
+          return goal;
+      }
     }
-
-    public static double[] kElevatorGoals = new double[] {
-      0.39,
-      0.32,
-      -0.01
-    };
-  }
+  }                      
+  
   public static final class MechanismConstants {
     public static final int kBottomBeltMotorCanId = 33;
     public static final int kTopBeltMotorCanId = 32;
@@ -122,18 +126,41 @@ public final class Constants {
   }
 
   public static final class LEDConstants {
+    /*
+    * LED Colour Table
+    * 
+    *          R       G       B
+    * White:   255,    255,    255
+    * Red:     255,    0,      0
+    * Green:   0,      255,    0
+    * Blue:    0,      0,      255
+    * Yellow:  255,    255,    0
+    * Purple:  255,    0,      255
+    * Cyan:    0,      255,    255
+    */
+    public enum LEDColor {
+      WHITE(new boolean[]{true, true, true}),
+      RED(new boolean[]{true, false, false}),
+      GREEN(new boolean[]{false, true, false}),
+      BLUE(new boolean[]{false, false, true}),
+      YELLOW(new boolean[]{true, true, false}),
+      PURPLE(new boolean[]{true, false, true}),
+      CYAN(new boolean[]{false, true, true}),
+      OFF(new boolean[]{false, false, false});
+  
+      private final boolean[] values;
+      LEDColor(boolean[] values) {
+          this.values = values;
+      }
+  
+      public boolean[] getArray() {
+          return values;
+      }
+    }
+
     public static final int kRedLEDPort = 8;
     public static final int kGreenLEDPort = 9;
     public static final int kBlueLEDPort = 7;
-
-    public static boolean[] kLEDRed = new boolean[] {true, false, false};
-    public static boolean[] kLEDGreen = new boolean[] {false, true, false};
-    public static boolean[] kLEDBlue = new boolean[] {false, false, true};
-    public static boolean[] kLEDYellow = new boolean[] {true, true, false};
-    public static boolean[] kLEDPurple = new boolean[] {true, false, true};
-    public static boolean[] kLEDCyan = new boolean[] {false, true, true};
-    public static boolean[] kLEDWhite = new boolean[] {true, true, true};
-    public static boolean[] kLEDOff = new boolean[] {false, false, false};
   }
   public static final class VisionConstants{
     // Height of the camera (not used anywhere right now)
