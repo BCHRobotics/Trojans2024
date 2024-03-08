@@ -208,6 +208,9 @@ public class RobotContainer {
 
     }
 
+    /**
+     * Binding for driver xbox controller buttons
+     */
     private void configureButtonBindingsDriverXbox() {
         // Zero heading command (Right Trigger)
         //this.m_driverController.rightTrigger().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
@@ -236,6 +239,28 @@ public class RobotContainer {
         this.m_operatorController.povLeft().onTrue(this.m_combinedCommands.scoreIntoSpeaker());
     }
 
+    /**
+     * Binding for flightstick controller buttons
+     */
+    private void configureButtonBindingsFlightstick() {
+        // Zero heading command (Button 5)
+        this.m_driverFlightstickController.button(5).onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
+        // Brake command (Button 1)
+        this.m_driverFlightstickController.button(1).whileTrue(new RunCommand(() -> m_robotDrive.setX(),m_robotDrive));
+        // Slow mode command (Button 2)
+        this.m_driverFlightstickController.button(2).onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive));
+        this.m_driverFlightstickController.button(2).onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
+        // Align with tag (Button 3)
+        this.m_driverFlightstickController.button(3).onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
+        // Align with note (Button 4)
+        this.m_driverFlightstickController.button(4).onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
+        // Cancel Alignment (Button 6)
+        this.m_driverFlightstickController.button(6).onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign()));
+    }
+
+    /**
+     * Binding for operator xbox controller buttons
+     */
     private void configureButtonBindingsOperator() {
         // Moving the elevator
         this.m_operatorController.povUp().onTrue(this.m_elevator.moveToPositionCommand(ElevatorPositions.AMP));
@@ -253,22 +278,6 @@ public class RobotContainer {
         this.m_operatorController.x().onTrue(this.m_mechanism.groundIntake(12));
         // Cancel command
         this.m_operatorController.a().onTrue(this.m_mechanism.stopMechanism());
-    }
-
-    private void configureButtonBindingsFlightstick() {
-        // Zero heading command (Button 5)
-        this.m_driverFlightstickController.button(5).onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
-        // Brake command (Button 1)
-        this.m_driverFlightstickController.button(1).whileTrue(new RunCommand(() -> m_robotDrive.setX(),m_robotDrive));
-        // Slow mode command (Button 2)
-        this.m_driverFlightstickController.button(2).onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive));
-        this.m_driverFlightstickController.button(2).onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
-        // Align with tag (Button 3)
-        this.m_driverFlightstickController.button(3).onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
-        // Align with note (Button 4)
-        this.m_driverFlightstickController.button(4).onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
-        // Cancel Alignment (Button 6)
-        this.m_driverFlightstickController.button(6).onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign()));
     }
 
     /**
