@@ -35,19 +35,13 @@
       "name": "New Event Marker",
       "waypointRelativePos": 0.4,
       "command": {
-        "type": "parallel",
+        "type": "sequential",
         "data": {
           "commands": [
             {
               "type": "named",
               "data": {
                 "name": "ELEVATOR LOW"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "INTAKE"
               }
             }
           ]

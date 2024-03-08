@@ -35,19 +35,13 @@
       "name": "Pickup",
       "waypointRelativePos": 0.25,
       "command": {
-        "type": "parallel",
+        "type": "sequential",
         "data": {
           "commands": [
             {
               "type": "named",
               "data": {
                 "name": "ELEVATOR LOW"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "INTAKE"
               }
             }
           ]

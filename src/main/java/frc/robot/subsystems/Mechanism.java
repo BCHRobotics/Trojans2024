@@ -323,6 +323,7 @@ public class Mechanism extends SubsystemBase{
         )
         .until(() -> this.checkState(Phase.NONE))
         .andThen(this.m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE))
+        .beforeStarting(new WaitCommand(0.1))
         .andThen(
             this.runOnce(
                 () -> {

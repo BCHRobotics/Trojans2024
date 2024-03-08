@@ -166,6 +166,23 @@ public final class Constants {
     // Height of the camera (not used anywhere right now)
     public static final double kCameraHeight = 0.0;
 
+    // Camera modes
+    public enum CameraModes {
+      NONE(new double[]{0, 0}), // Offset is not used here
+      NOTE(new double[]{0, 0}), // Offset is not used here
+      AMP(new double[]{0.52, 0}),
+      SPEAKER(new double[]{0, 0});
+
+      private final double[] offsets;
+      CameraModes(double[] _offsets) {
+          this.offsets = _offsets;
+      }
+  
+      public double[] getArray() {
+          return offsets;
+      }
+    }
+
     // Speed and rotation caps for vision
     public static final double kVisionSpeedLimit = 0.65; //0.4
     public static final double kVisionTurningLimit = 0.5;  //0.4
@@ -181,7 +198,7 @@ public final class Constants {
     public static final double kSpeakerOffsetX = 0; // (meters)
     public static final double kSpeakerOffsetY = 0; // (meters)
 
-    public static final double kAmpOffsetX = 0.53; // (meters)
+    public static final double kAmpOffsetX = 0.52; // (meters)
     public static final double kAmpOffsetY = 0; // (meters)
 
     // Camera names (a and b are TEMPORARY NAMES)

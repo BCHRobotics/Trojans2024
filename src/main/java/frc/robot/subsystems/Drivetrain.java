@@ -45,6 +45,7 @@ import frc.robot.RobotContainer;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.Constants.VisionConstants.CameraModes;
 import frc.utils.SwerveUtils;
 import frc.utils.devices.Camera;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -98,10 +99,11 @@ public class Drivetrain extends SubsystemBase {
   private boolean isAlignmentActive = false;
   // Is true when the robot has finished a vision command
   private boolean isAlignmentSuccess = false;
-  private boolean cameraMode = false;
+  private CameraModes cameraMode = CameraModes.NOTE;
 
   // The stored field position of the target apriltag
-  private Pose2d targetPose;
+  private Pose2d ampTargetPose;
+  private Pose2d speakerTargetPose;
 
   private boolean isRedAlliance;
 
@@ -134,7 +136,7 @@ public class Drivetrain extends SubsystemBase {
   public Drivetrain() {
     this.initializeAuto();
 
-    cameraMode = false;
+    cameraMode = CameraModes.NOTE;
   }
 
   @Override
@@ -160,10 +162,17 @@ public class Drivetrain extends SubsystemBase {
     this.printToDashboard();
 
     // Update the amp target pose
-    int desiredTagId = isRedAlliance ? 5 : 6; // Which amp tag to target (blue or red)
+    int desiredTagId = isRedAlliance ? 5 : 5; // Which amp tag to target (blue or red)
     if (m_tagCamera.hasTargetOfId(desiredTagId)) {
-      targetPose = m_tagCamera.getApriltagPose(getPose(), this.m_odometry.getPoseMeters().getRotation().getDegrees(), desiredTagId);
+      System.out.println("TAG FOUND");
+      ampTargetPose = m_tagCamera.getApriltagPose(getPose(), this.m_odometry.getPoseMeters().getRotation().getDegrees(), desiredTagId);
     }
+
+    // // Update the speaker target pose
+    // desiredTagId = isRedAlliance ? 4 : 7; // Which speaker tag to target (blue or red)
+    // if (m_tagCamera.hasTargetOfId(desiredTagId)) {
+    //   speakerTargetPose = m_tagCamera.getApriltagPose(getPose(), this.m_odometry.getPoseMeters().getRotation().getDegrees(), desiredTagId);
+    // }
   }
 
   /**
@@ -176,12 +185,12 @@ public class Drivetrain extends SubsystemBase {
    */
   public boolean checkAlignment() {
     // Canceling the vision command if the robot wanders over the middle line
-    if (Timer.getFPGATimestamp() <= 15) {
-      if ((getPose().getX() > 8.75 && !isRedAlliance) || (getPose().getX() < 7.75 && isRedAlliance)) {
-        isAlignmentActive = false;
-        isAlignmentSuccess = true;
-      }
-    }
+    // if (Timer.getFPGATimestamp() <= 15) {
+    //   if ((getPose().getX() > 8.75 && !isRedAlliance) || (getPose().getX() < 7.75 && isRedAlliance)) {
+    //     isAlignmentActive = false;
+    //     isAlignmentSuccess = true;
+    //   }
+    // }
 
     return isAlignmentSuccess; // This boolean variable is true when the robot has finished aligning (to either a tag or note)
   }
@@ -190,8 +199,10 @@ public class Drivetrain extends SubsystemBase {
    * A function for driving to the targeted apriltag, runs periodically 
    */
   public void driveToTag(double offsetX, double offsetY) {
+      Pose2d targetPose = ampTargetPose;
+
       // Apriltag alignment code
-      if (isAlignmentActive && targetPose != null && cameraMode == true) {
+      if (isAlignmentActive && ampTargetPose != null && cameraMode == CameraModes.AMP) {
         Pose2d robotPose = getPose();
 
         Transform2d desiredOffset = m_tagCamera.toFieldTransform(new Transform2d(offsetX, offsetY, new Rotation2d(0)), targetPose.getRotation().getDegrees());
@@ -202,6 +213,7 @@ public class Drivetrain extends SubsystemBase {
 
         double tagRotation = targetPose.getRotation().getDegrees();
 
+        // Flip the tag rotation
         if (tagRotation > 0) {
           tagRotation -= 180;
         }
@@ -277,12 +289,11 @@ public class Drivetrain extends SubsystemBase {
    */
   public void driveToNote() {
     // Note alignment code
-      if (isAlignmentActive && !cameraMode) {
+      if (isAlignmentActive && cameraMode == CameraModes.NOTE) {
         drive(VisionConstants.kVisionSpeedLimit, 0, m_noteCamera.getRotationSpeed(), false, true);
 
         if (!m_noteCamera.getResult().hasTargets()) {
           isAlignmentSuccess = true;
-          isAlignmentActive = false; // Stop the alignment when the target is reached
         }
         else {
           isAlignmentSuccess = false;
@@ -297,12 +308,12 @@ public class Drivetrain extends SubsystemBase {
       drive(xSpeed, ySpeed, rotSpeed, fieldRelative, rateLimit);
     }
     
-    if (isAlignmentActive && cameraMode == false) {
+    if (isAlignmentActive && cameraMode == CameraModes.NOTE) {
       // Align to the note while driving normally
       drive(xSpeed, ySpeed, rotSpeed + m_noteCamera.getRotationSpeed(), fieldRelative, rateLimit);
     }
 
-    if (isAlignmentActive && cameraMode == true && targetPose != null) {
+    if (isAlignmentActive && cameraMode == CameraModes.AMP && ampTargetPose != null) {
       // Apriltag alignment code
       driveToTag(VisionConstants.kAmpOffsetX, VisionConstants.kAmpOffsetY);
     }
@@ -331,17 +342,27 @@ public class Drivetrain extends SubsystemBase {
   public void alignWithNote() {
     isAlignmentSuccess = false; // Set this to false so the alignment doesn't finish instantly
 
-    cameraMode = false; // Set the camera mode to target notes
+    cameraMode = CameraModes.NOTE; // Set the camera mode to target notes
     isAlignmentActive = true; // Start aligning
   }
 
   /*
-   * Starts aligning towards a tag, if a tag can be seen
+   * Starts aligning towards the amp, if it can be seen
    */
   public void alignWithTag() {
     isAlignmentSuccess = false; // Set this to false so the alignment doesn't finish instantly
 
-    cameraMode = true; // Set the camera mode to target apriltags
+    cameraMode = CameraModes.AMP; // Set the camera mode to target apriltags
+    isAlignmentActive = true; // Start aligning
+  }
+
+  /*
+   * Starts aligning towards the speaker, if it can be seen
+   */
+  public void alignWithSpeaker() {
+    isAlignmentSuccess = false; // Set this to false so the alignment doesn't finish instantly
+
+    cameraMode = CameraModes.SPEAKER; // Set the camera mode to target apriltags
     isAlignmentActive = true; // Start aligning
   }
 
@@ -631,14 +652,21 @@ public class Drivetrain extends SubsystemBase {
 
     SmartDashboard.putBoolean("Align", isAlignmentActive);
     SmartDashboard.putBoolean("Alignment Success", isAlignmentSuccess);
-    SmartDashboard.putBoolean("Camera Mode", cameraMode);
 
-    // Apriltag target location/rotation (field relative space)
-    if (targetPose != null) {
-      SmartDashboard.putNumber("Target X", targetPose.getX());
-      SmartDashboard.putNumber("Target Y", targetPose.getY());
+    // Apriltag target location/rotation for amp (field relative space)
+    if (ampTargetPose != null) {
+      SmartDashboard.putNumber("Target X", ampTargetPose.getX());
+      SmartDashboard.putNumber("Target Y", ampTargetPose.getY());
 
-      SmartDashboard.putNumber("Target Rotation", targetPose.getRotation().getDegrees());
+      SmartDashboard.putNumber("Target Rotation", ampTargetPose.getRotation().getDegrees());
+    }
+
+    // Apriltag target location/rotation for speaker (field relative space)
+    if (speakerTargetPose != null) {
+      SmartDashboard.putNumber("Target X", speakerTargetPose.getX());
+      SmartDashboard.putNumber("Target Y", speakerTargetPose.getY());
+
+      SmartDashboard.putNumber("Target Rotation", speakerTargetPose.getRotation().getDegrees());
     }
 
     // Do the cameras have targets?
