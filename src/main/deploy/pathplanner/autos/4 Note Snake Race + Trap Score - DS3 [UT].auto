@@ -1,0 +1,85 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.4201810963517767,
+      "y": 7.312773438364859
+    },
+    "rotation": -90.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp To Half Mid"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Half To Mid Note One"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN NOTE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mid Note Two Pickup"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN NOTE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mid Note Three Pickup"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN NOTE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mid Note Four Pickup"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN NOTE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mid Note 4 To Trap"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SPEAKER SCORE"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Driver Station 3",
+  "choreoAuto": false
+}

@@ -1,0 +1,25 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.409718952751436,
+      "y": 3.257109918587488
+    },
+    "rotation": 90.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Outta The Way"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Driver Station 1",
+  "choreoAuto": false
+}
