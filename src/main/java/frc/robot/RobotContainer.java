@@ -143,7 +143,7 @@ public class RobotContainer {
                     new InstantCommand(
                         () -> m_robotDrive.alignWithNote())).alongWith(
                             this.m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE)).alongWith(
-                                this.m_mechanism.groundIntakeAuto(12))); // Set alignmode to true before starting, and set isAligned to false
+                                this.m_mechanism.groundIntakeAuto(12)).andThen(new InstantCommand(() -> m_robotDrive.cancelAlign()))); // Set alignmode to true before starting, and set isAligned to false
 
         // A command for canceling the current align command
         NamedCommands.registerCommand("CANCEL ALIGN", new InstantCommand(() -> m_robotDrive.cancelAlign()));

@@ -325,6 +325,7 @@ public class Drivetrain extends SubsystemBase {
    */
   public void cancelAlign() {
     isAlignmentActive = false;
+    isAlignmentSuccess = true;
   }
 
   /**
