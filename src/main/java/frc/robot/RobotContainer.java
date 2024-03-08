@@ -125,7 +125,7 @@ public class RobotContainer {
                     new InstantCommand(
                         () -> m_robotDrive.alignWithTag())).alongWith(
                             this.m_elevator.moveToPositionCommand(ElevatorPositions.AMP)).andThen(
-                                this.m_mechanism.scoreAmp(6))); // Set alignmode to true before starting
+                                this.m_mechanism.scoreAmp(8))); // Set alignmode to true before starting
 
         // Apriltag alignment command for speaker
         NamedCommands.registerCommand("ALIGN SPEAKER", new RunCommand(
@@ -134,7 +134,7 @@ public class RobotContainer {
                     new InstantCommand(
                         () -> m_robotDrive.alignWithTag())).alongWith(
                             this.m_elevator.moveToPositionCommand(ElevatorPositions.AMP)).andThen(
-                                this.m_mechanism.scoreAmp(6))); // Set alignmode to true before starting
+                                this.m_mechanism.scoreAmp(8))); // Set alignmode to true before starting
 
         // Note alignment command
         NamedCommands.registerCommand("ALIGN NOTE", new RunCommand(
@@ -150,7 +150,7 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("INTAKE", m_mechanism.groundIntakeAuto(12));
         NamedCommands.registerCommand("RELEASE", m_mechanism.groundReleaseAuto(12));
-        NamedCommands.registerCommand("AMP SCORE", m_mechanism.scoreAmp(12));
+        NamedCommands.registerCommand("AMP SCORE", m_mechanism.scoreAmp(8));
         NamedCommands.registerCommand("ELEVATOR LOW", m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE));
         NamedCommands.registerCommand("ELEVATOR HIGH", m_elevator.moveToPositionCommand(ElevatorPositions.AMP));
         NamedCommands.registerCommand("SPEAKER SCORE", m_combinedCommands.scoreIntoSpeaker());
