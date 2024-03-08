@@ -97,7 +97,7 @@ public class RobotContainer {
                         -MathUtil.applyDeadband(m_driverFlightstickController.getY(), OIConstants.kDriveDeadband) * invert,
                         -MathUtil.applyDeadband(m_driverFlightstickController.getX(), OIConstants.kDriveDeadband) * invert,
                         -MathUtil.applyDeadband(m_driverFlightstickController.getTwist(), OIConstants.kTwistDeadband),
-                        OIConstants.kFieldRelative, OIConstants.kRateLimited),
+                        OIConstants.kFieldRelative, OIConstants.kRateLimited, !m_mechanism.checkState(Phase.NONE)),
                     m_robotDrive));
         } else {
              // Configure the drivetrain to use the XBox controller
@@ -109,7 +109,7 @@ public class RobotContainer {
                                 -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband) * invert,
                                 -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband) * invert,
                                 -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kTurnDeadband),
-                                OIConstants.kFieldRelative, OIConstants.kRateLimited),
+                                OIConstants.kFieldRelative, OIConstants.kRateLimited, !m_mechanism.checkState(Phase.NONE)),
                         m_robotDrive));
         }
     }
