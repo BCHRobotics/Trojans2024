@@ -205,8 +205,6 @@ public class Drivetrain extends SubsystemBase {
       // Apriltag alignment code
       if (m_alignWithTarget && targetPose != null) {
         Pose2d robotPose = getPose();
-        
-        
 
         double xCommand = targetPose.getX() - robotPose.getX();
         double yCommand = targetPose.getY() - robotPose.getY();
