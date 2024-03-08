@@ -278,18 +278,11 @@ public class Drivetrain extends SubsystemBase {
     // Note alignment code
       if (isAlignmentActive && cameraMode == CameraModes.NOTE) {
         drive(VisionConstants.kVisionSpeedLimit, 0, m_noteCamera.getRotationSpeed(), false, true);
-
-        if (!m_noteCamera.getResult().hasTargets()) {
-          isAlignmentSuccess = true;
-        }
-        else {
-          isAlignmentSuccess = false;
-        }
       }
   }
 
   // TODO: replace this function with one that makes more sense and go back to calling drive in robotcontainer
-  public void driveCommand(double xSpeed, double ySpeed, double rotSpeed, boolean fieldRelative, boolean rateLimit) {
+  public void driveCommand(double xSpeed, double ySpeed, double rotSpeed, boolean fieldRelative, boolean rateLimit, boolean noteLoaded) {
 
     if (!isAlignmentActive) {
       drive(xSpeed, ySpeed, rotSpeed, fieldRelative, rateLimit);
@@ -298,6 +291,10 @@ public class Drivetrain extends SubsystemBase {
     if (isAlignmentActive && cameraMode == CameraModes.NOTE) {
       // Align to the note while driving normally
       drive(xSpeed, ySpeed, rotSpeed + m_noteCamera.getRotationSpeed(), fieldRelative, rateLimit);
+
+      if (noteLoaded) {
+        cancelAlign();
+      }
     }
 
     if (isAlignmentActive && cameraMode == CameraModes.AMP && ampTargetPose != null) {
@@ -616,49 +613,53 @@ public class Drivetrain extends SubsystemBase {
   public void printToDashboard() {
 
     // Speed
-    SmartDashboard.putNumber("Vertical Speed", this.getChassisSpeeds().vyMetersPerSecond); // Field relative horizontal speed
-    SmartDashboard.putNumber("Horizontal Speed", this.getChassisSpeeds().vxMetersPerSecond); // Field relative vertical speed
-    SmartDashboard.putNumber("Turn Speed", this.getChassisSpeeds().omegaRadiansPerSecond); // Field relative turn speed
+    // SmartDashboard.putNumber("Vertical Speed", this.getChassisSpeeds().vyMetersPerSecond); // Field relative horizontal speed
+    // SmartDashboard.putNumber("Horizontal Speed", this.getChassisSpeeds().vxMetersPerSecond); // Field relative vertical speed
+    // SmartDashboard.putNumber("Turn Speed", this.getChassisSpeeds().omegaRadiansPerSecond); // Field relative turn speed
     SmartDashboard.putNumber("Current Speed Percentage", m_maxSpeed); // Commanded speed multiplier [0 --> 1]
 
     // Position
-    SmartDashboard.putNumber("X Position", this.getPose().getX());
-    SmartDashboard.putNumber("Y Position", this.getPose().getY());
-    SmartDashboard.putNumber("Gyro Heading: ", this.getHeading());
+    // SmartDashboard.putNumber("X Position", this.getPose().getX());
+    // SmartDashboard.putNumber("Y Position", this.getPose().getY());
+    // SmartDashboard.putNumber("Gyro Heading: ", this.getHeading());
     SmartDashboard.putNumber("Odometry Heading: ", this.m_odometry.getPoseMeters().getRotation().getDegrees());
 
     // Slew rate filter variables
-    SmartDashboard.putNumber("slewCurrentRotation: ", m_currentRotation);
-    SmartDashboard.putNumber("slewCurrentTranslationDirection: ", m_currentTranslationDir);
-    SmartDashboard.putNumber("slewCurrentTranslationMagnitude: ", m_currentTranslationMag);
+    // SmartDashboard.putNumber("slewCurrentRotation: ", m_currentRotation);
+    // SmartDashboard.putNumber("slewCurrentTranslationDirection: ", m_currentTranslationDir);
+    // SmartDashboard.putNumber("slewCurrentTranslationMagnitude: ", m_currentTranslationMag);
 
     // Encoder values
-    SmartDashboard.putString("Front left Encoder", m_frontLeft.getState().toString());
-    SmartDashboard.putString("Front right Encoder", m_frontRight.getState().toString());
-    SmartDashboard.putString("Rear left Encoder", m_rearLeft.getState().toString());
-    SmartDashboard.putString("Rear right Encoder", m_rearRight.getState().toString());
+    // SmartDashboard.putString("Front left Encoder", m_frontLeft.getState().toString());
+    // SmartDashboard.putString("Front right Encoder", m_frontRight.getState().toString());
+    // SmartDashboard.putString("Rear left Encoder", m_rearLeft.getState().toString());
+    // SmartDashboard.putString("Rear right Encoder", m_rearRight.getState().toString());
 
     SmartDashboard.putBoolean("Align", isAlignmentActive);
     SmartDashboard.putBoolean("Alignment Success", isAlignmentSuccess);
 
     // Apriltag target location/rotation for amp (field relative space)
     if (ampTargetPose != null) {
-      SmartDashboard.putNumber("Target X", ampTargetPose.getX());
-      SmartDashboard.putNumber("Target Y", ampTargetPose.getY());
+      // SmartDashboard.putNumber("Target X", ampTargetPose.getX());
+      // SmartDashboard.putNumber("Target Y", ampTargetPose.getY());
 
-      SmartDashboard.putNumber("Target Rotation", ampTargetPose.getRotation().getDegrees());
+      // SmartDashboard.putNumber("Target Rotation", ampTargetPose.getRotation().getDegrees());
     }
 
     // Apriltag target location/rotation for speaker (field relative space)
     if (speakerTargetPose != null) {
-      SmartDashboard.putNumber("Target X", speakerTargetPose.getX());
-      SmartDashboard.putNumber("Target Y", speakerTargetPose.getY());
+      // SmartDashboard.putNumber("Target X", speakerTargetPose.getX());
+      // SmartDashboard.putNumber("Target Y", speakerTargetPose.getY());
 
-      SmartDashboard.putNumber("Target Rotation", speakerTargetPose.getRotation().getDegrees());
+      // SmartDashboard.putNumber("Target Rotation", speakerTargetPose.getRotation().getDegrees());
     }
 
     // Do the cameras have targets?
     SmartDashboard.putBoolean("Note Cam", m_noteCamera.getResult().hasTargets());
     SmartDashboard.putBoolean("Tag Cam", m_tagCamera.getResult().hasTargets());
+
+    // Are the cameras connected?
+    SmartDashboard.putBoolean("Note Cam Connected", m_noteCamera.isConnected());
+    SmartDashboard.putBoolean("Tag Cam Connected", m_tagCamera.isConnected());
   }
 }

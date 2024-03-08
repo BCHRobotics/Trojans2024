@@ -146,6 +146,10 @@ public class Mechanism extends SubsystemBase{
             case 2 -> this.powerLEDs(LEDColor.CYAN);
             default -> this.powerLEDs(LEDColor.OFF);
         }
+
+        // Intake request lights
+        SmartDashboard.putBoolean("Ground Request", requestIntakeType == 1);
+        SmartDashboard.putBoolean("Source Request", requestIntakeType == 2);
     }
 
     /**
