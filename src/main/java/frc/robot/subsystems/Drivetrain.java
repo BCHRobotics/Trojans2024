@@ -657,5 +657,9 @@ public class Drivetrain extends SubsystemBase {
     // Do the cameras have targets?
     SmartDashboard.putBoolean("Note Cam", m_noteCamera.getResult().hasTargets());
     SmartDashboard.putBoolean("Tag Cam", m_tagCamera.getResult().hasTargets());
+
+    // Are the cameras connected?
+    SmartDashboard.putBoolean("Note Cam Connected", m_noteCamera.isConnected());
+    SmartDashboard.putBoolean("Tag Cam Connected", m_tagCamera.isConnected());
   }
 }
