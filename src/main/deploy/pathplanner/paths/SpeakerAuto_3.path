@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.9078895212422267,
-        "y": 6.980826883268969
+        "x": 2.26,
+        "y": 5.54
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5471484672185505,
-        "y": 6.40559114847446
+        "x": 2.2449059624960115,
+        "y": 5.898603721197941
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.9329136995566167,
-        "y": 5.557362183607978
+        "x": 2.4399011268331336,
+        "y": 6.464089697775596
       },
       "prevControl": {
-        "x": 1.7281687770026384,
-        "y": 5.255119678885439
+        "x": 2.235156204279156,
+        "y": 6.191096467703624
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,7 +32,7 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Elevator Up",
+      "name": "Pickup",
       "waypointRelativePos": 0.25,
       "command": {
         "type": "sequential",
@@ -41,7 +41,7 @@
             {
               "type": "named",
               "data": {
-                "name": "ELEVATOR HIGH"
+                "name": "ELEVATOR LOW"
               }
             }
           ]
@@ -50,20 +50,20 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 4.1,
+    "maxAcceleration": 3.4,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0,
+    "rotation": 49.76364169072605,
     "rotateFast": true
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Speaker",
   "previewStartingState": {
-    "rotation": 45.0,
+    "rotation": 0.0,
     "velocity": 0.0
   },
   "useDefaultConstraints": true

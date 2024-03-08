@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3966769976295312,
-      "y": 5.537862667174266
+      "x": 1.4128354923376514,
+      "y": 4.042621285242571
     },
-    "rotation": 0
+    "rotation": 0.0
   },
   "command": {
     "type": "sequential",
@@ -14,25 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "SpeakerAuto_1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SPEAKER SCORE"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ELEVATOR LOW"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
+            "pathName": "Driver Station 2 To Mid Note Two + Note Release"
           }
         },
         {
@@ -44,31 +26,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "SpeakerAuto_2"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SPEAKER SCORE"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "SpeakerAuto_3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ELEVATOR LOW"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
+            "pathName": "Mid Note Three Pickup"
           }
         },
         {
@@ -80,13 +38,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "SpeakerAuto_4"
+            "pathName": "Mid Note Four Pickup"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "SPEAKER SCORE"
+            "name": "ALIGN NOTE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mid Note 4 To Amp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ALIGN TAG"
           }
         }
       ]

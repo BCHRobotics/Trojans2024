@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.97,
-        "y": 7.46
+        "x": 8.020599941020992,
+        "y": 7.401583890824312
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.462326174058525,
-        "y": 7.107573740088099
+        "x": 7.4038012834522995,
+        "y": 7.342841161532055
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.416583266214966,
-        "y": 7.46
+        "x": 7.653457882944388,
+        "y": 6.314843398917567
       },
       "prevControl": {
-        "x": 6.334360104143939,
-        "y": 7.634060683798327
+        "x": 7.3010015071908505,
+        "y": 6.35890044588676
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,8 +32,8 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Note Intake Setup",
-      "waypointRelativePos": 0.3,
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.35,
       "command": {
         "type": "parallel",
         "data": {
@@ -42,6 +42,12 @@
               "type": "named",
               "data": {
                 "name": "ELEVATOR LOW"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "INTAKE"
               }
             }
           ]
@@ -56,15 +62,15 @@
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 2.0,
-    "rotation": 0.0,
+    "velocity": 0,
+    "rotation": -43.26429541107168,
     "rotateFast": true
   },
   "reversed": false,
   "folder": "Mid Paths",
   "previewStartingState": {
-    "rotation": -90.0,
-    "velocity": 2.0
+    "rotation": 0,
+    "velocity": 0
   },
   "useDefaultConstraints": true
 }

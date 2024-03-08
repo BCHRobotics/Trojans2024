@@ -3,45 +3,57 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.97,
-        "y": 7.46
+        "x": 1.409718952751436,
+        "y": 3.257109918587488
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.462326174058525,
-        "y": 7.107573740088099
+        "x": 2.1007003711430188,
+        "y": 1.7990508560954346
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.416583266214966,
-        "y": 7.46
+        "x": 2.736707269089192,
+        "y": 0.6093438352314162
       },
       "prevControl": {
-        "x": 6.334360104143939,
-        "y": 7.634060683798327
+        "x": 2.77595798196186,
+        "y": 1.0733419980722796
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.0,
+      "rotationDegrees": 120.0,
+      "rotateFast": true
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Note Intake Setup",
-      "waypointRelativePos": 0.3,
+      "name": "New Event Marker",
+      "waypointRelativePos": 0,
       "command": {
-        "type": "parallel",
+        "type": "sequential",
         "data": {
           "commands": [
             {
+              "type": "wait",
+              "data": {
+                "waitTime": 2.0
+              }
+            },
+            {
               "type": "named",
               "data": {
-                "name": "ELEVATOR LOW"
+                "name": "SPEAKER SCORE"
               }
             }
           ]
@@ -56,15 +68,15 @@
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 2.0,
-    "rotation": 0.0,
-    "rotateFast": true
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
   },
   "reversed": false,
-  "folder": "Mid Paths",
+  "folder": null,
   "previewStartingState": {
-    "rotation": -90.0,
-    "velocity": 2.0
+    "rotation": 119.9739675598592,
+    "velocity": 0
   },
   "useDefaultConstraints": true
 }

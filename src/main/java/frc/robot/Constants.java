@@ -33,8 +33,8 @@ public final class Constants {
     public static final double kMinSpeedMetersPerSecond = 1.6;
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
-    public static final double kDirectionSlewRate = 1.4; // radians per second
-    public static final double kMagnitudeSlewRate = 2.8; // percent per second (1 = 100%) // 3.6
+    public static final double kDirectionSlewRate = 1.0; // radians per second
+    public static final double kMagnitudeSlewRate = 2.2; // percent per second (1 = 100%) // 3.6
     public static final double kRotationalSlewRate = 2.6; // percent per second (1 = 100%) // 3.0
 
     // Chassis configuration
@@ -98,18 +98,22 @@ public final class Constants {
                         (kElevatorWheelPitchDiameterInches * Math.PI) / 
                         (kElevatorMotorReduction * kElevatorMotorCPR);
       
-    public enum kElevatorPositions {
-      AMP,
-      SOURCE,
-      INTAKE
+    public enum ElevatorPositions {
+      AMP(0.39),
+      SOURCE(0.32),
+      INTAKE(-0.01);
+  
+      private final double goal;
+      ElevatorPositions(double goal) {
+          this.goal = goal;
+      }
+  
+      public double getGoal() {
+          return goal;
+      }
     }
-
-    public static double[] kElevatorGoals = new double[] {
-      0.39,
-      0.32,
-      -0.01
-    };
-  }
+  }                      
+  
   public static final class MechanismConstants {
     public static final int kBottomBeltMotorCanId = 33;
     public static final int kTopBeltMotorCanId = 32;
@@ -122,43 +126,83 @@ public final class Constants {
   }
 
   public static final class LEDConstants {
+    /*
+    * LED Colour Table
+    * 
+    *          R       G       B
+    * White:   255,    255,    255
+    * Red:     255,    0,      0
+    * Green:   0,      255,    0
+    * Blue:    0,      0,      255
+    * Yellow:  255,    255,    0
+    * Purple:  255,    0,      255
+    * Cyan:    0,      255,    255
+    */
+    public enum LEDColor {
+      WHITE(new boolean[]{true, true, true}),
+      RED(new boolean[]{true, false, false}),
+      GREEN(new boolean[]{false, true, false}),
+      BLUE(new boolean[]{false, false, true}),
+      YELLOW(new boolean[]{true, true, false}),
+      PURPLE(new boolean[]{true, false, true}),
+      CYAN(new boolean[]{false, true, true}),
+      OFF(new boolean[]{false, false, false});
+  
+      private final boolean[] values;
+      LEDColor(boolean[] values) {
+          this.values = values;
+      }
+  
+      public boolean[] getArray() {
+          return values;
+      }
+    }
+
     public static final int kRedLEDPort = 8;
     public static final int kGreenLEDPort = 9;
     public static final int kBlueLEDPort = 7;
-
-    public static boolean[] kLEDRed = new boolean[] {true, false, false};
-    public static boolean[] kLEDGreen = new boolean[] {false, true, false};
-    public static boolean[] kLEDBlue = new boolean[] {false, false, true};
-    public static boolean[] kLEDYellow = new boolean[] {true, true, false};
-    public static boolean[] kLEDPurple = new boolean[] {true, false, true};
-    public static boolean[] kLEDCyan = new boolean[] {false, true, true};
-    public static boolean[] kLEDWhite = new boolean[] {true, true, true};
-    public static boolean[] kLEDOff = new boolean[] {false, false, false};
   }
   public static final class VisionConstants{
     // Height of the camera (not used anywhere right now)
     public static final double kCameraHeight = 0.0;
 
+    // Camera modes
+    public enum CameraModes {
+      NONE(new double[]{0, 0}), // Offset is not used here
+      NOTE(new double[]{0, 0}), // Offset is not used here
+      AMP(new double[]{0.52, 0}),
+      SPEAKER(new double[]{0, 0});
+
+      private final double[] offsets;
+      CameraModes(double[] _offsets) {
+          this.offsets = _offsets;
+      }
+  
+      public double[] getArray() {
+          return offsets;
+      }
+    }
+
     // Speed and rotation caps for vision
-    public static final double kVisionSpeedLimit = 0.25;
-    public static final double kVisionTurningLimit = 0.4;
+    public static final double kVisionSpeedLimit = 0.65; //0.4
+    public static final double kVisionTurningLimit = 0.5;  //0.4
 
     // How close to an apriltag the robot has to be before stopping (meters)
     public static final double kTagDistanceThreshold = 0.15;
     // The amount of rotational error alowed (degrees)
     public static final double kTagRotationThreshold = 5;
     // How far away the bot is before it starts slowing down (farther than this it goes full speed as defined by kVisionSpeedLimit)
-    public static final double kTagSlowdownDistance = 0.5;
+    public static final double kTagSlowdownDistance = 0.6;
 
     // Desired offsets for the speaker and amp
     public static final double kSpeakerOffsetX = 0; // (meters)
     public static final double kSpeakerOffsetY = 0; // (meters)
 
-    public static final double kAmpOffsetX = 0.43; // (meters)
+    public static final double kAmpOffsetX = 0.52; // (meters)
     public static final double kAmpOffsetY = 0; // (meters)
 
     // Camera names (a and b are TEMPORARY NAMES)
-    public static final String kNoteCameraName = "a";
+    public static final String kNoteCameraName = "Note Cam";
     public static final String kTagCameraName = "Tag Cam";
 
     // PID values for aligning to a note
@@ -208,7 +252,7 @@ public final class Constants {
     public static final double kDrivingMinOutput = -1;
     public static final double kDrivingMaxOutput = 1;
 
-    public static final double kTurningP = 0.8;
+    public static final double kTurningP = 0.65;
     public static final double kTurningI = 0;
     public static final double kTurningD = 0;
     public static final double kTurningFF = 0;

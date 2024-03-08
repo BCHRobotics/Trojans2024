@@ -15,13 +15,15 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
-import frc.robot.Constants.ElevatorConstants.kElevatorPositions;
+import frc.robot.Constants.ElevatorConstants.ElevatorPositions;
+import frc.robot.Constants.LEDConstants.LEDColor;
 import frc.robot.commands.CombinedCommands;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Mechanism;
-import frc.utils.BeamBreak;
+import frc.utils.devices.BeamBreak;
+import frc.utils.devices.BeamBreak.Phase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -84,6 +86,8 @@ public class RobotContainer {
     // Configures default commands
     public void configureDefaultCommands(boolean isRedAlliance) {
         final double invert = isRedAlliance ? -1 : 1;
+
+        m_robotDrive.setAlliance(isRedAlliance);
         
         // Configure default commands
         if (inputChooser.getSelected().booleanValue() == true) {
@@ -114,32 +118,42 @@ public class RobotContainer {
     }
 
     public void configureNamedCommands() {
-        // Apriltag alignment command
+        // Apriltag alignment command for amp
         NamedCommands.registerCommand("ALIGN TAG", new RunCommand(
             () -> m_robotDrive.driveToTag(VisionConstants.kAmpOffsetX, VisionConstants.kAmpOffsetY)).until( // Run the alignwithtag function
                 () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
                     new InstantCommand(
                         () -> m_robotDrive.alignWithTag())).alongWith(
-                            this.m_elevator.moveToPositionCommand(kElevatorPositions.AMP)).andThen(
+                            this.m_elevator.moveToPositionCommand(ElevatorPositions.AMP)).andThen(
+                                this.m_mechanism.scoreAmp(6))); // Set alignmode to true before starting
+
+        // Apriltag alignment command for speaker
+        NamedCommands.registerCommand("ALIGN SPEAKER", new RunCommand(
+            () -> m_robotDrive.driveToTag(VisionConstants.kSpeakerOffsetX, VisionConstants.kSpeakerOffsetY)).until( // Run the alignwithtag function
+                () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
+                    new InstantCommand(
+                        () -> m_robotDrive.alignWithTag())).alongWith(
+                            this.m_elevator.moveToPositionCommand(ElevatorPositions.AMP)).andThen(
                                 this.m_mechanism.scoreAmp(6))); // Set alignmode to true before starting
 
         // Note alignment command
         NamedCommands.registerCommand("ALIGN NOTE", new RunCommand(
             () -> m_robotDrive.driveToNote()).until( // Run the 'drive to note' function
-                () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true, i.e the robot is done aligning
+                () -> m_mechanism.checkState(Phase.GROUND_PICKUP)).beforeStarting( // Stop when checkAlignment is true, i.e the robot is done aligning
                     new InstantCommand(
                         () -> m_robotDrive.alignWithNote())).alongWith(
-                            this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE)).alongWith(
-                                this.m_mechanism.groundIntake(12))); // Set alignmode to true before starting, and set isAligned to false
+                            this.m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE)).alongWith(
+                                this.m_mechanism.groundIntakeAuto(12)).andThen(new InstantCommand(() -> m_robotDrive.cancelAlign()))); // Set alignmode to true before starting, and set isAligned to false
 
         // A command for canceling the current align command
         NamedCommands.registerCommand("CANCEL ALIGN", new InstantCommand(() -> m_robotDrive.cancelAlign()));
 
-        NamedCommands.registerCommand("INTAKE", m_mechanism.groundIntake(12));
+        NamedCommands.registerCommand("INTAKE", m_mechanism.groundIntakeAuto(12));
+        NamedCommands.registerCommand("RELEASE", m_mechanism.groundReleaseAuto(12));
         NamedCommands.registerCommand("AMP SCORE", m_mechanism.scoreAmp(12));
-        NamedCommands.registerCommand("ELEVATOR LOW", m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE));
-        NamedCommands.registerCommand("ELEVATOR HIGH", m_elevator.moveToPositionCommand(kElevatorPositions.AMP));
-        NamedCommands.registerCommand("SPEAKER SCORE", m_mechanism.scoreSpeaker(12));
+        NamedCommands.registerCommand("ELEVATOR LOW", m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE));
+        NamedCommands.registerCommand("ELEVATOR HIGH", m_elevator.moveToPositionCommand(ElevatorPositions.AMP));
+        NamedCommands.registerCommand("SPEAKER SCORE", m_combinedCommands.scoreIntoSpeaker());
     }
 
   /**
@@ -186,40 +200,21 @@ public class RobotContainer {
          * Button 6 - CANCEL ALIGN
          */ 
 
-        driverControllerButtons();
+        configureButtonBindingsDriverXbox();
 
-        operatorControllerButtons();
+        configureButtonBindingsOperator();
 
-        flightStickControllerButtons();
-    }
+        configureButtonBindingsFlightstick();
 
-    /**
-     * Binding for flightstick controller buttons
-     */
-    private void flightStickControllerButtons() {
-        // // Zero heading command (Button 5)
-        this.m_driverFlightstickController.button(5).onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
-        // // Brake command (Button 1)
-        this.m_driverFlightstickController.button(1).onTrue(new RunCommand(() -> m_robotDrive.setX(),m_robotDrive));
-        // // Toggle slow mode (Button 2)
-        this.m_driverFlightstickController.button(2).onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive));
-        this.m_driverFlightstickController.button(2).onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
-
-        // // Align with apriltag command (Button 3)
-        this.m_driverFlightstickController.button(3).onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
-        // // Align with note command (Button 4)
-        this.m_driverFlightstickController.button(4).onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
-        // // Zero heading command (Button 6)
-        this.m_driverFlightstickController.button(6).onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign(), m_robotDrive));
     }
 
     /**
      * Binding for driver xbox controller buttons
      */
-    private void driverControllerButtons() {
-        // Zero heading command (Y Button)
-        this.m_driverController.y().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
-        // Brake command (Right Bumper)
+    private void configureButtonBindingsDriverXbox() {
+        // Zero heading command (Right Trigger)
+        //this.m_driverController.rightTrigger().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
+        // Brake command (Left Trigger)
         this.m_driverController.leftTrigger().whileTrue(new RunCommand(() -> m_robotDrive.setX(),m_robotDrive));
         // Slow mode command (Left Bumper)
         this.m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive));
@@ -231,33 +226,55 @@ public class RobotContainer {
         // Align with tag
         this.m_driverController.x().onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
         // Align with note
-        // this.m_driverController.b().onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
+        this.m_driverController.b().onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
+        // Align with speaker
+        //this.m_driverController.y().onTrue(new InstantCommand(() -> m_robotDrive.alignWithSpeaker()));
+        this.m_driverController.y().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
         // Cancel Alignment
         this.m_driverController.a().onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign()));
 
         this.m_driverController.povLeft().onTrue(this.m_mechanism.lightsOff().andThen(this.m_mechanism.lightShow()));
         
-        this.m_driverController.povRight().onTrue(this.m_combinedCommands.pickupFromSource());
-        this.m_driverController.povUp().onTrue(this.m_combinedCommands.scoreIntoSpeaker());
+        this.m_operatorController.y().onTrue(this.m_combinedCommands.pickupFromSource());
+        this.m_operatorController.povLeft().onTrue(this.m_combinedCommands.scoreIntoSpeaker());
+    }
+
+    /**
+     * Binding for flightstick controller buttons
+     */
+    private void configureButtonBindingsFlightstick() {
+        // Zero heading command (Button 5)
+        this.m_driverFlightstickController.button(5).onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
+        // Brake command (Button 1)
+        this.m_driverFlightstickController.button(1).whileTrue(new RunCommand(() -> m_robotDrive.setX(),m_robotDrive));
+        // Slow mode command (Button 2)
+        this.m_driverFlightstickController.button(2).onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive));
+        this.m_driverFlightstickController.button(2).onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
+        // Align with tag (Button 3)
+        this.m_driverFlightstickController.button(3).onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
+        // Align with note (Button 4)
+        this.m_driverFlightstickController.button(4).onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
+        // Cancel Alignment (Button 6)
+        this.m_driverFlightstickController.button(6).onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign()));
     }
 
     /**
      * Binding for operator xbox controller buttons
      */
-    private void operatorControllerButtons() {
+    private void configureButtonBindingsOperator() {
         // Moving the elevator
-        this.m_operatorController.povUp().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.AMP));
-        this.m_operatorController.povRight().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.SOURCE));
-        this.m_operatorController.povDown().onTrue(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE));
+        this.m_operatorController.povUp().onTrue(this.m_elevator.moveToPositionCommand(ElevatorPositions.AMP));
+        this.m_operatorController.povRight().onTrue(this.m_elevator.moveToPositionCommand(ElevatorPositions.SOURCE));
+        this.m_operatorController.povDown().onTrue(this.m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE));
         // Request intake (ground and source)
         this.m_operatorController.leftBumper().onTrue(new InstantCommand(() -> m_mechanism.requestIntake(1)));
         this.m_operatorController.rightBumper().onTrue(new InstantCommand(() -> m_mechanism.requestIntake(2)));
 
         // Scoring
         this.m_operatorController.b().onTrue(this.m_mechanism.scoreAmp(6));
-        this.m_operatorController.povLeft().onTrue(this.m_mechanism.scoreSpeaker(12));
+        //this.m_operatorController.povLeft().onTrue(this.m_mechanism.scoreSpeaker(12));
         // Intaking
-        this.m_operatorController.y().onTrue(this.m_mechanism.sourceIntake(6));
+        //this.m_operatorController.y().onTrue(this.m_mechanism.sourceIntake(6));
         this.m_operatorController.x().onTrue(this.m_mechanism.groundIntake(12));
         // Cancel command
         this.m_operatorController.a().onTrue(this.m_mechanism.stopMechanism());
@@ -291,6 +308,6 @@ public class RobotContainer {
      * Initializes the LEDs
      */
     public void initLEDs() {
-        this.m_mechanism.powerLEDs("Off");
+        this.m_mechanism.powerLEDs(LEDColor.OFF);
     }
 }

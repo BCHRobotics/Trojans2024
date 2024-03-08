@@ -14,11 +14,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.MechanismConstants;
-import frc.robot.Constants.LEDConstants;
-import frc.robot.Constants.ElevatorConstants.kElevatorPositions;
-import frc.utils.BeamBreak;
-import frc.utils.LEDs;
-import frc.utils.BeamBreak.Phase;
+import frc.robot.Constants.ElevatorConstants.ElevatorPositions;
+import frc.robot.Constants.LEDConstants.LEDColor;
+import frc.utils.devices.BeamBreak;
+import frc.utils.devices.LEDs;
+import frc.utils.devices.BeamBreak.Phase;
 
 public class Mechanism extends SubsystemBase{
     private static Mechanism instance = null;
@@ -142,9 +142,9 @@ public class Mechanism extends SubsystemBase{
         }
 
         switch (requestIntakeType) {
-            case 1 -> this.powerLEDs("purple");
-            case 2 -> this.powerLEDs("cyan");
-            default -> this.powerLEDs("off");
+            case 1 -> this.powerLEDs(LEDColor.BLUE);
+            case 2 -> this.powerLEDs(LEDColor.YELLOW);
+            default -> this.powerLEDs(LEDColor.OFF);
         }
     }
 
@@ -177,9 +177,38 @@ public class Mechanism extends SubsystemBase{
                 this.setBeltSpeed(0.0);
                 this.setSourceSpeed(0.0);
                 this.setAmpSpeed(0.0);
-            }).until(() -> this.checkState(Phase.LOADED)))
-            .andThen(confirmIntake());
-      }
+            }).until(() -> this.checkState(Phase.LOADED))
+        .andThen(confirmIntake()));
+    }
+
+    public Command groundIntakeAuto(double speed) {
+        return this.startEnd(
+            () -> {
+                this.setBeltSpeed(-speed);
+                this.setSourceSpeed(speed * 0.25);
+                this.setAmpSpeed(speed * 0.25);
+            },
+
+            () -> {
+                this.setBeltSpeed(-speed * 0.75);
+                this.setSourceSpeed(speed * 0.75 * 0.25);
+                this.setAmpSpeed(speed * 0.75 * 0.25);
+            })
+            .until(() -> this.checkState(Phase.GROUND_PICKUP))
+            .andThen(startEnd(
+                () -> {
+                this.setBeltSpeed(-speed * 0.75);
+                this.setSourceSpeed(speed * 0.75 * 0.25);
+                this.setAmpSpeed(speed * 0.75 * 0.25);
+            },
+            () -> {
+                this.setBeltSpeed(0.0);
+                this.setSourceSpeed(0.0);
+                this.setAmpSpeed(0.0);
+            }).until(() -> this.checkState(Phase.LOADED))
+        );
+    }
+    
 
     /**
      * source intake command
@@ -212,8 +241,28 @@ public class Mechanism extends SubsystemBase{
                 this.setAmpSpeed(0.0);
             })
             .until(() -> this.checkState(Phase.LOADED))
-            .andThen(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
+            .andThen(this.m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE))
         ).andThen(confirmIntake());
+    }
+
+    /**
+     * ejecting a note onto the ground command
+     * @param speed the speed to run the source intake at in volts [0 --> 12]
+     * @return
+     */
+    public Command groundReleaseAuto(double speed) {
+        return this.startEnd(
+                () -> {
+                this.setBeltSpeed(speed);
+                this.setSourceSpeed(-speed);
+                this.setAmpSpeed(-speed);
+            },
+            () -> {
+                this.setBeltSpeed(speed);
+                this.setSourceSpeed(-speed);
+                this.setAmpSpeed(-speed);
+            })
+            .andThen(this.m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE));
     }
 
     /**
@@ -243,10 +292,9 @@ public class Mechanism extends SubsystemBase{
                     this.setSourceSpeed(0);
                     this.setAmpSpeed(0);
                 }
-            )
-            .beforeStarting(new WaitCommand(1))
-            .andThen(lightsOff())
-            .andThen(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
+            ).andThen(lightsOff())
+            .andThen(this.m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE))
+            .beforeStarting(new WaitCommand(0.25))
         );
     }
 
@@ -274,7 +322,8 @@ public class Mechanism extends SubsystemBase{
             .beforeStarting(new WaitCommand(0.5))
         )
         .until(() -> this.checkState(Phase.NONE))
-        .andThen(this.m_elevator.moveToPositionCommand(kElevatorPositions.INTAKE))
+        .andThen(this.m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE))
+        .beforeStarting(new WaitCommand(0.1))
         .andThen(
             this.runOnce(
                 () -> {
@@ -302,17 +351,17 @@ public class Mechanism extends SubsystemBase{
      */
     public Command lightShow() {
         return Commands.sequence(
-            this.runOnce(() -> this.powerLEDs("red")),
+            this.runOnce(() -> this.powerLEDs(LEDColor.BLUE)),
             new WaitCommand(0.25),
-            this.runOnce(() -> this.powerLEDs("blue")),
+            this.runOnce(() -> this.powerLEDs(LEDColor.YELLOW)),
             new WaitCommand(0.35),
-            this.runOnce(() -> this.powerLEDs("green")),
+            this.runOnce(() -> this.powerLEDs(LEDColor.BLUE)),
             new WaitCommand(0.25),
-            this.runOnce(() -> this.powerLEDs("yellow")),
+            this.runOnce(() -> this.powerLEDs(LEDColor.YELLOW)),
             new WaitCommand(0.35),
-            this.runOnce(() -> this.powerLEDs("purple")),
+            this.runOnce(() -> this.powerLEDs(LEDColor.BLUE)),
             new WaitCommand(0.25),
-            this.runOnce(() -> this.powerLEDs("cyan")),
+            this.runOnce(() -> this.powerLEDs(LEDColor.YELLOW)),
             new WaitCommand(0.35)
         ).repeatedly();
     }
@@ -322,15 +371,15 @@ public class Mechanism extends SubsystemBase{
      */
     public Command confirmIntake() {
         return Commands.sequence(
-            this.runOnce(() -> this.powerLEDs("green")),
+            this.runOnce(() -> this.powerLEDs(LEDColor.GREEN)),
             new WaitCommand(0.1),
-            this.runOnce(() -> this.powerLEDs("off")),
+            this.runOnce(() -> this.powerLEDs(LEDColor.OFF)),
             new WaitCommand(0.1),
-            this.runOnce(() -> this.powerLEDs("green")),
+            this.runOnce(() -> this.powerLEDs(LEDColor.GREEN)),
             new WaitCommand(0.1),
-            this.runOnce(() -> this.powerLEDs("off")),
+            this.runOnce(() -> this.powerLEDs(LEDColor.OFF)),
             new WaitCommand(0.1),
-            this.runOnce(() -> this.powerLEDs("green"))
+            this.runOnce(() -> this.powerLEDs(LEDColor.GREEN))
         );
     }
 
@@ -338,27 +387,15 @@ public class Mechanism extends SubsystemBase{
      * A command for turning off all the LEDs
      */
     public Command lightsOff() {
-        return Commands.runOnce(() -> this.powerLEDs("off"));
+        return Commands.runOnce(() -> this.powerLEDs(LEDColor.OFF));
     }
 
     /**
      * A function for changing the color of the LEDs using a string
      * @param colour the desired color name
      */
-    public void powerLEDs(String colour) {
-        colour = colour.toLowerCase();
-
-        switch (colour) {
-            case "red" -> this.m_LEDs.setLEDs(LEDConstants.kLEDRed);
-            case "green" -> this.m_LEDs.setLEDs(LEDConstants.kLEDGreen);
-            case "blue" -> this.m_LEDs.setLEDs(LEDConstants.kLEDBlue);
-            case "yellow" -> this.m_LEDs.setLEDs(LEDConstants.kLEDYellow);
-            case "purple" -> this.m_LEDs.setLEDs(LEDConstants.kLEDPurple);
-            case "cyan" -> this.m_LEDs.setLEDs(LEDConstants.kLEDCyan);
-            case "white" -> this.m_LEDs.setLEDs(LEDConstants.kLEDWhite);
-            case "off" -> this.m_LEDs.setLEDs(LEDConstants.kLEDOff);  
-            default -> System.out.println("That LED Color Doesn't Exist!");
-        }
+    public void powerLEDs(LEDColor color) {
+        this.m_LEDs.setLEDs(color);
     }
 
     public void periodic() {
