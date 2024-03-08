@@ -17,18 +17,6 @@ public class LEDs extends SubsystemBase{
     }
 
     /**
-     * Set the LEDs to a color
-     * @param red red channel (on/off)
-     * @param green green channel (on/off)
-     * @param blue blue channel (on/off)
-     */
-    public void setLEDs(boolean red, boolean green, boolean blue) {
-        this.m_redLED.set(!red); 
-        this.m_greenLED.set(!green);
-        this.m_blueLED.set(!blue);
-    }
-
-    /**
      * Set the color of the LEDs using a predefined array
      * @param inputs the LED RGB values (on/off)
      */
