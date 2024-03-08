@@ -142,8 +142,8 @@ public class Mechanism extends SubsystemBase{
         }
 
         switch (requestIntakeType) {
-            case 1 -> this.powerLEDs(LEDColor.BLUE);
-            case 2 -> this.powerLEDs(LEDColor.YELLOW);
+            case 1 -> this.powerLEDs(LEDColor.PURPLE);
+            case 2 -> this.powerLEDs(LEDColor.CYAN);
             default -> this.powerLEDs(LEDColor.OFF);
         }
     }

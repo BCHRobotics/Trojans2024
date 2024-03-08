@@ -151,10 +151,6 @@ public class Elevator extends SubsystemBase {
         if (!forcedGoal && 
            (checkLimitSwitchPress(m_forwardLimit) || 
             checkLimitSwitchPress(m_reverseLimit))) {
-
-            System.out.println(checkLimitSwitchPress(m_forwardLimit) 
-                ? "Top Limit Hit" : "Bottom Limit Hit");
-
             limitReached();
         } else {
             calculateSpeed();

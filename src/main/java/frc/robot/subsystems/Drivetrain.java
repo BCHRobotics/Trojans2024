@@ -164,7 +164,6 @@ public class Drivetrain extends SubsystemBase {
     // Update the amp target pose
     int desiredTagId = isRedAlliance ? 5 : 5; // Which amp tag to target (blue or red)
     if (m_tagCamera.hasTargetOfId(desiredTagId)) {
-      System.out.println("TAG FOUND");
       ampTargetPose = m_tagCamera.getApriltagPose(getPose(), this.m_odometry.getPoseMeters().getRotation().getDegrees(), desiredTagId);
     }
 
