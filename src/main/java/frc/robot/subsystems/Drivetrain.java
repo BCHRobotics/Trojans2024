@@ -150,7 +150,7 @@ public class Drivetrain extends SubsystemBase {
     this.printToDashboard();
 
     // Update the amp target pose
-    int desiredTagId = isRedAlliance ? 5 : 5; // Which amp tag to target (blue or red)
+    int desiredTagId = isRedAlliance ? 5 : 6; // Which amp tag to target (blue or red)
     if (m_tagCamera.hasTargetOfId(desiredTagId)) {
       ampTargetPose = m_tagCamera.getApriltagPose(getPose(), this.m_odometry.getPoseMeters().getRotation().getDegrees(), desiredTagId);
     }
