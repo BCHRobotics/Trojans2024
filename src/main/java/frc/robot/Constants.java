@@ -100,7 +100,7 @@ public final class Constants {
     public enum ElevatorPositions {
       AMP(0.39),
       SOURCE(0.32),
-      INTAKE(-0.01);
+      INTAKE(-0.02);
   
       private final double goal;
       ElevatorPositions(double goal) {
@@ -197,7 +197,7 @@ public final class Constants {
     public static final double kSpeakerOffsetX = 0; // (meters)
     public static final double kSpeakerOffsetY = 0; // (meters)
 
-    public static final double kAmpOffsetX = 0.52; // (meters)
+    public static final double kAmpOffsetX = 0.5; // (meters)
     public static final double kAmpOffsetY = 0; // (meters)
 
     // Camera names (a and b are TEMPORARY NAMES)
