@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.38,
-      "y": 3.44
+      "x": 0.8912450873334795,
+      "y": 6.700750495518085
     },
-    "rotation": 0
+    "rotation": 59.88626684901758
   },
   "command": {
     "type": "sequential",
@@ -14,7 +14,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Go_DS2"
+            "pathName": "SpeakerAuto_1.5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SPEAKER SCORE"
           }
         }
       ]

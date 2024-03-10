@@ -28,13 +28,13 @@ public final class Constants {
     // Driving Parameters - Note that these are not the maximum and minimum capable speeds of
     // the robot, rather the allowed maximum and minimum speeds.
     public static final double kMaxSpeedMetersPerSecond = 4.1;
-    public static final double kDriveSpeedMetersPerSecond = 3.0;
+    public static final double kDriveSpeedMetersPerSecond = 3.7;
     public static final double kMinSpeedMetersPerSecond = 1.6;
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
-    public static final double kDirectionSlewRate = 1.0; // radians per second
-    public static final double kMagnitudeSlewRate = 2.2; // percent per second (1 = 100%) // 3.6
-    public static final double kRotationalSlewRate = 2.6; // percent per second (1 = 100%) // 3.0
+    public static final double kDirectionSlewRate = 1.2; // radians per second
+    public static final double kMagnitudeSlewRate = 1.8; // percent per second (1 = 100%) // 3.6
+    public static final double kRotationalSlewRate = 2.0; // percent per second (1 = 100%) // 3.0
 
     // Chassis configuration
     public static final double kTrackWidth = Units.inchesToMeters(24.5);
@@ -183,7 +183,7 @@ public final class Constants {
     }
 
     // Speed and rotation caps for vision
-    public static final double kVisionSpeedLimit = 0.65; //0.4
+    public static final double kVisionSpeedLimit = 0.55; //0.4
     public static final double kVisionTurningLimit = 0.5;  //0.4
 
     // How close to an apriltag the robot has to be before stopping (meters)
