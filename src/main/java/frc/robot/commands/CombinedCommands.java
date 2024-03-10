@@ -26,4 +26,12 @@ public class CombinedCommands {
                     .beforeStarting(new WaitCommand(0.1));
                     
     }
+
+    public Command scoreIntoAmp() {
+        return m_elevator.moveToPositionCommand(ElevatorPositions.AMP)
+                    .andThen(new WaitCommand(0.9))
+                    .andThen(m_mechanism.scoreAmp(6))
+                    .beforeStarting(new WaitCommand(0.1));
+                    
+    }
 }

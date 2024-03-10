@@ -38,7 +38,7 @@ public class Camera extends PhotonCamera {
         if(result.hasTargets()){
             double currentYaw = result.getBestTarget().getYaw();
 
-            rotationSpeed = alignController.calculate(currentYaw - 10);
+            rotationSpeed = alignController.calculate(currentYaw);
             
         } else{
             rotationSpeed = 0;

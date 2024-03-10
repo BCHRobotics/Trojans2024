@@ -1,0 +1,31 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.8912450873334795,
+      "y": 6.700750495518085
+    },
+    "rotation": 59.88626684901758
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SpeakerAuto_1.5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SPEAKER SCORE"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Driver Station 2",
+  "choreoAuto": false
+}
