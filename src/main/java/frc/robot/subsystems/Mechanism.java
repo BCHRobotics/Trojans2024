@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.MechanismConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorPositions;
 import frc.robot.Constants.LEDConstants.LEDColor;
+import frc.robot.commands.elevator.MoveToPosition;
 import frc.utils.devices.BeamBreak;
 import frc.utils.devices.LEDs;
 import frc.utils.devices.BeamBreak.Phase;
@@ -245,7 +246,7 @@ public class Mechanism extends SubsystemBase{
                 this.setAmpSpeed(0.0);
             })
             .until(() -> this.checkState(Phase.LOADED))
-            .andThen(this.m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE))
+            .andThen(new MoveToPosition(m_elevator, ElevatorPositions.INTAKE))
         ).andThen(confirmIntake());
     }
 
@@ -266,7 +267,7 @@ public class Mechanism extends SubsystemBase{
                 this.setSourceSpeed(-speed);
                 this.setAmpSpeed(-speed);
             })
-            .andThen(this.m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE));
+            .andThen(new MoveToPosition(m_elevator, ElevatorPositions.INTAKE));
     }
 
     /**
@@ -297,7 +298,7 @@ public class Mechanism extends SubsystemBase{
                     this.setAmpSpeed(0);
                 }
             ).andThen(lightsOff())
-            .andThen(this.m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE))
+            .andThen(new MoveToPosition(m_elevator, ElevatorPositions.INTAKE))
             .beforeStarting(new WaitCommand(0.25))
         );
     }
@@ -326,7 +327,7 @@ public class Mechanism extends SubsystemBase{
             .beforeStarting(new WaitCommand(0.5))
         )
         .until(() -> this.checkState(Phase.NONE))
-        .andThen(this.m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE))
+        .andThen(new MoveToPosition(m_elevator, ElevatorPositions.INTAKE))
         .beforeStarting(new WaitCommand(0.1))
         .andThen(
             this.runOnce(
@@ -406,4 +407,5 @@ public class Mechanism extends SubsystemBase{
         this.updatePhase();
         SmartDashboard.putString("Current Phase: ", this.m_currentPhase.name());
     }
+
 }

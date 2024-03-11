@@ -28,6 +28,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
+import frc.robot.commands.elevator.MoveToPosition;
+
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -121,7 +123,7 @@ public class RobotContainer {
                 () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
                     new InstantCommand(
                         () -> m_robotDrive.alignWithTag())).alongWith(
-                            this.m_elevator.moveToPositionCommand(ElevatorPositions.AMP)).andThen(
+                            new MoveToPosition(m_elevator, ElevatorPositions.AMP)).andThen(
                                 this.m_mechanism.scoreAmp(6))); // Set alignmode to true before starting
 
         // Apriltag alignment command for speaker
@@ -131,7 +133,7 @@ public class RobotContainer {
                 () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
                     new InstantCommand(
                         () -> m_robotDrive.alignWithTag())).alongWith(
-                            this.m_elevator.moveToPositionCommand(ElevatorPositions.AMP)).andThen(
+                            new MoveToPosition(m_elevator, ElevatorPositions.AMP)).andThen(
                                 this.m_mechanism.scoreAmp(6))); // Set alignmode to true before starting
 
         // Note alignment command
@@ -140,7 +142,7 @@ public class RobotContainer {
                 () -> m_mechanism.checkState(Phase.GROUND_PICKUP)).beforeStarting( // Stop when checkAlignment is true, i.e the robot is done aligning
                     new InstantCommand(
                         () -> m_robotDrive.alignWithNote())).alongWith(
-                            this.m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE)).alongWith(
+                            new MoveToPosition(m_elevator, ElevatorPositions.INTAKE)).alongWith(
                                 this.m_mechanism.groundIntakeAuto(12)).andThen(new InstantCommand(() -> m_robotDrive.cancelAlign()))); // Set alignmode to true before starting, and set isAligned to false
 
         // A command for canceling the current align command
@@ -149,9 +151,10 @@ public class RobotContainer {
         NamedCommands.registerCommand("INTAKE", m_mechanism.groundIntakeAuto(12));
         NamedCommands.registerCommand("RELEASE", m_mechanism.groundReleaseAuto(12));
         NamedCommands.registerCommand("AMP SCORE", m_mechanism.scoreAmp(6));
-        NamedCommands.registerCommand("ELEVATOR LOW", m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE));
-        NamedCommands.registerCommand("ELEVATOR HIGH", m_elevator.moveToPositionCommand(ElevatorPositions.AMP));
-        NamedCommands.registerCommand("SPEAKER SCORE", m_combinedCommands.scoreIntoSpeaker());
+        NamedCommands.registerCommand("ELEVATOR LOW", new MoveToPosition(m_elevator, ElevatorPositions.INTAKE));
+        NamedCommands.registerCommand("ELEVATOR HIGH", new MoveToPosition(m_elevator, ElevatorPositions.AMP));
+        // TODO: Uncomment and fix CombinedCommmands
+        // NamedCommands.registerCommand("SPEAKER SCORE", m_combinedCommands.scoreIntoSpeaker());
     }
 
     public void setupAuto() {
@@ -262,9 +265,9 @@ public class RobotContainer {
      */
     private void configureButtonBindingsOperator() {
         // Moving the elevator
-        this.m_operatorController.povUp().onTrue(this.m_elevator.moveToPositionCommand(ElevatorPositions.AMP));
-        this.m_operatorController.povRight().onTrue(this.m_elevator.moveToPositionCommand(ElevatorPositions.SOURCE));
-        this.m_operatorController.povDown().onTrue(this.m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE));
+        this.m_operatorController.povUp().onTrue(new MoveToPosition(m_elevator, ElevatorPositions.AMP));
+        this.m_operatorController.povRight().onTrue(new MoveToPosition(m_elevator, ElevatorPositions.SOURCE));
+        this.m_operatorController.povDown().onTrue(new MoveToPosition(m_elevator, ElevatorPositions.INTAKE));
         // Request intake (ground and source)
         this.m_operatorController.leftBumper().onTrue(new InstantCommand(() -> m_mechanism.requestIntake(1)));
         this.m_operatorController.rightBumper().onTrue(new InstantCommand(() -> m_mechanism.requestIntake(2)));
@@ -278,8 +281,9 @@ public class RobotContainer {
         // Cancel command
         this.m_operatorController.a().onTrue(this.m_mechanism.stopMechanism());
 
-        this.m_operatorController.y().onTrue(this.m_combinedCommands.pickupFromSource());
-        this.m_operatorController.povLeft().onTrue(this.m_combinedCommands.scoreIntoSpeaker());
+        // Add this back later
+        // this.m_operatorController.y().onTrue(this.m_combinedCommands.pickupFromSource());
+        // this.m_operatorController.povLeft().onTrue(this.m_combinedCommands.scoreIntoSpeaker());
 
         this.m_operatorController.leftTrigger().onTrue(this.m_mechanism.groundReleaseAuto(12));
     }

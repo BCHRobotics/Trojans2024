@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkLimitSwitch;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -14,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorPositions;
+import frc.utils.controllers.BetterPIDController;
 import frc.utils.controllers.BetterProfiledPIDController;
 
 public class Elevator extends SubsystemBase {
@@ -45,10 +47,6 @@ public class Elevator extends SubsystemBase {
             ElevatorConstants.kAVolts
         );
    
-    double totalSpeed = 0;
-
-    private boolean forcedGoal = false;
-
     /** Creates a new Elevator. */
     public Elevator() {
         
@@ -84,9 +82,9 @@ public class Elevator extends SubsystemBase {
         this.m_leftEncoder.setPositionConversionFactor(ElevatorConstants.kElevatorPositionConversionFactor);
         this.m_leftEncoder.setVelocityConversionFactor(ElevatorConstants.kElevatorPositionConversionFactor);
 
-        m_controller.setTolerance(0.005);
-
         m_leftEncoder.setPosition(0);
+
+        m_controller.setTolerance(0.005);
         m_controller.setGoal(0);
     }
 
@@ -100,92 +98,35 @@ public class Elevator extends SubsystemBase {
         }
         return instance;
     }
-
-    /**
-     * Checks if the elevator postion is at the goal
-     * @return if goal is reached
-     */
-    public boolean checkAtGoal() {
-        return m_controller.atGoal();
-    }
     
     /**
      * Sets the speed of the drive motor
-     * @param speed speed in volts [0 --> 12]
+     * @param speed speed in percent [0 --> 1]
      */
-    private void setLeftMotorSpeed(double speed) {
+    private void setMotorSpeed(double speed) {
+        MathUtil.clamp(speed, 0, 1);
+
         this.m_leftMotor.setVoltage(speed * 12);
-    }
-
-    /**
-     * Checks to see if a limit switched is being pressed
-     * @param limitSwitch The limit switch to check
-     * @return if the limit switch is being pressed
-     */
-    private boolean checkLimitSwitchPress(SparkLimitSwitch limitSwitch) {
-        return limitSwitch.isPressed();
-    }
-
-    /**
-     * Stops the elevator and sets the goal to the current setpoint
-     */
-    private void limitReached() {
-        cancelAllElevatorCommands();
-        m_controller.forceAtGoal();
-        forcedGoal = true;
     }
 
     /**
      * Calculates and sets the profiled speed of the motor
      */
     private void calculateSpeed() {
-        totalSpeed = m_controller.calculate(m_leftEncoder.getPosition())
-                     + m_feedforward.calculate(m_controller.getSetpoint().velocity);
-        setLeftMotorSpeed(totalSpeed);
+        double pidSpeed = m_controller.calculate(m_leftEncoder.getPosition());
+        double ffSpeed = m_feedforward.calculate(m_controller.getSetpoint().velocity);
+
+        setMotorSpeed(pidSpeed + ffSpeed);
     }
 
-    /**
-     * Checks for limits and sets the motor speed
-     */
-    private void setProfiledSpeed() {
-        if (!forcedGoal && 
-           (checkLimitSwitchPress(m_forwardLimit) || 
-            checkLimitSwitchPress(m_reverseLimit))) {
-            limitReached();
-        } else {
-            calculateSpeed();
-            if (!this.checkLimitSwitchPress(m_forwardLimit) 
-             && !this.checkLimitSwitchPress(m_reverseLimit)) {
-                forcedGoal = false;
-            } 
-        }
+    public BetterProfiledPIDController getController() {
+        return m_controller;
     }
 
-    /**
-     * Cancels all elevator commands
-     */
-    private void cancelAllElevatorCommands() {
-        CommandScheduler.getInstance().cancel(this.moveToPositionCommand(ElevatorPositions.SOURCE));
-        CommandScheduler.getInstance().cancel(this.moveToPositionCommand(ElevatorPositions.AMP));
-        CommandScheduler.getInstance().cancel(this.moveToPositionCommand(ElevatorPositions.INTAKE));
+    public boolean limitHit() {
+        return m_forwardLimit.isPressed() || m_reverseLimit.isPressed();
     }
 
-    /**
-     * Sets the elevator positions
-     * @param position the position to be set
-     * @return the command to get to the position
-     */
-    public Command moveToPositionCommand(ElevatorPositions position) {
-        return this.runOnce(() -> m_controller.setGoal(position.getGoal()));
-    }
-
-    /**
-     * Stops the elevator
-     * @return the command for stopping the elevator
-     */
-    public Command stopElevatorCommand() {
-        return this.runOnce(() -> cancelAllElevatorCommands());
-    }
     
     private void putToDashboard() {
         // SmartDashboard.putNumber("Total output speed", totalSpeed);
@@ -198,7 +139,7 @@ public class Elevator extends SubsystemBase {
     
     @Override
     public void periodic() {
-        setProfiledSpeed();
-        putToDashboard();
+        this.calculateSpeed();
+        this.putToDashboard();
     }
 }
