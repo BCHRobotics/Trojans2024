@@ -1,4 +1,4 @@
-package frc.robot.commands.combined;
+package frc.robot.commands.combined.teleop;
 
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -10,17 +10,17 @@ import frc.utils.devices.BeamBreak.Phase;
 
 public class GroundIntakeCmd extends SequentialCommandGroup {
     /**
-     * Releases the stored note and moves the elevator to intake.
+     * Picks up the note from the ground and uses LED to confirm intake.
      * <p> REPLACES: groundIntake
      */
     public GroundIntakeCmd(Mechanism mechanism) {
         addCommands(
             new ParallelRaceGroup(
-                new GroundIntake(mechanism, 12),
+                new GroundIntake(mechanism, 12, false),
                 new WaitUntilCommand(() -> mechanism.getPhase() == Phase.NONE)
             ),
             new ParallelRaceGroup(
-                new GroundIntake(mechanism, 12, 0.75),
+                new GroundIntake(mechanism, 12, 0.75, false),
                 new WaitUntilCommand(() -> mechanism.getPhase() == Phase.LOADED)
             ),
             new ConfirmIntake(mechanism)

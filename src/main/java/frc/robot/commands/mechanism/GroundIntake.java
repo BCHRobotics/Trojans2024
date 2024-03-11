@@ -8,16 +8,18 @@ public class GroundIntake extends Command {
     private final Mechanism m_mechanism;
     private final double m_speed;
     private final double m_slowPercent;
+    private final boolean m_isAuto;
 
-    public GroundIntake(Mechanism mechanism, double speed) {
-        this(mechanism, speed, 1);
+    public GroundIntake(Mechanism mechanism, double speed, boolean isAuto) {
+        this(mechanism, speed, 1, isAuto);
     }
 
 
-    public GroundIntake(Mechanism mechanism, double speed, double slowPercent) {
+    public GroundIntake(Mechanism mechanism, double speed, double slowPercent, boolean isAuto) {
         m_mechanism = mechanism;
         m_speed = speed;
         m_slowPercent = slowPercent;
+        m_isAuto = isAuto;
 
         addRequirements(m_mechanism);
     }
@@ -25,9 +27,15 @@ public class GroundIntake extends Command {
 
     @Override
     public void initialize() {
-        m_mechanism.setBeltSpeed(-m_speed * m_slowPercent);
-        m_mechanism.setSourceSpeed(m_speed * m_slowPercent);
-        m_mechanism.setAmpSpeed(m_speed * m_slowPercent);
+        if(m_isAuto) {
+            m_mechanism.setBeltSpeed(-m_speed * m_slowPercent);
+            m_mechanism.setSourceSpeed(m_speed * m_slowPercent * 0.25);
+            m_mechanism.setAmpSpeed(m_speed * m_slowPercent * 0.25);
+        } else {
+            m_mechanism.setBeltSpeed(-m_speed * m_slowPercent);
+            m_mechanism.setSourceSpeed(m_speed * m_slowPercent);
+            m_mechanism.setAmpSpeed(m_speed * m_slowPercent);
+        }
     }
 
 

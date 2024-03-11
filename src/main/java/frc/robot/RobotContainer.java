@@ -16,9 +16,10 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorPositions;
 import frc.robot.Constants.LEDConstants.LEDColor;
 import frc.robot.commands.CombinedCommands;
-import frc.robot.commands.combined.GroundIntakeAutoCmd;
-import frc.robot.commands.combined.GroundIntakeCmd;
-import frc.robot.commands.combined.ReleaseAndMove;
+import frc.robot.commands.combined.auto.GroundIntakeAutoCmd;
+import frc.robot.commands.combined.auto.GroundReleaseAutoCmd;
+import frc.robot.commands.combined.teleop.GroundIntakeCmd;
+import frc.robot.commands.combined.teleop.ScoreAmpCmd;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Elevator;
@@ -132,7 +133,7 @@ public class RobotContainer {
                     new InstantCommand(
                         () -> m_robotDrive.alignWithTag())).alongWith(
                             new MoveToPosition(m_elevator, ElevatorPositions.AMP)).andThen(
-                                this.m_mechanism.scoreAmp(6))); // Set alignmode to true before starting
+                                new ScoreAmpCmd(m_mechanism, m_elevator))); // Set alignmode to true before starting
 
         // Apriltag alignment command for speaker
         // NOT USED
@@ -142,7 +143,7 @@ public class RobotContainer {
                     new InstantCommand(
                         () -> m_robotDrive.alignWithTag())).alongWith(
                             new MoveToPosition(m_elevator, ElevatorPositions.AMP)).andThen(
-                                this.m_mechanism.scoreAmp(6))); // Set alignmode to true before starting
+                                new ScoreAmpCmd(m_mechanism, m_elevator))); // Set alignmode to true before starting
 
         // Note alignment command
         NamedCommands.registerCommand("ALIGN NOTE", new RunCommand(
@@ -157,8 +158,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("CANCEL ALIGN", new InstantCommand(() -> m_robotDrive.cancelAlign()));
 
         NamedCommands.registerCommand("INTAKE", new GroundIntakeAutoCmd(m_mechanism));
-        NamedCommands.registerCommand("RELEASE", new ReleaseAndMove(m_mechanism, m_elevator));
-        NamedCommands.registerCommand("AMP SCORE", m_mechanism.scoreAmp(6));
+        NamedCommands.registerCommand("RELEASE", new GroundReleaseAutoCmd(m_mechanism, m_elevator));
+        NamedCommands.registerCommand("AMP SCORE", new ScoreAmpCmd(m_mechanism, m_elevator));
         NamedCommands.registerCommand("ELEVATOR LOW", new MoveToPosition(m_elevator, ElevatorPositions.INTAKE));
         NamedCommands.registerCommand("ELEVATOR HIGH", new MoveToPosition(m_elevator, ElevatorPositions.AMP));
         // TODO: Uncomment and fix CombinedCommmands
@@ -281,19 +282,19 @@ public class RobotContainer {
         this.m_operatorController.rightBumper().onTrue(new RequestIntake(m_mechanism, LEDColor.CYAN));
 
         // Scoring
-        this.m_operatorController.b().onTrue(m_mechanism.scoreAmp(6));
+        this.m_operatorController.b().onTrue(new ScoreAmpCmd(m_mechanism, m_elevator));
         //this.m_operatorController.povLeft().onTrue(this.m_mechanism.scoreSpeaker(12));
         // Intaking
         //this.m_operatorController.y().onTrue(this.m_mechanism.sourceIntake(6));
         this.m_operatorController.x().onTrue(new GroundIntakeCmd(m_mechanism));
         // Cancel command
-        this.m_operatorController.a().onTrue(this.m_mechanism.stopMechanism());
+        this.m_operatorController.a().onTrue(new InstantCommand(() -> m_mechanism.stopMotors(), m_mechanism));
 
         // Add this back later
         // this.m_operatorController.y().onTrue(this.m_combinedCommands.pickupFromSource());
         // this.m_operatorController.povLeft().onTrue(this.m_combinedCommands.scoreIntoSpeaker());
 
-        this.m_operatorController.leftTrigger().onTrue(new ReleaseAndMove(m_mechanism, m_elevator));
+        this.m_operatorController.leftTrigger().onTrue(new GroundReleaseAutoCmd(m_mechanism, m_elevator));
     }
 
     /**

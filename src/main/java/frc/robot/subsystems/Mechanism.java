@@ -143,73 +143,6 @@ public class Mechanism extends SubsystemBase{
         return m_LEDs.getLEDS();
     }
 
-    /**
-     * source intake command
-     * @param speed the speed to run the source intake at in volts [0 --> 12]
-     * @return
-     */
-    public Command sourceIntake(double speed) {
-        return this.startEnd(
-            () -> {
-                this.setBeltSpeed(speed);
-                this.setSourceSpeed(-speed);
-                this.setAmpSpeed(-speed);
-            },
-
-            () -> {
-                this.setBeltSpeed(speed * 0.75);
-                this.setSourceSpeed(-speed * 0.75);
-                this.setAmpSpeed(-speed * 0.75);
-            })
-            .until(() -> this.checkState(Phase.SOURCE_INTAKE))
-            .andThen(startEnd(
-                () -> {
-                this.setBeltSpeed(speed * 0.75);
-                this.setSourceSpeed(-speed * 0.75);
-                this.setAmpSpeed(-speed * 0.75);
-            },
-            () -> {
-                this.setBeltSpeed(0.0);
-                this.setSourceSpeed(0.0);
-                this.setAmpSpeed(0.0);
-            })
-            .until(() -> this.checkState(Phase.LOADED))
-            .andThen(new MoveToPosition(m_elevator, ElevatorPositions.INTAKE))
-        ).andThen(new ConfirmIntake(this));
-    }
-
-    /**
-     * score amp command
-     * @param speed the speed to run the amp at in volts [0 --> 12]
-     * @return
-     */
-    public Command scoreAmp(double speed) {
-        return this.startEnd(
-            () -> {
-                this.setBeltSpeed(-speed);
-                this.setSourceSpeed(speed);
-                this.setAmpSpeed(-speed * 0.7);
-            },
-
-            () -> {
-                this.setBeltSpeed(-speed);
-                this.setSourceSpeed(speed);
-                this.setAmpSpeed(-speed * 0.7);
-            }
-        )
-        .until(() -> this.checkState(Phase.NONE))
-        .andThen(
-            this.runOnce(
-                () -> {
-                    this.setBeltSpeed(0);
-                    this.setSourceSpeed(0);
-                    this.setAmpSpeed(0);
-                }
-            ).andThen(() -> this.powerLEDs(LEDColor.OFF))
-            .andThen(new MoveToPosition(m_elevator, ElevatorPositions.INTAKE))
-            .beforeStarting(new WaitCommand(0.25))
-        );
-    }
 
     /**
      * score speaker command
@@ -245,16 +178,6 @@ public class Mechanism extends SubsystemBase{
                 }
             )
         ).andThen(() -> this.powerLEDs(LEDColor.OFF));
-    }
-
-    /**
-     * Stop the mechanism from running
-     * @return
-     */
-    public Command stopMechanism() {
-        return runOnce(() -> {
-          this.stopMotors();
-        });
     }
 
 
