@@ -16,6 +16,8 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorPositions;
 import frc.robot.Constants.LEDConstants.LEDColor;
 import frc.robot.commands.CombinedCommands;
+import frc.robot.commands.combined.GroundIntakeAutoCmd;
+import frc.robot.commands.combined.GroundIntakeCmd;
 import frc.robot.commands.combined.ReleaseAndMove;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Drivetrain;
@@ -32,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.robot.commands.elevator.MoveToPosition;
 import frc.robot.commands.mechanism.led.LightShow;
+import frc.robot.commands.mechanism.led.RequestIntake;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -148,12 +151,12 @@ public class RobotContainer {
                     new InstantCommand(
                         () -> m_robotDrive.alignWithNote())).alongWith(
                             new MoveToPosition(m_elevator, ElevatorPositions.INTAKE)).alongWith(
-                                this.m_mechanism.groundIntakeAuto(12)).andThen(new InstantCommand(() -> m_robotDrive.cancelAlign()))); // Set alignmode to true before starting, and set isAligned to false
+                                new GroundIntakeAutoCmd(m_mechanism)).andThen(new InstantCommand(() -> m_robotDrive.cancelAlign()))); // Set alignmode to true before starting, and set isAligned to false
 
         // A command for canceling the current align command
         NamedCommands.registerCommand("CANCEL ALIGN", new InstantCommand(() -> m_robotDrive.cancelAlign()));
 
-        NamedCommands.registerCommand("INTAKE", m_mechanism.groundIntakeAuto(12));
+        NamedCommands.registerCommand("INTAKE", new GroundIntakeAutoCmd(m_mechanism));
         NamedCommands.registerCommand("RELEASE", new ReleaseAndMove(m_mechanism, m_elevator));
         NamedCommands.registerCommand("AMP SCORE", m_mechanism.scoreAmp(6));
         NamedCommands.registerCommand("ELEVATOR LOW", new MoveToPosition(m_elevator, ElevatorPositions.INTAKE));
@@ -274,15 +277,15 @@ public class RobotContainer {
         this.m_operatorController.povRight().onTrue(new MoveToPosition(m_elevator, ElevatorPositions.SOURCE));
         this.m_operatorController.povDown().onTrue(new MoveToPosition(m_elevator, ElevatorPositions.INTAKE));
         // Request intake (ground and source)
-        this.m_operatorController.leftBumper().onTrue(new InstantCommand(() -> m_mechanism.requestIntake(1)));
-        this.m_operatorController.rightBumper().onTrue(new InstantCommand(() -> m_mechanism.requestIntake(2)));
+        this.m_operatorController.leftBumper().onTrue(new RequestIntake(m_mechanism, LEDColor.PURPLE));
+        this.m_operatorController.rightBumper().onTrue(new RequestIntake(m_mechanism, LEDColor.CYAN));
 
         // Scoring
         this.m_operatorController.b().onTrue(m_mechanism.scoreAmp(6));
         //this.m_operatorController.povLeft().onTrue(this.m_mechanism.scoreSpeaker(12));
         // Intaking
         //this.m_operatorController.y().onTrue(this.m_mechanism.sourceIntake(6));
-        this.m_operatorController.x().onTrue(this.m_mechanism.groundIntake(12));
+        this.m_operatorController.x().onTrue(new GroundIntakeCmd(m_mechanism));
         // Cancel command
         this.m_operatorController.a().onTrue(this.m_mechanism.stopMechanism());
 

@@ -11,6 +11,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.MechanismConstants;
@@ -33,8 +34,6 @@ public class Mechanism extends SubsystemBase{
 
     // The phase of the beam-break sensor
     private Phase m_currentPhase = Phase.NONE;
-
-    private int requestIntakeType;
 
     private final CANSparkMax m_bottomBeltMotor = new CANSparkMax(MechanismConstants.kBottomBeltMotorCanId, MotorType.kBrushless);
     private final CANSparkMax m_topBeltMotor = new CANSparkMax(MechanismConstants.kTopBeltMotorCanId, MotorType.kBrushless);
@@ -76,7 +75,6 @@ public class Mechanism extends SubsystemBase{
         this.m_ampMotor.enableVoltageCompensation(12);
 
         this.powerLEDs(LEDColor.OFF);
-        requestIntakeType = 0;
     }
 
     /**
@@ -123,6 +121,12 @@ public class Mechanism extends SubsystemBase{
         this.m_ampMotor.setVoltage(speed);
     }
 
+    public void stopMotors() {
+        this.setBeltSpeed(0);
+        this.setSourceSpeed(0);
+        this.setAmpSpeed(0);
+    }
+
     /**
      * A method to check if the phase changed
      * @param phase the phase that is checked
@@ -131,92 +135,13 @@ public class Mechanism extends SubsystemBase{
         return m_currentPhase == phase;
     }
 
-    /**
-     * A function for requesting ground/source intake using LEDs
-     * @param intakeType The requested intake type (1 is ground, 2 is source, 0 is nothing)
-     */
-    public void requestIntake(int intakeType) {
-        // Set the requested intake based on the input
-        // If you request the same intake twice the lights turn off
-        requestIntakeType = requestIntakeType == intakeType ? 0 : intakeType;
-
-        // Set the LED color to the requested intake
-        if (this.m_currentPhase != Phase.NONE) {
-            requestIntakeType = 0;
-        }
-
-        switch (requestIntakeType) {
-            case 1 -> this.powerLEDs(LEDColor.PURPLE);
-            case 2 -> this.powerLEDs(LEDColor.CYAN);
-            default -> this.powerLEDs(LEDColor.OFF);
-        }
-
-        // Intake request lights
-        SmartDashboard.putBoolean("Ground Request", requestIntakeType == 1);
-        SmartDashboard.putBoolean("Source Request", requestIntakeType == 2);
+    public Phase getPhase() {
+        return m_currentPhase;
     }
 
-    /**
-     * ground intake command
-     * @param speed the speed to run the ground intake at in volts [0 --> 12]
-     * @return
-     */
-    public Command groundIntake(double speed) {
-        return this.startEnd(
-            () -> {
-                this.setBeltSpeed(-speed);
-                this.setSourceSpeed(speed);
-                this.setAmpSpeed(speed);
-            },
-
-            () -> {
-                this.setBeltSpeed(-speed * 0.75);
-                this.setSourceSpeed(speed * 0.75);
-                this.setAmpSpeed(speed * 0.75);
-            })
-            .until(() -> this.checkState(Phase.GROUND_PICKUP))
-            .andThen(startEnd(
-                () -> {
-                this.setBeltSpeed(-speed * 0.75);
-                this.setSourceSpeed(speed * 0.75);
-                this.setAmpSpeed(speed * 0.75);
-            },
-            () -> {
-                this.setBeltSpeed(0.0);
-                this.setSourceSpeed(0.0);
-                this.setAmpSpeed(0.0);
-            }).until(() -> this.checkState(Phase.LOADED))
-        .andThen(new ConfirmIntake(this)));
+    public LEDColor getColor() {
+        return m_LEDs.getLEDS();
     }
-
-    public Command groundIntakeAuto(double speed) {
-        return this.startEnd(
-            () -> {
-                this.setBeltSpeed(-speed);
-                this.setSourceSpeed(speed * 0.25);
-                this.setAmpSpeed(speed * 0.25);
-            },
-
-            () -> {
-                this.setBeltSpeed(-speed * 0.75);
-                this.setSourceSpeed(speed * 0.75 * 0.25);
-                this.setAmpSpeed(speed * 0.75 * 0.25);
-            })
-            .until(() -> this.checkState(Phase.GROUND_PICKUP))
-            .andThen(startEnd(
-                () -> {
-                this.setBeltSpeed(-speed * 0.75);
-                this.setSourceSpeed(speed * 0.75 * 0.25);
-                this.setAmpSpeed(speed * 0.75 * 0.25);
-            },
-            () -> {
-                this.setBeltSpeed(0.0);
-                this.setSourceSpeed(0.0);
-                this.setAmpSpeed(0.0);
-            }).until(() -> this.checkState(Phase.LOADED))
-        );
-    }
-    
 
     /**
      * source intake command
@@ -328,9 +253,7 @@ public class Mechanism extends SubsystemBase{
      */
     public Command stopMechanism() {
         return runOnce(() -> {
-          this.setBeltSpeed(0);
-          this.setSourceSpeed(0);
-          this.setAmpSpeed(0);
+          this.stopMotors();
         });
     }
 
@@ -345,7 +268,8 @@ public class Mechanism extends SubsystemBase{
 
     public void periodic() {
         this.updatePhase();
-        SmartDashboard.putString("Current Phase: ", this.m_currentPhase.name());
+        SmartDashboard.putString("Current Phase: ", getPhase().name());
+        SmartDashboard.putString("Current LEDColor: ", getColor().name());
     }
 
 }

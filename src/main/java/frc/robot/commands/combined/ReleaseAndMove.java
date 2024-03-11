@@ -10,6 +10,7 @@ import frc.robot.subsystems.Mechanism;
 public class ReleaseAndMove extends SequentialCommandGroup {
     /**
      * Releases the stored note and moves the elevator to intake.
+     * <p> REPLACES: groundReleaseAuto
      */
     public ReleaseAndMove(Mechanism mechanism, Elevator elevator) {
         addCommands(

@@ -10,6 +10,10 @@ public class MoveToPosition extends Command {
     private final BetterProfiledPIDController m_controller;
     private final double m_goal;
 
+    /**
+     * Releases the stored note and moves the elevator to intake.
+     * <p>REPLACES: moveToPositionCommand
+     */
     public MoveToPosition(Elevator elevator, ElevatorPositions position) {
         m_elevator = elevator;
         m_controller = elevator.getController();

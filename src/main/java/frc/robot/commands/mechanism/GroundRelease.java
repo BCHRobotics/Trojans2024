@@ -21,4 +21,9 @@ public class GroundRelease extends Command {
         m_mechanism.setSourceSpeed(-m_speed);
         m_mechanism.setAmpSpeed(-m_speed);
     }
+
+    @Override
+    public void end(boolean interrupted) {
+        m_mechanism.stopMotors();
+    }
 }
