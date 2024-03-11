@@ -75,6 +75,7 @@ public class Mechanism extends SubsystemBase{
         this.m_sourceMotor.enableVoltageCompensation(12);
         this.m_ampMotor.enableVoltageCompensation(12);
 
+        this.powerLEDs(LEDColor.OFF);
         requestIntakeType = 0;
     }
 
@@ -101,7 +102,7 @@ public class Mechanism extends SubsystemBase{
      * Sets the speed of the belt motor
      * @param speed the speed in volts [0 --> 12]
      */
-    private void setBeltSpeed(double speed) {
+    public void setBeltSpeed(double speed) {
         this.m_bottomBeltMotor.setVoltage(speed);
         this.m_topBeltMotor.setVoltage(speed);
     }
@@ -110,7 +111,7 @@ public class Mechanism extends SubsystemBase{
      * Sets the speed of the source motor
      * @param speed the speed in volts [0 --> 12]
      */
-    private void setSourceSpeed(double speed) {
+    public void setSourceSpeed(double speed) {
         this.m_sourceMotor.setVoltage(speed);
     }
     
@@ -118,7 +119,7 @@ public class Mechanism extends SubsystemBase{
      * Sets the speed of the amp motor
      * @param speed the speed in volts [0 --> 12]
      */
-    private void setAmpSpeed(double speed) {
+    public void setAmpSpeed(double speed) {
         this.m_ampMotor.setVoltage(speed);
     }
 
@@ -250,26 +251,6 @@ public class Mechanism extends SubsystemBase{
             .until(() -> this.checkState(Phase.LOADED))
             .andThen(new MoveToPosition(m_elevator, ElevatorPositions.INTAKE))
         ).andThen(new ConfirmIntake(this));
-    }
-
-    /**
-     * ejecting a note onto the ground command
-     * @param speed the speed to run the source intake at in volts [0 --> 12]
-     * @return
-     */
-    public Command groundReleaseAuto(double speed) {
-        return this.startEnd(
-                () -> {
-                this.setBeltSpeed(speed);
-                this.setSourceSpeed(-speed);
-                this.setAmpSpeed(-speed);
-            },
-            () -> {
-                this.setBeltSpeed(speed);
-                this.setSourceSpeed(-speed);
-                this.setAmpSpeed(-speed);
-            })
-            .andThen(new MoveToPosition(m_elevator, ElevatorPositions.INTAKE));
     }
 
     /**

@@ -6,6 +6,7 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
@@ -15,6 +16,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorPositions;
 import frc.robot.Constants.LEDConstants.LEDColor;
 import frc.robot.commands.CombinedCommands;
+import frc.robot.commands.combined.ReleaseAndMove;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Elevator;
@@ -81,6 +83,8 @@ public class RobotContainer {
         this.configureButtonBindings();
         // Configure the default commands for the input method chosen
         this.configureDefaultCommands(false);
+
+        BeamBreak.solenoidChannelActive(true);
     }
 
     // Configures default commands
@@ -150,7 +154,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("CANCEL ALIGN", new InstantCommand(() -> m_robotDrive.cancelAlign()));
 
         NamedCommands.registerCommand("INTAKE", m_mechanism.groundIntakeAuto(12));
-        NamedCommands.registerCommand("RELEASE", m_mechanism.groundReleaseAuto(12));
+        NamedCommands.registerCommand("RELEASE", new ReleaseAndMove(m_mechanism, m_elevator));
         NamedCommands.registerCommand("AMP SCORE", m_mechanism.scoreAmp(6));
         NamedCommands.registerCommand("ELEVATOR LOW", new MoveToPosition(m_elevator, ElevatorPositions.INTAKE));
         NamedCommands.registerCommand("ELEVATOR HIGH", new MoveToPosition(m_elevator, ElevatorPositions.AMP));
@@ -286,7 +290,7 @@ public class RobotContainer {
         // this.m_operatorController.y().onTrue(this.m_combinedCommands.pickupFromSource());
         // this.m_operatorController.povLeft().onTrue(this.m_combinedCommands.scoreIntoSpeaker());
 
-        this.m_operatorController.leftTrigger().onTrue(this.m_mechanism.groundReleaseAuto(12));
+        this.m_operatorController.leftTrigger().onTrue(new ReleaseAndMove(m_mechanism, m_elevator));
     }
 
     /**
@@ -302,21 +306,6 @@ public class RobotContainer {
      * This function is called when the robot enters disabled mode, it sets the motors to brake mode.
      */
     public void eStop() {
-        m_robotDrive.setIdleStates(1);
-    }
-
-    /**
-     * enable the PCM channels
-     */
-    public void enablePCMChannels() {
-        BeamBreak.solenoidChannelActive(true);
-        
-    }
-
-    /**
-     * Initializes the LEDs
-     */
-    public void initLEDs() {
-        this.m_mechanism.powerLEDs(LEDColor.OFF);
+        m_robotDrive.setIdleStates(IdleMode.kBrake);
     }
 }

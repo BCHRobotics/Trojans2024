@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
+import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -505,7 +506,7 @@ public class Drivetrain extends SubsystemBase {
    *
    * @param mode the mode to set the states to (0 is coast, 1 is brake)
    */
-  public void setIdleStates(int mode) {
+  public void setIdleStates(IdleMode mode) {
     m_frontLeft.setIdle(mode);
     m_rearLeft.setIdle(mode);
     m_frontRight.setIdle(mode);

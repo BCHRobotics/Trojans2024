@@ -88,6 +88,10 @@ public class Elevator extends SubsystemBase {
         m_controller.setGoal(0);
     }
 
+    public BetterProfiledPIDController getController() {
+        return m_controller;
+    }
+
     /**
      * Gets the instance of the elevator
      * @return the instance of the elevator
@@ -117,10 +121,6 @@ public class Elevator extends SubsystemBase {
         double ffSpeed = m_feedforward.calculate(m_controller.getSetpoint().velocity);
 
         setMotorSpeed(pidSpeed + ffSpeed);
-    }
-
-    public BetterProfiledPIDController getController() {
-        return m_controller;
     }
 
     public boolean limitHit() {
