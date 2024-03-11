@@ -20,6 +20,8 @@ import frc.robot.commands.elevator.MoveToPosition;
 import frc.utils.devices.BeamBreak;
 import frc.utils.devices.LEDs;
 import frc.utils.devices.BeamBreak.Phase;
+import frc.robot.commands.mechanism.led.ConfirmIntake;
+
 
 public class Mechanism extends SubsystemBase{
     private static Mechanism instance = null;
@@ -183,7 +185,7 @@ public class Mechanism extends SubsystemBase{
                 this.setSourceSpeed(0.0);
                 this.setAmpSpeed(0.0);
             }).until(() -> this.checkState(Phase.LOADED))
-        .andThen(confirmIntake()));
+        .andThen(new ConfirmIntake(this)));
     }
 
     public Command groundIntakeAuto(double speed) {
@@ -247,7 +249,7 @@ public class Mechanism extends SubsystemBase{
             })
             .until(() -> this.checkState(Phase.LOADED))
             .andThen(new MoveToPosition(m_elevator, ElevatorPositions.INTAKE))
-        ).andThen(confirmIntake());
+        ).andThen(new ConfirmIntake(this));
     }
 
     /**
@@ -297,7 +299,7 @@ public class Mechanism extends SubsystemBase{
                     this.setSourceSpeed(0);
                     this.setAmpSpeed(0);
                 }
-            ).andThen(lightsOff())
+            ).andThen(() -> this.powerLEDs(LEDColor.OFF))
             .andThen(new MoveToPosition(m_elevator, ElevatorPositions.INTAKE))
             .beforeStarting(new WaitCommand(0.25))
         );
@@ -336,7 +338,7 @@ public class Mechanism extends SubsystemBase{
                     this.setAmpSpeed(0);
                 }
             )
-        ).andThen(lightsOff());
+        ).andThen(() -> this.powerLEDs(LEDColor.OFF));
     }
 
     /**
@@ -351,49 +353,6 @@ public class Mechanism extends SubsystemBase{
         });
     }
 
-    /**
-     * A command for the rainbow-light-thing
-     */
-    public Command lightShow() {
-        return Commands.sequence(
-            this.runOnce(() -> this.powerLEDs(LEDColor.BLUE)),
-            new WaitCommand(0.25),
-            this.runOnce(() -> this.powerLEDs(LEDColor.YELLOW)),
-            new WaitCommand(0.35),
-            this.runOnce(() -> this.powerLEDs(LEDColor.BLUE)),
-            new WaitCommand(0.25),
-            this.runOnce(() -> this.powerLEDs(LEDColor.YELLOW)),
-            new WaitCommand(0.35),
-            this.runOnce(() -> this.powerLEDs(LEDColor.BLUE)),
-            new WaitCommand(0.25),
-            this.runOnce(() -> this.powerLEDs(LEDColor.YELLOW)),
-            new WaitCommand(0.35)
-        ).repeatedly();
-    }
-
-    /**
-     * A command for confirming an intake
-     */
-    public Command confirmIntake() {
-        return Commands.sequence(
-            this.runOnce(() -> this.powerLEDs(LEDColor.GREEN)),
-            new WaitCommand(0.1),
-            this.runOnce(() -> this.powerLEDs(LEDColor.OFF)),
-            new WaitCommand(0.1),
-            this.runOnce(() -> this.powerLEDs(LEDColor.GREEN)),
-            new WaitCommand(0.1),
-            this.runOnce(() -> this.powerLEDs(LEDColor.OFF)),
-            new WaitCommand(0.1),
-            this.runOnce(() -> this.powerLEDs(LEDColor.GREEN))
-        );
-    }
-
-    /**
-     * A command for turning off all the LEDs
-     */
-    public Command lightsOff() {
-        return Commands.runOnce(() -> this.powerLEDs(LEDColor.OFF));
-    }
 
     /**
      * A function for changing the color of the LEDs using a string

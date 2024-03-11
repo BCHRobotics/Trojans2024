@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.robot.commands.elevator.MoveToPosition;
+import frc.robot.commands.mechanism.led.LightShow;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -238,7 +239,7 @@ public class RobotContainer {
         // Cancel Alignment
         this.m_driverController.a().onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign()));
 
-        this.m_driverController.povLeft().onTrue(this.m_mechanism.lightsOff().andThen(this.m_mechanism.lightShow()));
+        this.m_driverController.povLeft().whileTrue(new LightShow(m_mechanism));
     }
 
     /**
