@@ -32,7 +32,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
+            "waitTime": 0.75
           }
         },
         {
@@ -45,42 +45,6 @@
           "type": "path",
           "data": {
             "pathName": "SpeakerAuto_2"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SPEAKER SCORE"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "SpeakerAuto_3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ELEVATOR LOW"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ALIGN NOTE"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "SpeakerAuto_4"
           }
         },
         {

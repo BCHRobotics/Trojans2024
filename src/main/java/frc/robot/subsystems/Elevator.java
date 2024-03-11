@@ -188,12 +188,12 @@ public class Elevator extends SubsystemBase {
     }
     
     private void putToDashboard() {
-        SmartDashboard.putNumber("Total output speed", totalSpeed);
-        SmartDashboard.putNumber("Encoder Position: ", m_leftEncoder.getPosition());
-        SmartDashboard.putBoolean("At goal: ", m_controller.atGoal());
-        SmartDashboard.putBoolean("At setpoint: ", m_controller.atSetpoint());
-        SmartDashboard.putBoolean("Top limit switch hit: ", m_forwardLimit.isPressed());
-        SmartDashboard.putBoolean("Bottom limit switch hit: ", m_reverseLimit.isPressed());
+        // SmartDashboard.putNumber("Total output speed", totalSpeed);
+        // SmartDashboard.putNumber("Encoder Position: ", m_leftEncoder.getPosition());
+        // SmartDashboard.putBoolean("At goal: ", m_controller.atGoal());
+        // SmartDashboard.putBoolean("At setpoint: ", m_controller.atSetpoint());
+        // SmartDashboard.putBoolean("Top limit switch hit: ", m_forwardLimit.isPressed());
+        // SmartDashboard.putBoolean("Bottom limit switch hit: ", m_reverseLimit.isPressed());
     }
     
     @Override
