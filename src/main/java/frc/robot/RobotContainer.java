@@ -46,8 +46,8 @@ import frc.robot.commands.mechanism.led.RequestIntake;
 public class RobotContainer {
     // The robot's subsystems
     private final Drivetrain m_robotDrive = new Drivetrain();
-    private final Elevator m_elevator;
-    private final Mechanism m_mechanism;
+    private final Elevator m_elevator = new Elevator();
+    private final Mechanism m_mechanism = new Mechanism();
     private final CombinedCommands m_combinedCommands = new CombinedCommands();
 
     // Flightstick controller
@@ -66,8 +66,6 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
-        m_elevator = Elevator.getInstance();
-        m_mechanism = Mechanism.getInstance();
 
         configureNamedCommands();
 
@@ -162,8 +160,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("AMP SCORE", new ScoreAmpCmd(m_mechanism, m_elevator));
         NamedCommands.registerCommand("ELEVATOR LOW", new MoveToPosition(m_elevator, ElevatorPositions.INTAKE));
         NamedCommands.registerCommand("ELEVATOR HIGH", new MoveToPosition(m_elevator, ElevatorPositions.AMP));
-        // TODO: Uncomment and fix CombinedCommmands
-        // NamedCommands.registerCommand("SPEAKER SCORE", m_combinedCommands.scoreIntoSpeaker());
+        NamedCommands.registerCommand("SPEAKER SCORE", m_combinedCommands.scoreIntoSpeaker(m_mechanism, m_elevator));
     }
 
     public void setupAuto() {
@@ -290,9 +287,8 @@ public class RobotContainer {
         // Cancel command
         this.m_operatorController.a().onTrue(new InstantCommand(() -> m_mechanism.stopMotors(), m_mechanism));
 
-        // Add this back later
-        // this.m_operatorController.y().onTrue(this.m_combinedCommands.pickupFromSource());
-        // this.m_operatorController.povLeft().onTrue(this.m_combinedCommands.scoreIntoSpeaker());
+        this.m_operatorController.y().onTrue(this.m_combinedCommands.pickupFromSource(m_mechanism, m_elevator));
+        this.m_operatorController.povLeft().onTrue(this.m_combinedCommands.scoreIntoSpeaker(m_mechanism, m_elevator));
 
         this.m_operatorController.leftTrigger().onTrue(new GroundReleaseAutoCmd(m_mechanism, m_elevator));
     }

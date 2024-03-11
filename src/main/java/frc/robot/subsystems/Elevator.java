@@ -19,8 +19,7 @@ import frc.utils.controllers.BetterPIDController;
 import frc.utils.controllers.BetterProfiledPIDController;
 
 public class Elevator extends SubsystemBase {
-    private static Elevator instance = null;
-
+    
     private final CANSparkMax m_leftMotor;
     private final CANSparkMax m_rightMotor;
 
@@ -90,17 +89,6 @@ public class Elevator extends SubsystemBase {
 
     public BetterProfiledPIDController getController() {
         return m_controller;
-    }
-
-    /**
-     * Gets the instance of the elevator
-     * @return the instance of the elevator
-     */
-    public static Elevator getInstance() {
-        if (instance == null) {
-            instance = new Elevator();
-        }
-        return instance;
     }
     
     /**

@@ -25,8 +25,7 @@ import frc.robot.commands.mechanism.led.ConfirmIntake;
 
 
 public class Mechanism extends SubsystemBase{
-    private static Mechanism instance = null;
-    
+
     // The beam-break sensor that detects where a note is in the mechanism
     private final BeamBreak m_beamBreak = new BeamBreak();
     private LEDs m_LEDs = new LEDs();
@@ -42,7 +41,6 @@ public class Mechanism extends SubsystemBase{
 
     /** Creates a new Mechanism. */
     public Mechanism() {
-        m_elevator = Elevator.getInstance();
 
         this.m_bottomBeltMotor.restoreFactoryDefaults();
         this.m_topBeltMotor.restoreFactoryDefaults();
@@ -75,17 +73,6 @@ public class Mechanism extends SubsystemBase{
         this.m_ampMotor.enableVoltageCompensation(12);
 
         this.powerLEDs(LEDColor.OFF);
-    }
-
-    /**
-     * Gets the instance of the mechanism
-     * @return the instance of the mechanism
-     */
-    public static Mechanism getInstance() {
-        if (instance == null) {
-            instance = new Mechanism();
-        }
-        return instance;
     }
 
     /**
@@ -142,44 +129,6 @@ public class Mechanism extends SubsystemBase{
     public LEDColor getColor() {
         return m_LEDs.getLEDS();
     }
-
-
-    /**
-     * score speaker command
-     * @param speed the speed to run the speaker at in volts [0 --> 12]
-     * @return
-     */
-    public Command scoreSpeaker(double speed) {
-        return this.runOnce(
-            () -> {
-                this.setSourceSpeed(speed);
-                this.setAmpSpeed(speed);
-            }
-        )
-        .andThen(
-            this.startEnd(
-                () -> {
-                    this.setBeltSpeed(-speed);
-                },
-                () -> {
-                    this.setBeltSpeed(0);
-                }
-            )
-            .beforeStarting(new WaitCommand(0.5))
-        )
-        .until(() -> this.checkState(Phase.NONE))
-        .andThen(new MoveToPosition(m_elevator, ElevatorPositions.INTAKE))
-        .beforeStarting(new WaitCommand(0.1))
-        .andThen(
-            this.runOnce(
-                () -> {
-                    this.setSourceSpeed(0);
-                    this.setAmpSpeed(0);
-                }
-            )
-        ).andThen(() -> this.powerLEDs(LEDColor.OFF));
-    }
-
 
     /**
      * A function for changing the color of the LEDs using a string
