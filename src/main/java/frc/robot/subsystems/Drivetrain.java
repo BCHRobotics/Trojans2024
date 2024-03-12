@@ -17,6 +17,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -32,14 +33,17 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.CustomPoseEstimatorConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.VisionConstants.CameraModes;
+import frc.utils.CustomPoseEstimator;
 import frc.utils.SwerveUtils;
 import frc.utils.devices.Camera;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -635,6 +639,27 @@ public class Drivetrain extends SubsystemBase {
           Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> stdDevs) {
     m_poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
   }
+
+
+  private void estimatePoseFromAmp() {
+     // Inputs
+     double cameraFacingAngle = m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0); // The camera's facing angle in degrees
+     double fieldWidth = CustomPoseEstimatorConstants.fieldWidth;        // Field width
+     double fieldHeight = CustomPoseEstimatorConstants.fieldHeight;        // Field height
+     double pointX = Units.inchesToMeters(578.77);             // Known point x-coordinate
+     double pointY = Units.inchesToMeters(323.00);             // Known point y-coordinate
+     double cameraToPointAngle = 20.0; // Angle from camera to point
+
+     // Find the camera position
+     double[] pos = CustomPoseEstimator.findCameraPosition(cameraFacingAngle, fieldWidth, fieldHeight, pointX, pointY, cameraToPointAngle);
+
+  }
+
+
+
+
+
+
 
   /** Prints all values to the dashboard. */
   public void printToDashboard() {
