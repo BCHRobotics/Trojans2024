@@ -15,6 +15,9 @@ import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -27,6 +30,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -96,30 +101,22 @@ public class Drivetrain extends SubsystemBase {
 
   private boolean isRedAlliance;
 
-  // Odometry class for tracking robot pose
-  SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
-      DriveConstants.kDriveKinematics,
-      Rotation2d.fromDegrees(m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)),
-      new SwerveModulePosition[] {
+// Define the standard deviations for the pose estimator, which determine how fast the pose
+  // estimate converges to the vision measurement. This should depend on the vision measurement noise
+  // and how many or how frequently vision measurements are applied to the pose estimator.
+  private final SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
+        DriveConstants.kDriveKinematics,
+        getGyroYaw(),
+        new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
           m_frontRight.getPosition(),
           m_rearLeft.getPosition(),
           m_rearRight.getPosition()
-      });
-
-  AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-
-  Transform3d robotToCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
-
-  // Construct PhotonPoseEstimator
-  //PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, m_tagCamera.getInstance(), robotToCam); // I'm using getInstance here as a temporary solution
-
-  /*
-  public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
-        photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
-        return photonPoseEstimator.update();
-  }
-  */
+        },
+        new Pose2d(),
+        VecBuilder.fill(0.1, 0.1, 0.1),   // state standard deviation
+        VecBuilder.fill(1, 1, 1)          // vision standard deviateion
+  );
 
   /** Creates a new DriveSubsystem. */
   public Drivetrain() {
@@ -137,15 +134,7 @@ public class Drivetrain extends SubsystemBase {
     // Set the max speed of the bot
     setSpeedPercent();
 
-    // Update the odometry in the periodic block
-    m_odometry.update(
-        Rotation2d.fromDegrees(m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)),
-        new SwerveModulePosition[] {
-            m_frontLeft.getPosition(),
-            m_frontRight.getPosition(),
-            m_rearLeft.getPosition(),
-            m_rearRight.getPosition()
-        });
+    this.updateOdometry();
 
     // Print debug values to smartDashboard
     this.printToDashboard();
@@ -153,7 +142,7 @@ public class Drivetrain extends SubsystemBase {
     // Update the amp target pose
     int desiredTagId = isRedAlliance ? 5 : 6; // Which amp tag to target (blue or red)
     if (m_tagCamera.hasTargetOfId(desiredTagId)) {
-      ampTargetPose = m_tagCamera.getApriltagPose(getPose(), this.m_odometry.getPoseMeters().getRotation().getDegrees(), desiredTagId);
+      ampTargetPose = m_tagCamera.getApriltagPose(getPose(), this.m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), desiredTagId);
     }
 
     // // Update the speaker target pose
@@ -161,6 +150,18 @@ public class Drivetrain extends SubsystemBase {
     // if (m_tagCamera.hasTargetOfId(desiredTagId)) {
     //   speakerTargetPose = m_tagCamera.getApriltagPose(getPose(), this.m_odometry.getPoseMeters().getRotation().getDegrees(), desiredTagId);
     // }
+  }
+
+  public void updateOdometry() {
+
+    m_poseEstimator.update(
+        getGyroYaw(),
+        new SwerveModulePosition[] {
+          m_frontLeft.getPosition(),
+          m_frontRight.getPosition(),
+          m_rearLeft.getPosition(),
+          m_rearRight.getPosition()
+        });
   }
 
   /**
@@ -209,7 +210,7 @@ public class Drivetrain extends SubsystemBase {
           tagRotation += 180;
         }
 
-        double rotCommand = tagRotation - this.m_odometry.getPoseMeters().getRotation().getDegrees();
+        double rotCommand = tagRotation - this.m_poseEstimator.getEstimatedPosition().getRotation().getDegrees();
 
         if (xCommand < 0) {
           xCommand = Math.max(xCommand, -VisionConstants.kVisionSpeedLimit);
@@ -250,7 +251,7 @@ public class Drivetrain extends SubsystemBase {
           }
         }
 
-        boolean rotFinished = Math.abs(tagRotation - this.m_odometry.getPoseMeters().getRotation().getDegrees()) < VisionConstants.kTagRotationThreshold;
+        boolean rotFinished = Math.abs(tagRotation - this.m_poseEstimator.getEstimatedPosition().getRotation().getDegrees()) < VisionConstants.kTagRotationThreshold;
         boolean xFinished = Math.abs(targetPose.getX() + desiredOffset.getX() - robotPose.getX()) < VisionConstants.kTagDistanceThreshold;
         boolean yFinished = Math.abs(targetPose.getY() + desiredOffset.getY() - robotPose.getY()) < VisionConstants.kTagDistanceThreshold;
 
@@ -319,7 +320,11 @@ public class Drivetrain extends SubsystemBase {
    * @return The pose.
    */
   public Pose2d getPose() {
-    return m_odometry.getPoseMeters();
+    return m_poseEstimator.getEstimatedPosition();
+    }
+
+  public Rotation2d getGyroYaw() {
+    return Rotation2d.fromDegrees(m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0));
   }
 
   /*
@@ -358,8 +363,8 @@ public class Drivetrain extends SubsystemBase {
    * @param pose The pose to which to set the odometry.
    */
   public void resetOdometry(Pose2d pose) {
-    m_odometry.resetPosition(
-        Rotation2d.fromDegrees(m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)),
+    m_poseEstimator.resetPosition(
+        getGyroYaw(),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),
@@ -388,11 +393,45 @@ public class Drivetrain extends SubsystemBase {
    * @param rateLimit     Whether to enable rate limiting for smoother control.
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {
-    double xSpeedCommanded;
-    double ySpeedCommanded;
-    
+
+    double xSpeedCommanded = 0;
+    double ySpeedCommanded = 0;
+
     if (rateLimit) {
-      // Convert XY to polar for rate limiting
+      double[] slewRateAdjustedValues = slewRateCalculations(ySpeed, xSpeed, rot, xSpeedCommanded, ySpeedCommanded);
+      xSpeedCommanded = slewRateAdjustedValues[0];
+      ySpeedCommanded = slewRateAdjustedValues[1];
+      m_currentRotation = slewRateAdjustedValues[2];
+
+    } else {
+      xSpeedCommanded = xSpeed;
+      ySpeedCommanded = ySpeed;
+      m_currentRotation = rot;
+    }
+
+    // Creates an interpolated value based on the min and max speed constants and the position of the slider (m_maxSpeed)
+    double lerpSpeed = DriveConstants.kMinSpeedMetersPerSecond + (DriveConstants.kMaxSpeedMetersPerSecond
+                     - DriveConstants.kMinSpeedMetersPerSecond) * m_maxSpeed;
+
+    // Convert the commanded speeds into the correct units for the drivetrain,
+    // using the interpolated speed
+    double xSpeedDelivered = xSpeedCommanded * lerpSpeed;
+    double ySpeedDelivered = ySpeedCommanded * lerpSpeed;
+    double rotDelivered = m_currentRotation * DriveConstants.kMaxAngularSpeed;
+
+      SwerveModuleState[] swerveModuleStates =
+        DriveConstants.kDriveKinematics.toSwerveModuleStates(ChassisSpeeds.discretize(
+          fieldRelative
+              ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, 
+                getHeading())
+                    : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered),
+                0.02));
+ 
+    this.setModuleStates(swerveModuleStates);
+  }
+
+  private double[] slewRateCalculations(double ySpeed, double xSpeed, double rot, double xSpeedCommanded, double ySpeedCommanded){
+          // Convert XY to polar for rate limiting
       double inputTranslationDir = Math.atan2(ySpeed, xSpeed);
       double inputTranslationMag = Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(ySpeed, 2));
 
@@ -413,8 +452,8 @@ public class Drivetrain extends SubsystemBase {
             directionSlewRate * elapsedTime);
         m_currentTranslationMag = m_magLimiter.calculate(inputTranslationMag);
       } else if (angleDif > 0.85 * Math.PI) {
-        if (m_currentTranslationMag > 1e-4) { // Some small number to avoid floating-point errors with equality checking
-          // Keep currentTranslationDir unchanged
+        if (m_currentTranslationMag > 1e-4) { // some small number to avoid floating-point errors with equality checking
+          // keep currentTranslationDir unchanged
           m_currentTranslationMag = m_magLimiter.calculate(0.0);
         } else {
           m_currentTranslationDir = SwerveUtils.WrapAngle(m_currentTranslationDir + Math.PI);
@@ -431,27 +470,7 @@ public class Drivetrain extends SubsystemBase {
       ySpeedCommanded = m_currentTranslationMag * Math.sin(m_currentTranslationDir);
       m_currentRotation = m_rotLimiter.calculate(rot);
 
-    } else {
-      xSpeedCommanded = xSpeed;
-      ySpeedCommanded = ySpeed;
-      m_currentRotation = rot;
-    }
-
-    /*
-     * Convert the commanded speeds into the correct units for the drivetrain,
-     * using the interpolated speed.
-     */
-    double xSpeedDelivered = xSpeedCommanded * m_maxSpeed;
-    double ySpeedDelivered = ySpeedCommanded * m_maxSpeed;
-    double rotDelivered = m_currentRotation * DriveConstants.kMaxAngularSpeed;
-
-    SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
-        fieldRelative
-            ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
-                Rotation2d.fromDegrees(-this.m_odometry.getPoseMeters().getRotation().getDegrees() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)))
-            : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
- 
-    this.setModuleStates(swerveModuleStates);
+      return new double[] {xSpeedCommanded, ySpeedCommanded, m_currentRotation};
   }
 
   /**
@@ -519,17 +538,13 @@ public class Drivetrain extends SubsystemBase {
     resetOdometry(new Pose2d(getPose().getX(), getPose().getY(), new Rotation2d()));
   }
 
-  /**
-   * Returns the heading of the robot.
+    /**
+   * Returns the extimated heading of the robot.
    *
-   * @return the robot's heading in degrees, from -Infinity to Infinity
+   * @return the robot's estimated heading
    */
-  public double getHeading() {
-    /* I'm multiplying the navx heading by -1 
-    * because WPILib uses CCW as the positive direction
-    * and NavX uses CW as the positive direction
-    */ 
-    return Rotation2d.fromDegrees(-m_gyro.getAngle()).getDegrees();
+  public Rotation2d getHeading() {
+    return getPose().getRotation();
   }
 
   /**
@@ -610,6 +625,17 @@ public class Drivetrain extends SubsystemBase {
     return DriveConstants.kDriveKinematics.toChassisSpeeds(this.getModuleStates());
   }
 
+  /** See {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double)}. */
+  public void addVisionMeasurement(Pose2d visionMeasurement, double timestampSeconds) {
+    m_poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds);
+  }
+
+  /** See {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double, Matrix)}. */
+  public void addVisionMeasurement(
+          Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> stdDevs) {
+    m_poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
+  }
+
   /** Prints all values to the dashboard. */
   public void printToDashboard() {
 
@@ -623,7 +649,7 @@ public class Drivetrain extends SubsystemBase {
     // SmartDashboard.putNumber("X Position", this.getPose().getX());
     // SmartDashboard.putNumber("Y Position", this.getPose().getY());
     // SmartDashboard.putNumber("Gyro Heading: ", this.getHeading());
-    SmartDashboard.putNumber("Odometry Heading: ", this.m_odometry.getPoseMeters().getRotation().getDegrees());
+       SmartDashboard.putNumber("Odometry Heading: ", this.m_poseEstimator.getEstimatedPosition().getRotation().getDegrees());
 
     // Slew rate filter variables
     // SmartDashboard.putNumber("slewCurrentRotation: ", m_currentRotation);

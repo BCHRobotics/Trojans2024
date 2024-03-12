@@ -4,11 +4,19 @@
 
 package frc.robot;
 
+import java.util.Optional;
+
+import org.photonvision.EstimatedRobotPose;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -26,6 +34,7 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Mechanism;
 import frc.utils.devices.BeamBreak;
 import frc.utils.devices.BeamBreak.Phase;
+import frc.utils.devices.Camera;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -49,6 +58,7 @@ public class RobotContainer {
     private final Elevator m_elevator = new Elevator();
     private final Mechanism m_mechanism = new Mechanism();
     private final CombinedCommands m_combinedCommands = new CombinedCommands();
+    private final Camera m_photonCam = new Camera(VisionConstants.kNoteCameraName);
 
     // Flightstick controller
     //CommandJoystick m_driverFlightstickController = new CommandJoystick(OIConstants.kFlightstickPort);
@@ -307,5 +317,22 @@ public class RobotContainer {
      */
     public void eStop() {
         m_robotDrive.setIdleStates(IdleMode.kBrake);
+    }
+
+    public void updateOdometry() {
+        m_robotDrive.updateOdometry();
+    }
+
+    public void updateVisionMeasurements() {
+        Optional<EstimatedRobotPose> visionEst = m_photonCam.getEstimatedGlobalPose();
+        visionEst.ifPresent(
+                est -> {
+                    Pose2d estPose = est.estimatedPose.toPose2d();
+                    // Change our trust in the measurement based on the tags we can see
+                    Matrix<N3, N1> estStdDevs = m_photonCam.getEstimationStdDevs(estPose);
+
+                    m_robotDrive.addVisionMeasurement(
+                            est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+                });
     }
 }
