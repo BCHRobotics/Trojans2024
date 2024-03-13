@@ -215,9 +215,9 @@ public class RobotContainer {
         this.m_driverController.rightBumper().onFalse(new InstantCommand(() -> m_robotDrive.setFastMode(false), m_robotDrive));
 
         // Align with tag
-        this.m_driverController.x().onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
+        this.m_driverController.x().onTrue(new InstantCommand(() -> m_robotDrive.drive(0,0,VisionConstants.m_tagCamera.getRotationSpeed(),true,true)));
         // Align with note
-        this.m_driverController.b().onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
+        this.m_driverController.b().onTrue(new InstantCommand(() -> m_robotDrive.drive(0,0,-VisionConstants.m_noteCamera.getRotationSpeed(),true,true)));
         // Align with speaker
         //this.m_driverController.y().onTrue(new InstantCommand(() -> m_robotDrive.alignWithSpeaker()));
         this.m_driverController.y().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
