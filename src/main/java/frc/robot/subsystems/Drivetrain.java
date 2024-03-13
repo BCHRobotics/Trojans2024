@@ -39,6 +39,8 @@ import frc.utils.devices.Camera;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Drivetrain extends SubsystemBase {
+  private final Camera m_tagCamera = VisionConstants.m_noteCamera;
+  private final Camera m_noteCamera = VisionConstants.m_tagCamera;
 
   // Create MAXSwerveModules
   private final MAXSwerveModule m_frontLeft = new MAXSwerveModule(
@@ -80,8 +82,7 @@ public class Drivetrain extends SubsystemBase {
   private boolean m_fastMode = false;
 
   // If you switch the camera you have to change the name property of this
-  private final Camera m_noteCamera = new Camera(VisionConstants.kNoteCameraName); // These names might need to be changed
-  private final Camera m_tagCamera = new Camera(VisionConstants.kTagCameraName); // this too
+  
 
   // Whether or not to try and align with a target
   private boolean isAlignmentActive = false;
@@ -185,95 +186,7 @@ public class Drivetrain extends SubsystemBase {
   /**
    * A function for driving to the targeted apriltag, runs periodically 
    */
-  public void driveToTag(double offsetX, double offsetY) {
-      Pose2d targetPose = ampTargetPose;
-
-      // Apriltag alignment code
-      if (isAlignmentActive && ampTargetPose != null && cameraMode == CameraModes.AMP) {
-        Pose2d robotPose = getPose();
-
-        Transform2d desiredOffset = m_tagCamera.toFieldTransform(new Transform2d(offsetX, offsetY, new Rotation2d(0)), targetPose.getRotation().getDegrees());
-
-        // The desired offset is how far from the tag you want to be (y axis shouldn't realy be used)
-        double xCommand = targetPose.getX() + desiredOffset.getX() - robotPose.getX();
-        double yCommand = targetPose.getY() + desiredOffset.getY() - robotPose.getY();
-
-        double tagRotation = targetPose.getRotation().getDegrees();
-
-        // Flip the tag rotation
-        if (tagRotation > 0) {
-          tagRotation -= 180;
-        }
-        else {
-          tagRotation += 180;
-        }
-
-        double rotCommand = tagRotation - this.m_odometry.getPoseMeters().getRotation().getDegrees();
-
-        if (xCommand < 0) {
-          xCommand = Math.max(xCommand, -VisionConstants.kVisionSpeedLimit);
-        }
-        else {
-          xCommand = Math.min(xCommand, VisionConstants.kVisionSpeedLimit);
-        }
-
-        if (yCommand < 0) {
-          yCommand = Math.max(yCommand, -VisionConstants.kVisionSpeedLimit);
-        }
-        else {
-          yCommand = Math.min(yCommand, VisionConstants.kVisionSpeedLimit);
-        }
-        
-        if (rotCommand < 0) {
-          rotCommand = Math.max(rotCommand, -VisionConstants.kVisionTurningLimit);
-        } 
-        else {
-          rotCommand = Math.min(rotCommand, VisionConstants.kVisionTurningLimit);
-        }
-
-        if (Math.abs(xCommand) > VisionConstants.kTagSlowdownDistance) {
-          if (xCommand < 0) {
-            xCommand = -VisionConstants.kVisionSpeedLimit;
-          }
-          else {
-            xCommand = VisionConstants.kVisionSpeedLimit;
-          }
-        }
-
-        if (Math.abs(yCommand) > VisionConstants.kTagSlowdownDistance) {
-          if (yCommand < 0) {
-            yCommand = -VisionConstants.kVisionSpeedLimit;
-          }
-          else {
-            yCommand = VisionConstants.kVisionSpeedLimit;
-          }
-        }
-
-        boolean rotFinished = Math.abs(tagRotation - this.m_odometry.getPoseMeters().getRotation().getDegrees()) < VisionConstants.kTagRotationThreshold;
-        boolean xFinished = Math.abs(targetPose.getX() + desiredOffset.getX() - robotPose.getX()) < VisionConstants.kTagDistanceThreshold;
-        boolean yFinished = Math.abs(targetPose.getY() + desiredOffset.getY() - robotPose.getY()) < VisionConstants.kTagDistanceThreshold;
-
-        if (rotFinished) { rotCommand = 0; }
-        if (xFinished) { xCommand = 0; }
-        //if (yFinished) { yCommand = 0; }
-
-        if (rotFinished && xFinished && yFinished) {
-          isAlignmentSuccess = true;
-          isAlignmentActive = false; // Stop the alignment when the target is reached
-          setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
-        }
-        else {
-          isAlignmentSuccess = false;
-          drive(xCommand, yCommand, rotCommand * 0.3, true, true);
-        }
-      }
-  }
-
-  /**
-   * A function for driving to the targeted note, runs periodically 
-   * 
-   * (ONLY USED DURING AUTO)
-   */
+  
   public void driveToNote() {
     // Note alignment code
       if (isAlignmentActive && cameraMode == CameraModes.NOTE) {
@@ -299,7 +212,7 @@ public class Drivetrain extends SubsystemBase {
 
     if (isAlignmentActive && cameraMode == CameraModes.AMP && ampTargetPose != null) {
       // Apriltag alignment code
-      driveToTag(VisionConstants.kAmpOffsetX, VisionConstants.kAmpOffsetY);
+
     }
   }
 

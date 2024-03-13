@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import frc.utils.devices.Camera;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -163,6 +164,8 @@ public final class Constants {
   }
   public static final class VisionConstants{
     // Height of the camera (not used anywhere right now)
+    public static final Camera m_noteCamera = new Camera(VisionConstants.kNoteCameraName); // These names might need to be changed
+    public static final Camera m_tagCamera = new Camera(VisionConstants.kTagCameraName); // this too
     public static final double kCameraHeight = 0.0;
 
     // Camera modes

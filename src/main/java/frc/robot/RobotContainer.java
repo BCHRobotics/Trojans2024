@@ -117,7 +117,7 @@ public class RobotContainer {
     public void configureNamedCommands() {
         // Apriltag alignment command for amp
         NamedCommands.registerCommand("ALIGN TAG", new RunCommand(
-            () -> m_robotDrive.driveToTag(VisionConstants.kAmpOffsetX, VisionConstants.kAmpOffsetY)).until( // Run the alignwithtag function
+            () -> m_robotDrive.drive(0, 0,VisionConstants.m_tagCamera.getRotationSpeed(),true,true)).until( // Run the alignwithtag function
                 () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
                     new InstantCommand(
                         () -> m_robotDrive.alignWithTag())).alongWith(
@@ -127,7 +127,7 @@ public class RobotContainer {
         // Apriltag alignment command for speaker
         // NOT USED
         NamedCommands.registerCommand("ALIGN SPEAKER", new RunCommand(
-            () -> m_robotDrive.driveToTag(VisionConstants.kSpeakerOffsetX, VisionConstants.kSpeakerOffsetY)).until( // Run the alignwithtag function
+            () -> m_robotDrive.drive(0, 0,VisionConstants.m_tagCamera.getRotationSpeed(),true,true)).until( // Run the alignwithtag function
                 () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
                     new InstantCommand(
                         () -> m_robotDrive.alignWithTag())).alongWith(
