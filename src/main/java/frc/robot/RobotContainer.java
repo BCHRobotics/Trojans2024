@@ -44,7 +44,7 @@ public class RobotContainer {
     // Flightstick controller
     //CommandJoystick m_driverFlightstickController = new CommandJoystick(OIConstants.kFlightstickPort);
     // Driving controller
-    CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDrivingControllerXBoxPort);
+    public static final CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDrivingControllerXBoxPort);
     // Operator controller
     CommandXboxController m_operatorController = new CommandXboxController(OIConstants.kOperatingControllerXBoxPort);
 
@@ -105,11 +105,11 @@ public class RobotContainer {
                 // The left stick controls translation of the robot.
                 // Turning is controlled by the X axis of the right stick.
                 new RunCommand(
-                        () -> m_robotDrive.driveCommand(
+                        () -> m_robotDrive.driveWithRotationLock(
                                 -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband) * invert,
                                 -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband) * invert,
                                 -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kTurnDeadband),
-                                OIConstants.kFieldRelative, OIConstants.kRateLimited, !m_mechanism.checkState(Phase.NONE)),
+                                OIConstants.kFieldRelative, OIConstants.kRateLimited),
                         m_robotDrive));
         }
     }
@@ -217,25 +217,25 @@ public class RobotContainer {
         // Zero heading command (Right Trigger)
         //this.m_driverController.rightTrigger().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
         // Brake command (Left Trigger)
-        this.m_driverController.leftTrigger().whileTrue(new RunCommand(() -> m_robotDrive.setX(),m_robotDrive));
+        m_driverController.leftTrigger().whileTrue(new RunCommand(() -> m_robotDrive.setX(),m_robotDrive));
         // Slow mode command (Left Bumper)
-        this.m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive));
-        this.m_driverController.leftBumper().onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
+        m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive));
+        m_driverController.leftBumper().onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
 
-        this.m_driverController.rightBumper().onTrue(new InstantCommand(() -> m_robotDrive.setFastMode(true), m_robotDrive));
-        this.m_driverController.rightBumper().onFalse(new InstantCommand(() -> m_robotDrive.setFastMode(false), m_robotDrive));
+        m_driverController.rightBumper().onTrue(new InstantCommand(() -> m_robotDrive.setFastMode(true), m_robotDrive));
+        m_driverController.rightBumper().onFalse(new InstantCommand(() -> m_robotDrive.setFastMode(false), m_robotDrive));
 
         // Align with tag
-        this.m_driverController.x().onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
+        m_driverController.x().onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
         // Align with note
-        this.m_driverController.b().onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
+        m_driverController.b().onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
         // Align with speaker
         //this.m_driverController.y().onTrue(new InstantCommand(() -> m_robotDrive.alignWithSpeaker()));
-        this.m_driverController.y().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
+        m_driverController.y().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
         // Cancel Alignment
-        this.m_driverController.a().onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign()));
+        m_driverController.a().onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign()));
 
-        this.m_driverController.povLeft().onTrue(this.m_mechanism.lightsOff().andThen(this.m_mechanism.lightShow()));
+        m_driverController.povLeft().onTrue(this.m_mechanism.lightsOff().andThen(this.m_mechanism.lightShow()));
     }
 
     /**

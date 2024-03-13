@@ -14,6 +14,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -34,11 +35,16 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.VisionConstants.CameraModes;
+import frc.robot.Robot;
+import frc.robot.RobotContainer;
 import frc.utils.SwerveUtils;
 import frc.utils.devices.Camera;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Drivetrain extends SubsystemBase {
+
+  private boolean locationLock;
+  private PIDController locationLockPID;
 
   // Create MAXSwerveModules
   private final MAXSwerveModule m_frontLeft = new MAXSwerveModule(
@@ -125,6 +131,37 @@ public class Drivetrain extends SubsystemBase {
     this.initializeAuto();
 
     cameraMode = CameraModes.NOTE;
+
+    locationLock = false;
+    locationLockPID = new PIDController(0.005, 0, 0);
+    locationLockPID.enableContinuousInput(0,360);
+  }
+
+  /**
+     * Lock swerve drive to be at one angle.
+     */
+  public void turnOnLocationLock(double angle) {
+      locationLock = true;
+      
+      locationLockPID.setSetpoint(angle);
+      locationLockPID.calculate(-m_gyro.getAngle());
+  }
+
+  public void turnOffLocationLock() {
+      locationLock = false;
+  }
+
+  public void driveWithRotationLock(double xSpeed, double ySpeed, double rotation, boolean fieldRelative, boolean rateLimit) {
+    // if there is joystick input changing the rotation, then location lock will turn off
+    // this will allow for lockin onto a rotation, and then turning it off when needed without pressing button again
+    if (RobotContainer.m_driverController.getRightX() != 0) {
+      turnOffLocationLock();
+    }
+    if (locationLock) {
+        //rotation = locationLockPID.calculate(m_gyro.getAngle());
+        rotation = locationLockPID.calculate(-m_gyro.getAngle(), locationLockPID.getSetpoint());
+    }
+    drive(xSpeed, ySpeed, rotation, fieldRelative, rateLimit);
   }
 
   @Override
