@@ -288,6 +288,7 @@ public class Mechanism extends SubsystemBase{
                 this.setAmpSpeed(-speed * 0.7);
             }
         )
+        
         .until(() -> this.checkState(Phase.NONE))
         .andThen(
             this.runOnce(
@@ -324,7 +325,7 @@ public class Mechanism extends SubsystemBase{
                 }
             )
             .beforeStarting(new WaitCommand(0.5))
-        )
+        ).andThen(this.m_elevator.moveToPositionCommand(ElevatorPositions.AMP))
         .until(() -> this.checkState(Phase.NONE))
         .andThen(this.m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE))
         .beforeStarting(new WaitCommand(0.1))
