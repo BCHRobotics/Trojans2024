@@ -28,4 +28,9 @@ public class CustomPoseEstimator {
         // Return the calculated camera coordinates
         return new double[] {cameraX, cameraY};
     }
+
+    public static double anglePerPixelCamRes(double cameraResolutionX, double cameraFOVX) {
+        double anglePerPixel = cameraFOVX / cameraResolutionX;
+        return anglePerPixel;
+    }
 }
