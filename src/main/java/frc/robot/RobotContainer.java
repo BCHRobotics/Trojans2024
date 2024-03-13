@@ -4,10 +4,14 @@
 
 package frc.robot;
 
+import java.util.Optional;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -40,6 +44,9 @@ public class RobotContainer {
     private final Elevator m_elevator;
     private final Mechanism m_mechanism;
     private final CombinedCommands m_combinedCommands = new CombinedCommands();
+    Optional<Alliance> ally = DriverStation.getAlliance();
+
+
 
     // Flightstick controller
     //CommandJoystick m_driverFlightstickController = new CommandJoystick(OIConstants.kFlightstickPort);
@@ -111,6 +118,15 @@ public class RobotContainer {
                                 -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kTurnDeadband),
                                 OIConstants.kFieldRelative, OIConstants.kRateLimited, !m_mechanism.checkState(Phase.NONE)),
                         m_robotDrive));
+        }
+    }
+
+    public int checkIfInverted(){
+        if(ally.get() == Alliance.Red){
+            return -1;
+
+        } else{
+            return 1;
         }
     }
 
@@ -215,9 +231,9 @@ public class RobotContainer {
         this.m_driverController.rightBumper().onFalse(new InstantCommand(() -> m_robotDrive.setFastMode(false), m_robotDrive));
 
         // Align with tag
-        this.m_driverController.x().onTrue(new InstantCommand(() -> m_robotDrive.drive(0,0,VisionConstants.m_tagCamera.getRotationSpeed(),true,true)));
+        this.m_driverController.x().onTrue(new InstantCommand(() -> m_robotDrive.drive(-MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband) * checkIfInverted(),0,VisionConstants.m_tagCamera.getRotationSpeed(),false,true)));
         // Align with note
-        this.m_driverController.b().onTrue(new InstantCommand(() -> m_robotDrive.drive(0,0,-VisionConstants.m_noteCamera.getRotationSpeed(),true,true)));
+        this.m_driverController.b().onTrue(new InstantCommand(() -> m_robotDrive.drive(-MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband) * checkIfInverted(), -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband) * checkIfInverted(),-VisionConstants.m_noteCamera.getRotationSpeed(),true,true)));
         // Align with speaker
         //this.m_driverController.y().onTrue(new InstantCommand(() -> m_robotDrive.alignWithSpeaker()));
         this.m_driverController.y().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
