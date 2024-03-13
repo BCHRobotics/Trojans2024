@@ -107,8 +107,10 @@ public class RobotContainer {
                 new RunCommand(
                         () -> m_robotDrive.driveCommand(
                                 -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband) * invert,
-                                -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband) * invert,
-                                -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kTurnDeadband),
+                                0,
+                               // -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband) * invert,
+                               // -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kTurnDeadband),
+                               0,
                                 OIConstants.kFieldRelative, OIConstants.kRateLimited, !m_mechanism.checkState(Phase.NONE)),
                         m_robotDrive));
         }
