@@ -171,7 +171,7 @@ public class Drivetrain extends SubsystemBase {
    * 
    * @return whether or not the robot has finished aligning
    */
-  public boolean checkAlignment() {
+  public boolean checkAlignment(String Type) {
     // Canceling the vision command if the robot wanders over the middle line
     // if (Timer.getFPGATimestamp() <= 15) {
     //   if ((getPose().getX() > 8.75 && !isRedAlliance) || (getPose().getX() < 7.75 && isRedAlliance)) {
@@ -179,6 +179,18 @@ public class Drivetrain extends SubsystemBase {
     //     isAlignmentSuccess = true;
     //   }
     // }
+      if (Type == "TAG"){
+        if (m_tagCamera.getObjectOffset() < 5 && m_tagCamera.getObjectOffset() > -5){
+          isAlignmentActive = false;
+          isAlignmentSuccess = true;
+        }
+      }
+      if (Type == "NOTE"){
+        if(m_noteCamera.getObjectOffset() < 5 && m_noteCamera.getObjectOffset() > -5){
+          isAlignmentActive = false;
+          isAlignmentSuccess = true;
+        }
+      }
 
     return isAlignmentSuccess; // This boolean variable is true when the robot has finished aligning (to either a tag or note)
   }

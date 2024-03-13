@@ -17,6 +17,7 @@ public class Camera extends PhotonCamera {
 
     private double rotationSpeed;
     private PIDController alignController;
+    public double offset;
 
     /**
      * Constructor for the Camera class
@@ -45,6 +46,15 @@ public class Camera extends PhotonCamera {
         }
 
         return rotationSpeed;
+    }
+
+    public double getObjectOffset(){
+        if (result.hasTargets()){
+            offset = result.getBestTarget().getYaw();
+        }
+        
+
+        return offset;
     }
 
     /**

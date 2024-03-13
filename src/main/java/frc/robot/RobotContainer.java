@@ -118,31 +118,20 @@ public class RobotContainer {
         // Apriltag alignment command for amp
         NamedCommands.registerCommand("ALIGN TAG", new RunCommand(
             () -> m_robotDrive.drive(0, 0,VisionConstants.m_tagCamera.getRotationSpeed(),true,true)).until( // Run the alignwithtag function
-                () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
-                    new InstantCommand(
-                        () -> m_robotDrive.alignWithTag())).alongWith(
-                            this.m_elevator.moveToPositionCommand(ElevatorPositions.AMP)).andThen(
-                                this.m_mechanism.scoreAmp(6))); // Set alignmode to true before starting
+                () -> m_robotDrive.checkAlignment("TAG"))); // Stop when checkAlignment is true
+ // Set alignmode to true before starting
 
         // Apriltag alignment command for speaker
         // NOT USED
         NamedCommands.registerCommand("ALIGN SPEAKER", new RunCommand(
             () -> m_robotDrive.drive(0, 0,VisionConstants.m_tagCamera.getRotationSpeed(),true,true)).until( // Run the alignwithtag function
-                () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
-                    new InstantCommand(
-                        () -> m_robotDrive.alignWithTag())).alongWith(
-                            this.m_elevator.moveToPositionCommand(ElevatorPositions.AMP)).andThen(
-                                this.m_mechanism.scoreAmp(6))); // Set alignmode to true before starting
+                () -> m_robotDrive.checkAlignment("TAG")));
 
         // Note alignment command
         NamedCommands.registerCommand("ALIGN NOTE", new RunCommand(
-            () -> m_robotDrive.driveToNote()).until( // Run the 'drive to note' function
-                () -> m_mechanism.checkState(Phase.GROUND_PICKUP)).beforeStarting( // Stop when checkAlignment is true, i.e the robot is done aligning
-                    new InstantCommand(
-                        () -> m_robotDrive.alignWithNote())).alongWith(
-                            this.m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE)).alongWith(
-                                this.m_mechanism.groundIntakeAuto(12)).andThen(new InstantCommand(() -> m_robotDrive.cancelAlign()))); // Set alignmode to true before starting, and set isAligned to false
-
+            () -> m_robotDrive.drive(0,0,-VisionConstants.m_noteCamera.getRotationSpeed(),true,true)).until( // Run the 'drive to note' function
+                () -> m_robotDrive.checkAlignment("NOTE"))); // Stop when checkAlignment is true, i.e the robot is done aligning
+   
         // A command for canceling the current align command
         NamedCommands.registerCommand("CANCEL ALIGN", new InstantCommand(() -> m_robotDrive.cancelAlign()));
 
