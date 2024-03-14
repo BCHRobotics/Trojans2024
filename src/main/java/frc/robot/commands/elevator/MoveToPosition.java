@@ -13,7 +13,9 @@ public class MoveToPosition extends Command {
     private final boolean m_direction;
 
     /**
-     * Releases the stored note and moves the elevator to intake.
+     * Moves the elevator to a specified position.
+     * @param elevator The elevator subsystem.
+     * @param position The position to travel to.
      */
     public MoveToPosition(Elevator elevator, ElevatorPositions position) {
         m_elevator = elevator;
@@ -32,6 +34,7 @@ public class MoveToPosition extends Command {
 
     @Override
     public void end(boolean interrupted) {
+        // If limit is hit we need to force it to reach the goal.
         m_controller.forceAtGoal();
     }
 

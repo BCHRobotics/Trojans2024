@@ -10,18 +10,10 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.MechanismConstants;
-import frc.robot.Constants.ElevatorConstants.ElevatorPositions;
 import frc.robot.Constants.LEDConstants.LEDColor;
-import frc.robot.commands.elevator.MoveToPosition;
-import frc.robot.commands.mechanism.led.ConfirmIntake;
 import frc.utils.devices.BeamBreak;
 import frc.utils.devices.LEDs;
 import frc.utils.devices.BeamBreak.Phase;
@@ -32,7 +24,6 @@ public class Mechanism extends SubsystemBase{
     // The beam-break sensor that detects where a note is in the mechanism
     private final BeamBreak m_beamBreak = new BeamBreak();
     private LEDs m_LEDs = new LEDs();
-    private Elevator m_elevator;
 
     // The phase of the beam-break sensor
     private Phase m_currentPhase = Phase.NONE;

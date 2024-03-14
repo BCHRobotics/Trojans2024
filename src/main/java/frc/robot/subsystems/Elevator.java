@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.function.Supplier;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -12,12 +10,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.ElevatorConstants.ElevatorPositions;
-import frc.utils.controllers.BetterPIDController;
 import frc.utils.controllers.BetterProfiledPIDController;
 
 public class Elevator extends SubsystemBase {
@@ -89,6 +83,9 @@ public class Elevator extends SubsystemBase {
         m_controller.setGoal(0);
     }
 
+    /**
+     * Gets the Elevator PID Controller.
+     */
     public BetterProfiledPIDController getController() {
         return m_controller;
     }
@@ -104,7 +101,7 @@ public class Elevator extends SubsystemBase {
     }
 
     /**
-     * Calculates and sets the profiled speed of the motor
+     * Calculates and sets the profiled speed of the motor.
      */
     private void calculateSpeed() {
         double pidSpeed = m_controller.calculate(m_leftEncoder.getPosition());
@@ -113,19 +110,10 @@ public class Elevator extends SubsystemBase {
         setMotorSpeed(pidSpeed + ffSpeed);
     }
 
-    public boolean limitHit() {
-        return m_forwardLimit.isPressed() || m_reverseLimit.isPressed();
-    }
-
-    public boolean topLimitHit() {
-        return m_forwardLimit.isPressed();
-    }
-
-    public boolean bottomLimitHit() {
-        return m_reverseLimit.isPressed();
-    }
-
-    // Forward is true, backwards is false;
+    /**
+     * Sees if the limit is hit based on the travel direction.
+     * @param direction true means forward, false means backward
+     */
     public boolean limitHit(boolean direction) {
         if(direction && m_forwardLimit.isPressed()) {
             return true;
@@ -137,9 +125,13 @@ public class Elevator extends SubsystemBase {
 
         return false;
     }
-    
+
+    /**
+     * Prints values to the dashboard. Useful for debugging.
+     */
+    @SuppressWarnings("unused")
     private void putToDashboard() {
-         //SmartDashboard.putNumber("Total output speed", totalSpeed);
+         SmartDashboard.putNumber("Total output speed", m_leftMotor.get());
          SmartDashboard.putNumber("Encoder Position: ", m_leftEncoder.getPosition());
          SmartDashboard.putBoolean("At goal: ", m_controller.atGoal());
          SmartDashboard.putBoolean("At setpoint: ", m_controller.atSetpoint());
@@ -150,6 +142,6 @@ public class Elevator extends SubsystemBase {
     @Override
     public void periodic() {
         this.calculateSpeed();
-        this.putToDashboard();
+        // this.putToDashboard();
     }
 }

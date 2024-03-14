@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import javax.lang.model.element.ElementKind;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -26,7 +24,6 @@ import frc.utils.devices.BeamBreak.Phase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.combined.PickupFromGround;
