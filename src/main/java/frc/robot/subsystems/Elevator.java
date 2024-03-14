@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.Supplier;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -115,14 +117,34 @@ public class Elevator extends SubsystemBase {
         return m_forwardLimit.isPressed() || m_reverseLimit.isPressed();
     }
 
+    public boolean topLimitHit() {
+        return m_forwardLimit.isPressed();
+    }
+
+    public boolean bottomLimitHit() {
+        return m_reverseLimit.isPressed();
+    }
+
+    // Forward is true, backwards is false;
+    public boolean limitHit(boolean direction) {
+        if(direction && m_forwardLimit.isPressed()) {
+            return true;
+        }
+
+        if(!direction && m_reverseLimit.isPressed()) {
+            return true;
+        }
+
+        return false;
+    }
     
     private void putToDashboard() {
-        // SmartDashboard.putNumber("Total output speed", totalSpeed);
-        // SmartDashboard.putNumber("Encoder Position: ", m_leftEncoder.getPosition());
-        // SmartDashboard.putBoolean("At goal: ", m_controller.atGoal());
-        // SmartDashboard.putBoolean("At setpoint: ", m_controller.atSetpoint());
-        // SmartDashboard.putBoolean("Top limit switch hit: ", m_forwardLimit.isPressed());
-        // SmartDashboard.putBoolean("Bottom limit switch hit: ", m_reverseLimit.isPressed());
+         //SmartDashboard.putNumber("Total output speed", totalSpeed);
+         SmartDashboard.putNumber("Encoder Position: ", m_leftEncoder.getPosition());
+         SmartDashboard.putBoolean("At goal: ", m_controller.atGoal());
+         SmartDashboard.putBoolean("At setpoint: ", m_controller.atSetpoint());
+         SmartDashboard.putBoolean("Top limit switch hit: ", m_forwardLimit.isPressed());
+         SmartDashboard.putBoolean("Bottom limit switch hit: ", m_reverseLimit.isPressed());
     }
     
     @Override

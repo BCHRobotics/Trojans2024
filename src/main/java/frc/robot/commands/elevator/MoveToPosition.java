@@ -9,15 +9,18 @@ public class MoveToPosition extends Command {
     private final Elevator m_elevator;
     private final BetterProfiledPIDController m_controller;
     private final double m_goal;
+    // Forward is true, backwards is false.
+    private final boolean m_direction;
 
     /**
      * Releases the stored note and moves the elevator to intake.
-     * <p>REPLACES: moveToPositionCommand
      */
     public MoveToPosition(Elevator elevator, ElevatorPositions position) {
         m_elevator = elevator;
         m_controller = elevator.getController();
         m_goal = position.getGoal();
+        // If the goal is greater we know it's going up, otherwise it isn't.
+        m_direction = m_controller.getGoal().position < m_goal;
 
         addRequirements(m_elevator);
     }
@@ -28,14 +31,12 @@ public class MoveToPosition extends Command {
     }
 
     @Override
-    public void execute() {
-        if(m_elevator.limitHit()) {
-            m_controller.forceAtGoal();
-        }
+    public void end(boolean interrupted) {
+        m_controller.forceAtGoal();
     }
 
     @Override
     public boolean isFinished() {
-        return m_controller.atGoal();
+        return m_controller.atGoal() || m_elevator.limitHit(m_direction);
     }
 }
