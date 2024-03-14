@@ -4,10 +4,13 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.Supplier;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -18,10 +21,10 @@ import frc.robot.Constants.MechanismConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorPositions;
 import frc.robot.Constants.LEDConstants.LEDColor;
 import frc.robot.commands.elevator.MoveToPosition;
+import frc.robot.commands.mechanism.led.ConfirmIntake;
 import frc.utils.devices.BeamBreak;
 import frc.utils.devices.LEDs;
 import frc.utils.devices.BeamBreak.Phase;
-import frc.robot.commands.mechanism.led.ConfirmIntake;
 
 
 public class Mechanism extends SubsystemBase{
@@ -72,15 +75,7 @@ public class Mechanism extends SubsystemBase{
         this.m_sourceMotor.enableVoltageCompensation(12);
         this.m_ampMotor.enableVoltageCompensation(12);
 
-        this.powerLEDs(LEDColor.OFF);
-    }
-
-    /**
-     * updates the phase of the beam break sensor
-     */
-    private void updatePhase() {
-        this.m_beamBreak.updatePhase();
-        this.m_currentPhase = this.m_beamBreak.getPhase();
+        this.setColor(LEDColor.OFF);
     }
 
     /**
@@ -126,6 +121,18 @@ public class Mechanism extends SubsystemBase{
         return m_currentPhase;
     }
 
+    /**
+     * updates the phase of the beam break sensor
+     */
+    private void updatePhase() {
+        this.m_beamBreak.updatePhase();
+        this.m_currentPhase = this.m_beamBreak.getPhase();
+    }
+
+    public Supplier<Boolean> phaseChecker(Phase phase) {
+        return () -> m_currentPhase == phase;
+    }
+
     public LEDColor getColor() {
         return m_LEDs.getLEDS();
     }
@@ -134,7 +141,7 @@ public class Mechanism extends SubsystemBase{
      * A function for changing the color of the LEDs using a string
      * @param colour the desired color name
      */
-    public void powerLEDs(LEDColor color) {
+    public void setColor(LEDColor color) {
         this.m_LEDs.setLEDs(color);
     }
 

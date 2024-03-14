@@ -13,15 +13,10 @@ public class LightShow extends Command {
     }
 
     @Override
-    public void initialize() {
-        m_mechanism.powerLEDs(LEDColor.OFF);
-    }
-
-    @Override
     public void execute() {
-        m_mechanism.powerLEDs(LEDColor.BLUE);
+        m_mechanism.setColor(LEDColor.BLUE);
         Timer.delay(0.25);
-        m_mechanism.powerLEDs(LEDColor.YELLOW);
+        m_mechanism.setColor(LEDColor.YELLOW);
         Timer.delay(0.35);
     }
 }

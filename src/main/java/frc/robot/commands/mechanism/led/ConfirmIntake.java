@@ -14,14 +14,14 @@ public class ConfirmIntake extends Command {
 
     @Override
     public void initialize() {
-        m_mechanism.powerLEDs(LEDColor.GREEN);
+        m_mechanism.setColor(LEDColor.GREEN);
         Timer.delay(0.1);
-        m_mechanism.powerLEDs(LEDColor.OFF);
+        m_mechanism.setColor(LEDColor.OFF);
         Timer.delay(0.1);
-        m_mechanism.powerLEDs(LEDColor.GREEN);
+        m_mechanism.setColor(LEDColor.GREEN);
         Timer.delay(0.1);
-        m_mechanism.powerLEDs(LEDColor.OFF);
+        m_mechanism.setColor(LEDColor.OFF);
         Timer.delay(0.1);
-        m_mechanism.powerLEDs(LEDColor.GREEN);
+        m_mechanism.setColor(LEDColor.GREEN);
     }
 }

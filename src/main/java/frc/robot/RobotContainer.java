@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import javax.lang.model.element.ElementKind;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -12,14 +14,9 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants.LEDConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorPositions;
-import frc.robot.Constants.LEDConstants.LEDColor;
-import frc.robot.commands.CombinedCommands;
-import frc.robot.commands.combined.auto.GroundIntakeAutoCmd;
-import frc.robot.commands.combined.auto.GroundReleaseAutoCmd;
-import frc.robot.commands.combined.teleop.GroundIntakeCmd;
-import frc.robot.commands.combined.teleop.ScoreAmpCmd;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Elevator;
@@ -32,8 +29,13 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-
+import frc.robot.commands.combined.PickupFromGround;
+import frc.robot.commands.combined.PickupFromSource;
+import frc.robot.commands.combined.ReleaseToGround;
+import frc.robot.commands.combined.ScoreIntoAmp;
+import frc.robot.commands.combined.ScoreIntoSpeaker;
 import frc.robot.commands.elevator.MoveToPosition;
+import frc.robot.commands.mechanism.IntakeGround;
 import frc.robot.commands.mechanism.led.LightShow;
 import frc.robot.commands.mechanism.led.RequestIntake;
 
@@ -48,7 +50,6 @@ public class RobotContainer {
     private final Drivetrain m_robotDrive = new Drivetrain();
     private final Elevator m_elevator = new Elevator();
     private final Mechanism m_mechanism = new Mechanism();
-    private final CombinedCommands m_combinedCommands = new CombinedCommands();
 
     // Flightstick controller
     //CommandJoystick m_driverFlightstickController = new CommandJoystick(OIConstants.kFlightstickPort);
@@ -131,7 +132,7 @@ public class RobotContainer {
                     new InstantCommand(
                         () -> m_robotDrive.alignWithTag())).alongWith(
                             new MoveToPosition(m_elevator, ElevatorPositions.AMP)).andThen(
-                                new ScoreAmpCmd(m_mechanism, m_elevator))); // Set alignmode to true before starting
+                                new ScoreIntoAmp(m_mechanism, m_elevator))); // Set alignmode to true before starting
 
         // Apriltag alignment command for speaker
         // NOT USED
@@ -141,7 +142,7 @@ public class RobotContainer {
                     new InstantCommand(
                         () -> m_robotDrive.alignWithTag())).alongWith(
                             new MoveToPosition(m_elevator, ElevatorPositions.AMP)).andThen(
-                                new ScoreAmpCmd(m_mechanism, m_elevator))); // Set alignmode to true before starting
+                                new ScoreIntoAmp(m_mechanism, m_elevator))); // Set alignmode to true before starting
 
         // Note alignment command
         NamedCommands.registerCommand("ALIGN NOTE", new RunCommand(
@@ -150,17 +151,18 @@ public class RobotContainer {
                     new InstantCommand(
                         () -> m_robotDrive.alignWithNote())).alongWith(
                             new MoveToPosition(m_elevator, ElevatorPositions.INTAKE)).alongWith(
-                                new GroundIntakeAutoCmd(m_mechanism)).andThen(new InstantCommand(() -> m_robotDrive.cancelAlign()))); // Set alignmode to true before starting, and set isAligned to false
+                                new IntakeGround(m_mechanism, 12, m_mechanism.phaseChecker(Phase.SOURCE_INTAKE), m_mechanism.phaseChecker(Phase.LOADED),true)).andThen(new InstantCommand(() -> m_robotDrive.cancelAlign()))); // Set alignmode to true before starting, and set isAligned to false
 
         // A command for canceling the current align command
         NamedCommands.registerCommand("CANCEL ALIGN", new InstantCommand(() -> m_robotDrive.cancelAlign()));
 
-        NamedCommands.registerCommand("INTAKE", new GroundIntakeAutoCmd(m_mechanism));
-        NamedCommands.registerCommand("RELEASE", new GroundReleaseAutoCmd(m_mechanism, m_elevator));
-        NamedCommands.registerCommand("AMP SCORE", new ScoreAmpCmd(m_mechanism, m_elevator));
+        // Ill reorganize vision commands later
+        NamedCommands.registerCommand("INTAKE", new IntakeGround(m_mechanism, 12, m_mechanism.phaseChecker(Phase.SOURCE_INTAKE), m_mechanism.phaseChecker(Phase.LOADED),true));
+        NamedCommands.registerCommand("RELEASE", new ReleaseToGround(m_mechanism, m_elevator));
+        NamedCommands.registerCommand("AMP SCORE", new ScoreIntoAmp(m_mechanism, m_elevator));
         NamedCommands.registerCommand("ELEVATOR LOW", new MoveToPosition(m_elevator, ElevatorPositions.INTAKE));
         NamedCommands.registerCommand("ELEVATOR HIGH", new MoveToPosition(m_elevator, ElevatorPositions.AMP));
-        NamedCommands.registerCommand("SPEAKER SCORE", m_combinedCommands.scoreIntoSpeaker(m_mechanism, m_elevator));
+        NamedCommands.registerCommand("SPEAKER SCORE", new ScoreIntoSpeaker(m_mechanism, m_elevator));
     }
 
     public void setupAuto() {
@@ -272,25 +274,25 @@ public class RobotContainer {
     private void configureButtonBindingsOperator() {
         // Moving the elevator
         this.m_operatorController.povUp().onTrue(new MoveToPosition(m_elevator, ElevatorPositions.AMP));
-        this.m_operatorController.povRight().onTrue(new MoveToPosition(m_elevator, ElevatorPositions.SOURCE));
+        this.m_operatorController.povRight().onTrue(new MoveToPosition(m_elevator,ElevatorPositions.SOURCE));
         this.m_operatorController.povDown().onTrue(new MoveToPosition(m_elevator, ElevatorPositions.INTAKE));
         // Request intake (ground and source)
-        this.m_operatorController.leftBumper().onTrue(new RequestIntake(m_mechanism, LEDColor.PURPLE));
-        this.m_operatorController.rightBumper().onTrue(new RequestIntake(m_mechanism, LEDColor.CYAN));
+        this.m_operatorController.leftBumper().onTrue(new RequestIntake(m_mechanism, LEDConstants.kGroundRequest));
+        this.m_operatorController.rightBumper().onTrue(new RequestIntake(m_mechanism, LEDConstants.kSourceRequest));
 
         // Scoring
-        this.m_operatorController.b().onTrue(new ScoreAmpCmd(m_mechanism, m_elevator));
+        this.m_operatorController.b().onTrue(new ScoreIntoAmp(m_mechanism, m_elevator));
         //this.m_operatorController.povLeft().onTrue(this.m_mechanism.scoreSpeaker(12));
         // Intaking
         //this.m_operatorController.y().onTrue(this.m_mechanism.sourceIntake(6));
-        this.m_operatorController.x().onTrue(new GroundIntakeCmd(m_mechanism));
+        this.m_operatorController.x().onTrue(new PickupFromGround(m_mechanism, m_elevator));
         // Cancel command
         this.m_operatorController.a().onTrue(new InstantCommand(() -> m_mechanism.stopMotors(), m_mechanism));
 
-        this.m_operatorController.y().onTrue(this.m_combinedCommands.pickupFromSource(m_mechanism, m_elevator));
-        this.m_operatorController.povLeft().onTrue(this.m_combinedCommands.scoreIntoSpeaker(m_mechanism, m_elevator));
+        this.m_operatorController.y().onTrue(new PickupFromSource(m_mechanism, m_elevator));
+        this.m_operatorController.povLeft().onTrue(new ScoreIntoSpeaker(m_mechanism, m_elevator));
 
-        this.m_operatorController.leftTrigger().onTrue(new GroundReleaseAutoCmd(m_mechanism, m_elevator));
+        this.m_operatorController.leftTrigger().onTrue(new ReleaseToGround(m_mechanism, m_elevator));
     }
 
     /**

@@ -17,9 +17,9 @@ public class RequestIntake extends Command {
     @Override
     public void initialize() {
         if(m_mechanism.getPhase() != Phase.NONE || m_mechanism.getColor() == m_color) {
-            m_mechanism.powerLEDs(LEDColor.OFF);
+            m_mechanism.setColor(LEDColor.OFF);
         }  else {
-            m_mechanism.powerLEDs(m_color);
+            m_mechanism.setColor(m_color);
         }
     }
 }

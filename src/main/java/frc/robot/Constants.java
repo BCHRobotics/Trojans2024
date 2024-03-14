@@ -122,6 +122,10 @@ public final class Constants {
     public static final int kBottomSensorChannel = 4;
     public static final int kMiddleSensorChannel = 5;
     public static final int kTopSensorChannel = 6;
+
+    // Slow percentages
+    public static final double kSlow = 0.75;
+    public static final double kAutoSlow= 0.25;
   }
 
   public static final class LEDConstants {
@@ -160,6 +164,9 @@ public final class Constants {
     public static final int kRedLEDPort = 8;
     public static final int kGreenLEDPort = 9;
     public static final int kBlueLEDPort = 7;
+
+    public static final LEDColor kGroundRequest = LEDColor.PURPLE;
+    public static final LEDColor kSourceRequest = LEDColor.CYAN;
   }
   public static final class VisionConstants{
     // Height of the camera (not used anywhere right now)
