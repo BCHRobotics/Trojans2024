@@ -133,7 +133,7 @@ public class Drivetrain extends SubsystemBase {
     cameraMode = CameraModes.NOTE;
 
     locationLock = false;
-    locationLockPID = new PIDController(0.005, 0, 0);
+    locationLockPID = new PIDController(10, 0, 0);
     locationLockPID.enableContinuousInput(0,360);
   }
 
@@ -654,6 +654,7 @@ public class Drivetrain extends SubsystemBase {
     // SmartDashboard.putNumber("Horizontal Speed", this.getChassisSpeeds().vxMetersPerSecond); // Field relative vertical speed
     // SmartDashboard.putNumber("Turn Speed", this.getChassisSpeeds().omegaRadiansPerSecond); // Field relative turn speed
     SmartDashboard.putNumber("Current Speed Percentage", m_maxSpeed); // Commanded speed multiplier [0 --> 1]
+    SmartDashboard.putBoolean("Heading locked: ", locationLock);
 
     // Position
     // SmartDashboard.putNumber("X Position", this.getPose().getX());
