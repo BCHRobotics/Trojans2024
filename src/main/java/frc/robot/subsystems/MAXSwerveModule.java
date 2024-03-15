@@ -4,9 +4,13 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -25,8 +29,9 @@ public class MAXSwerveModule {
   private final RelativeEncoder m_drivingEncoder;
   private final AbsoluteEncoder m_turningEncoder;
 
-  private final SparkPIDController m_drivingPIDController;
-  private final SparkPIDController m_turningPIDController;
+  private final ProfiledPIDController m_drivingPIDController;
+  private final ProfiledPIDController m_turningPIDController;
+
 
   private double m_chassisAngularOffset = 0;
   private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
@@ -49,10 +54,8 @@ public class MAXSwerveModule {
     // Setup encoders and PID controllers for the driving and turning SPARKS MAX.
     m_drivingEncoder = m_drivingSparkMax.getEncoder();
     m_turningEncoder = m_turningSparkMax.getAbsoluteEncoder(Type.kDutyCycle);
-    m_drivingPIDController = m_drivingSparkMax.getPIDController();
-    m_turningPIDController = m_turningSparkMax.getPIDController();
-    m_drivingPIDController.setFeedbackDevice(m_drivingEncoder);
-    m_turningPIDController.setFeedbackDevice(m_turningEncoder);
+    m_drivingPIDController = new ProfiledPIDController(0, 0, 0, new Constraints(4.1, 4.1));
+    m_turningPIDController = new ProfiledPIDController(0, 0, 0, new Constraints(4.1, 4.1));
 
     // Apply position and velocity conversion factors for the driving encoder. The
     // native units for position and velocity are rotations and RPM, respectively,
@@ -74,27 +77,19 @@ public class MAXSwerveModule {
     // controller to go through 0 to get to the setpoint i.e. going from 350 degrees
     // to 10 degrees will go through 0 rather than the other direction which is a
     // longer route.
-    m_turningPIDController.setPositionPIDWrappingEnabled(true);
-    m_turningPIDController.setPositionPIDWrappingMinInput(ModuleConstants.kTurningEncoderPositionPIDMinInput);
-    m_turningPIDController.setPositionPIDWrappingMaxInput(ModuleConstants.kTurningEncoderPositionPIDMaxInput);
+    m_turningPIDController.enableContinuousInput(ModuleConstants.kTurningEncoderPositionPIDMinInput, ModuleConstants.kTurningEncoderPositionPIDMaxInput);
 
     // Set the PID gains for the driving motor. Note these are example gains, and you
     // may need to tune them for your own robot!
     m_drivingPIDController.setP(ModuleConstants.kDrivingP);
     m_drivingPIDController.setI(ModuleConstants.kDrivingI);
     m_drivingPIDController.setD(ModuleConstants.kDrivingD);
-    m_drivingPIDController.setFF(ModuleConstants.kDrivingFF);
-    m_drivingPIDController.setOutputRange(ModuleConstants.kDrivingMinOutput,
-        ModuleConstants.kDrivingMaxOutput);
 
     // Set the PID gains for the turning motor. Note these are example gains, and you
     // may need to tune them for your own robot!
     m_turningPIDController.setP(ModuleConstants.kTurningP);
     m_turningPIDController.setI(ModuleConstants.kTurningI);
     m_turningPIDController.setD(ModuleConstants.kTurningD);
-    m_turningPIDController.setFF(ModuleConstants.kTurningFF);
-    m_turningPIDController.setOutputRange(ModuleConstants.kTurningMinOutput,
-        ModuleConstants.kTurningMaxOutput);
 
     m_drivingSparkMax.setIdleMode(ModuleConstants.kDrivingMotorIdleMode);
     m_turningSparkMax.setIdleMode(ModuleConstants.kTurningMotorIdleMode);
@@ -152,8 +147,8 @@ public class MAXSwerveModule {
         new Rotation2d(m_turningEncoder.getPosition()));
 
     // Command driving and turning SPARKS MAX towards their respective setpoints.
-    m_drivingPIDController.setReference(optimizedDesiredState.speedMetersPerSecond, CANSparkMax.ControlType.kVelocity);
-    m_turningPIDController.setReference(optimizedDesiredState.angle.getRadians(), CANSparkMax.ControlType.kPosition);
+    m_drivingPIDController.setGoal(optimizedDesiredState.speedMetersPerSecond);
+    m_turningPIDController.setGoal(optimizedDesiredState.angle.getRadians());
 
     m_desiredState = desiredState;
   }
@@ -173,5 +168,13 @@ public class MAXSwerveModule {
       m_drivingSparkMax.setIdleMode(IdleMode.kBrake);
       m_turningSparkMax.setIdleMode(IdleMode.kBrake);
     }
+  }
+
+  public void periodic() {   
+    m_drivingPIDController.calculate(m_drivingEncoder.getVelocity());
+    m_turningPIDController.calculate(m_turningEncoder.getPosition());
+
+    SmartDashboard.putData(m_drivingPIDController);
+    SmartDashboard.putData(m_turningPIDController);
   }
 }
