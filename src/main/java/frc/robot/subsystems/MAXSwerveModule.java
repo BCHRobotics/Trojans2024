@@ -7,11 +7,13 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkAbsoluteEncoder.Type; // SparkMaxAbsoluteEncoder
 import com.revrobotics.SparkPIDController; //SparkPIDController
+import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
@@ -173,5 +175,9 @@ public class MAXSwerveModule {
       m_drivingSparkMax.setIdleMode(IdleMode.kBrake);
       m_turningSparkMax.setIdleMode(IdleMode.kBrake);
     }
+  }
+
+  public double getVel() {
+    return m_drivingEncoder.getVelocity();
   }
 }

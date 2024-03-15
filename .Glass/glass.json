@@ -1,11 +1,28 @@
 {
   "NetworkTables": {
+    "transitory": {
+      "SmartDashboard": {
+        "open": true
+      },
+      "photonvision": {
+        "Note Cam": {
+          "open": true
+        },
+        "Tag Cam": {
+          "open": true
+        }
+      }
+    },
     "types": {
       "/FMSInfo": "FMSInfo",
-      "/SmartDashboard/Auto Chooser": "String Chooser"
+      "/SmartDashboard/Auto Chooser": "String Chooser",
+      "/SmartDashboard/Input Chooser": "String Chooser"
     }
   },
   "NetworkTables Info": {
+    "Clients": {
+      "open": true
+    },
     "Connections": {
       "open": true
     },
@@ -31,6 +48,30 @@
       "window": {
         "visible": false
       }
+    },
+    "Plot <1>": {
+      "plots": [
+        {
+          "backgroundColor": [
+            0.0,
+            0.0,
+            0.0,
+            0.8500000238418579
+          ],
+          "height": 326,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Front left Encoder"
+            }
+          ]
+        }
+      ]
     }
   }
 }
