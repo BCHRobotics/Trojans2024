@@ -205,9 +205,9 @@ public final class Constants {
     public static final String kTagCameraName = "Tag Cam";
 
     // PID values for aligning to a note
-    public static final double kNoteP = 0.02;
-    public static final double kNoteI = 0.004;
-    public static final double kNoteD = 0.0003;
+    public static final double kNoteP = 0.01;
+    public static final double kNoteI = 0;
+    public static final double kNoteD = 0;
   }
 
   public static final class ModuleConstants {
