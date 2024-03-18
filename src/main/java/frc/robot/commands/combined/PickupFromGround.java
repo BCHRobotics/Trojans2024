@@ -14,7 +14,7 @@ public class PickupFromGround extends SequentialCommandGroup {
     public PickupFromGround(Mechanism mechanism, Elevator elevator) {
         addCommands(
             new MoveToPosition(elevator, ElevatorPositions.INTAKE),
-            new IntakeGround(mechanism, 6, mechanism.phaseChecker(Phase.SOURCE_INTAKE), mechanism.phaseChecker(Phase.LOADED), false),
+            new IntakeGround(mechanism, 6, mechanism.phaseChecker(Phase.GROUND_PICKUP), mechanism.phaseChecker(Phase.LOADED), false),
             new ConfirmIntake(mechanism)
         );
     }
