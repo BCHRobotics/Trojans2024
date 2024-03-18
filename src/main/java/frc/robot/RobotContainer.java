@@ -236,6 +236,8 @@ public class RobotContainer {
         m_driverController.a().onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign()));
 
         m_driverController.povLeft().onTrue(this.m_mechanism.lightsOff().andThen(this.m_mechanism.lightShow()));
+
+        m_driverController.povRight().onTrue(new InstantCommand(() -> m_robotDrive.turnOnLocationLock(90)));
     }
 
     /**
