@@ -281,25 +281,24 @@ public class Drivetrain extends SubsystemBase {
       }
   }
 
-  // TODO: replace this function with one that makes more sense and go back to calling drive in robotcontainer
   public void driveCommand(double xSpeed, double ySpeed, double rotSpeed, boolean fieldRelative, boolean rateLimit, boolean noteLoaded) {
-
     if (!isAlignmentActive) {
       drive(xSpeed, ySpeed, rotSpeed, fieldRelative, rateLimit);
     }
-    
-    if (isAlignmentActive && cameraMode == CameraModes.NOTE) {
-      // Align to the note while driving normally
-      drive(xSpeed, ySpeed, rotSpeed + m_noteCamera.getRotationSpeed(), fieldRelative, rateLimit);
-
-      if (noteLoaded) {
-        cancelAlign();
+    else {
+      if (cameraMode == CameraModes.NOTE) {
+        // Align to the note while driving normally
+        drive(xSpeed, ySpeed, rotSpeed + m_noteCamera.getRotationSpeed(), fieldRelative, rateLimit);
+  
+        if (noteLoaded) {
+          cancelAlign();
+        }
       }
-    }
-
-    if (isAlignmentActive && cameraMode == CameraModes.AMP && ampTargetPose != null) {
-      // Apriltag alignment code
-      driveToTag(VisionConstants.kAmpOffsetX, VisionConstants.kAmpOffsetY);
+  
+      if (cameraMode == CameraModes.AMP && ampTargetPose != null) {
+        // Apriltag alignment code
+        driveToTag(CameraModes.AMP.getOffsets()[0], CameraModes.AMP.getOffsets()[1]);
+      }
     }
   }
 
@@ -321,33 +320,14 @@ public class Drivetrain extends SubsystemBase {
     return m_odometry.getPoseMeters();
   }
 
-  /*
-   * Starts aligning towards a note, if a note can be seen
+  /**
+   * Starts aligning with the specified target
+   * @param modeToSet the target (either AMP, SPEAKER, or NOTE)
    */
-  public void alignWithNote() {
+  public void setVisionMode(CameraModes modeToSet) {
     isAlignmentSuccess = false; // Set this to false so the alignment doesn't finish instantly
 
-    cameraMode = CameraModes.NOTE; // Set the camera mode to target notes
-    isAlignmentActive = true; // Start aligning
-  }
-
-  /*
-   * Starts aligning towards the amp, if it can be seen
-   */
-  public void alignWithTag() {
-    isAlignmentSuccess = false; // Set this to false so the alignment doesn't finish instantly
-
-    cameraMode = CameraModes.AMP; // Set the camera mode to target apriltags
-    isAlignmentActive = true; // Start aligning
-  }
-
-  /*
-   * Starts aligning towards the speaker, if it can be seen
-   */
-  public void alignWithSpeaker() {
-    isAlignmentSuccess = false; // Set this to false so the alignment doesn't finish instantly
-
-    cameraMode = CameraModes.SPEAKER; // Set the camera mode to target apriltags
+    cameraMode = modeToSet; // Set the camera mode to target apriltags
     isAlignmentActive = true; // Start aligning
   }
 

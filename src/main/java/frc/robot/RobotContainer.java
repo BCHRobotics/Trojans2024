@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorPositions;
 import frc.robot.Constants.LEDConstants.LEDColor;
+import frc.robot.Constants.VisionConstants.CameraModes;
 import frc.robot.commands.CombinedCommands;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Drivetrain;
@@ -50,8 +51,6 @@ public class RobotContainer {
 
     // The auto chooser
     private final SendableChooser<Command> autoChooser;
-    // The input method chooser
-    private final SendableChooser<Boolean> inputChooser;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -61,14 +60,6 @@ public class RobotContainer {
         m_mechanism = Mechanism.getInstance();
 
         configureNamedCommands();
-
-        inputChooser = new SendableChooser<>();
-        // Assigning values to the input method chooser
-        inputChooser.addOption("XBoxController", Boolean.FALSE);
-        inputChooser.addOption("Flightstick", Boolean.TRUE);
-        inputChooser.setDefaultOption("XBoxController", Boolean.FALSE);
-
-        SmartDashboard.putData("Input Chooser", inputChooser);
 
         // Build an auto chooser. This will use Commands.none() as the default option.
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -86,51 +77,36 @@ public class RobotContainer {
 
         m_robotDrive.setAlliance(isRedAlliance);
         
-        // Configure default commands
-        if (inputChooser.getSelected().booleanValue() == true) {
-            // Configure the drivetrain to use the flightstick
-            // m_robotDrive.setDefaultCommand(
-            //     // Joystick movement controls robot movement (up, right, left, down).
-            //     // Turning is controlled by the twist axis of the flightstick.
-            //     new RunCommand(
-            //         () -> m_robotDrive.driveCommand(
-            //             -MathUtil.applyDeadband(m_driverFlightstickController.getY(), OIConstants.kDriveDeadband) * invert,
-            //             -MathUtil.applyDeadband(m_driverFlightstickController.getX(), OIConstants.kDriveDeadband) * invert,
-            //             -MathUtil.applyDeadband(m_driverFlightstickController.getTwist(), OIConstants.kTwistDeadband),
-            //             OIConstants.kFieldRelative, OIConstants.kRateLimited, !m_mechanism.checkState(Phase.NONE)),
-            //         m_robotDrive));
-        } else {
-             // Configure the drivetrain to use the XBox controller
-            m_robotDrive.setDefaultCommand(
-                // The left stick controls translation of the robot.
-                // Turning is controlled by the X axis of the right stick.
-                new RunCommand(
-                        () -> m_robotDrive.driveCommand(
-                                -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband) * invert,
-                                -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband) * invert,
-                                -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kTurnDeadband),
-                                OIConstants.kFieldRelative, OIConstants.kRateLimited, !m_mechanism.checkState(Phase.NONE)),
-                        m_robotDrive));
-        }
+        // Configure the drivetrain to use the XBox controller
+        m_robotDrive.setDefaultCommand(
+            // The left stick controls translation of the robot.
+            // Turning is controlled by the X axis of the right stick.
+            new RunCommand(
+                    () -> m_robotDrive.driveCommand(
+                            -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband) * invert,
+                            -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband) * invert,
+                            -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kTurnDeadband),
+                            OIConstants.kFieldRelative, OIConstants.kRateLimited, !m_mechanism.checkState(Phase.NONE)),
+                    m_robotDrive));
     }
 
     public void configureNamedCommands() {
         // Apriltag alignment command for amp
         NamedCommands.registerCommand("ALIGN TAG", new RunCommand(
-            () -> m_robotDrive.driveToTag(VisionConstants.kAmpOffsetX, VisionConstants.kAmpOffsetY)).until( // Run the alignwithtag function
+            () -> m_robotDrive.driveToTag(CameraModes.AMP.getOffsets()[0], CameraModes.AMP.getOffsets()[1])).until( // Run the alignwithtag function
                 () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
                     new InstantCommand(
-                        () -> m_robotDrive.alignWithTag())).alongWith(
+                        () -> m_robotDrive.setVisionMode(CameraModes.AMP))).alongWith(
                             this.m_elevator.moveToPositionCommand(ElevatorPositions.AMP)).andThen(
                                 this.m_mechanism.scoreAmp(6))); // Set alignmode to true before starting
 
         // Apriltag alignment command for speaker
         // NOT USED
         NamedCommands.registerCommand("ALIGN SPEAKER", new RunCommand(
-            () -> m_robotDrive.driveToTag(VisionConstants.kSpeakerOffsetX, VisionConstants.kSpeakerOffsetY)).until( // Run the alignwithtag function
+            () -> m_robotDrive.driveToTag(CameraModes.AMP.getOffsets()[0], CameraModes.AMP.getOffsets()[1])).until( // Run the alignwithtag function
                 () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
                     new InstantCommand(
-                        () -> m_robotDrive.alignWithTag())).alongWith(
+                        () -> m_robotDrive.setVisionMode(CameraModes.SPEAKER))).alongWith(
                             this.m_elevator.moveToPositionCommand(ElevatorPositions.AMP)).andThen(
                                 this.m_mechanism.scoreAmp(6))); // Set alignmode to true before starting
 
@@ -139,7 +115,7 @@ public class RobotContainer {
             () -> m_robotDrive.driveToNote()).until( // Run the 'drive to note' function
                 () -> m_mechanism.checkState(Phase.GROUND_PICKUP)).beforeStarting( // Stop when checkAlignment is true, i.e the robot is done aligning
                     new InstantCommand(
-                        () -> m_robotDrive.alignWithNote())).alongWith(
+                        () -> m_robotDrive.setVisionMode(CameraModes.NOTE))).alongWith(
                             this.m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE)).alongWith(
                                 this.m_mechanism.groundIntakeAuto(12)).andThen(new InstantCommand(() -> m_robotDrive.cancelAlign()))); // Set alignmode to true before starting, and set isAligned to false
 
@@ -191,29 +167,16 @@ public class RobotContainer {
          * Y - SOURCE INTAKE
          * X - GROUND INTAKE
          * A - CANCEL INTAKE
-         * 
-         * -- Flightstick Controller --
-         * 
-         * Button 5 - RESET GYRO
-         * Button 1 - BRAKE
-         * Button 2 - TOGGLE SLOW MODE
-         * Button 3 - ALIGN WITH TAG
-         * Button 4 - ALIGN WITH NOTE
-         * Button 6 - CANCEL ALIGN
          */ 
 
-        configureButtonBindingsDriverXbox();
-
+        configureButtonBindingsDriver();
         configureButtonBindingsOperator();
-
-        configureButtonBindingsFlightstick();
-
     }
 
     /**
      * Binding for driver xbox controller buttons
      */
-    private void configureButtonBindingsDriverXbox() {
+    private void configureButtonBindingsDriver() {
         // Zero heading command (Right Trigger)
         //this.m_driverController.rightTrigger().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
         // Brake command (Left Trigger)
@@ -226,9 +189,9 @@ public class RobotContainer {
         this.m_driverController.rightBumper().onFalse(new InstantCommand(() -> m_robotDrive.setFastMode(false), m_robotDrive));
 
         // Align with tag
-        this.m_driverController.x().onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
+        this.m_driverController.x().onTrue(new InstantCommand(() -> m_robotDrive.setVisionMode(CameraModes.AMP)));
         // Align with note
-        this.m_driverController.b().onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
+        this.m_driverController.b().onTrue(new InstantCommand(() -> m_robotDrive.setVisionMode(CameraModes.NOTE)));
         // Align with speaker
         //this.m_driverController.y().onTrue(new InstantCommand(() -> m_robotDrive.alignWithSpeaker()));
         this.m_driverController.y().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
@@ -236,25 +199,6 @@ public class RobotContainer {
         this.m_driverController.a().onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign()));
 
         this.m_driverController.povLeft().onTrue(this.m_mechanism.lightsOff().andThen(this.m_mechanism.lightShow()));
-    }
-
-    /**
-     * Binding for flightstick controller buttons
-     */
-    private void configureButtonBindingsFlightstick() {
-        // // Zero heading command (Button 5)
-        // this.m_driverFlightstickController.button(5).onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
-        // // Brake command (Button 1)
-        // this.m_driverFlightstickController.button(1).whileTrue(new RunCommand(() -> m_robotDrive.setX(),m_robotDrive));
-        // // Slow mode command (Button 2)
-        // this.m_driverFlightstickController.button(2).onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive));
-        // this.m_driverFlightstickController.button(2).onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
-        // // Align with tag (Button 3)
-        // this.m_driverFlightstickController.button(3).onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
-        // // Align with note (Button 4)
-        // this.m_driverFlightstickController.button(4).onTrue(new InstantCommand(() -> m_robotDrive.alignWithNote()));
-        // // Cancel Alignment (Button 6)
-        // this.m_driverFlightstickController.button(6).onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign()));
     }
 
     /**

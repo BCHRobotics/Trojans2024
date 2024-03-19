@@ -165,11 +165,11 @@ public final class Constants {
     // Height of the camera (not used anywhere right now)
     public static final double kCameraHeight = 0.0;
 
-    // Camera modes
+    // Camera modes, with their respective desired offsets
     public enum CameraModes {
       NONE(new double[]{0, 0}), // Offset is not used here
       NOTE(new double[]{0, 0}), // Offset is not used here
-      AMP(new double[]{0.52, 0}),
+      AMP(new double[]{0.5, 0}),
       SPEAKER(new double[]{0, 0});
 
       private final double[] offsets;
@@ -177,8 +177,8 @@ public final class Constants {
           this.offsets = _offsets;
       }
   
-      public double[] getArray() {
-          return offsets;
+      public double[] getOffsets() {
+          return this.offsets;
       }
     }
 
@@ -192,13 +192,6 @@ public final class Constants {
     public static final double kTagRotationThreshold = 5;
     // How far away the bot is before it starts slowing down (farther than this it goes full speed as defined by kVisionSpeedLimit)
     public static final double kTagSlowdownDistance = 0.6;
-
-    // Desired offsets for the speaker and amp
-    public static final double kSpeakerOffsetX = 0; // (meters)
-    public static final double kSpeakerOffsetY = 0; // (meters)
-
-    public static final double kAmpOffsetX = 0.5; // (meters)
-    public static final double kAmpOffsetY = 0; // (meters)
 
     // Camera names (a and b are TEMPORARY NAMES)
     public static final String kNoteCameraName = "Note Cam";
