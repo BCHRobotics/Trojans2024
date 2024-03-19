@@ -77,7 +77,6 @@ public class Drivetrain extends SubsystemBase {
   private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
   private boolean m_slowMode = false;
-  private boolean m_fastMode = false;
 
   // If you switch the camera you have to change the name property of this
   private final Camera m_noteCamera = new Camera(VisionConstants.kNoteCameraName); // These names might need to be changed
@@ -327,7 +326,7 @@ public class Drivetrain extends SubsystemBase {
   public void setVisionMode(CameraModes modeToSet) {
     isAlignmentSuccess = false; // Set this to false so the alignment doesn't finish instantly
 
-    cameraMode = modeToSet; // Set the camera mode to target apriltags
+    cameraMode = modeToSet; // Set the camera mode
     isAlignmentActive = true; // Start aligning
   }
 
@@ -522,16 +521,6 @@ public class Drivetrain extends SubsystemBase {
   }
 
   /**
-   * Enables and disables fast mode.
-   *
-   * @param mode Whether to enable fast mode on or off.
-   */
-  public void setFastMode(boolean mode) {
-    this.m_fastMode = mode;
-    setSpeedPercent();
-  }
-
-  /**
    * Sets the speed of the robot to a desired m/s value
    *
    * @param percent The desired speed in metres per second
@@ -539,10 +528,8 @@ public class Drivetrain extends SubsystemBase {
   public void setSpeedPercent() {
     if (m_slowMode) {
       m_maxSpeed = DriveConstants.kMinSpeedMetersPerSecond;
-    } else if (m_fastMode) {
-      m_maxSpeed = DriveConstants.kMaxSpeedMetersPerSecond;
     } else {
-      m_maxSpeed = DriveConstants.kDriveSpeedMetersPerSecond;
+      m_maxSpeed = DriveConstants.kMaxSpeedMetersPerSecond;
     }
   }
 
