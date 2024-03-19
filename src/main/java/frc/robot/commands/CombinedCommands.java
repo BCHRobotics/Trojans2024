@@ -22,8 +22,8 @@ public class CombinedCommands {
 
     public Command scoreIntoSpeaker() {
         return m_elevator.moveToPositionCommand(ElevatorPositions.AMP)
-                    .andThen(m_mechanism.scoreSpeaker(12))
-                    .beforeStarting(new WaitCommand(0.1));
+                    .andThen(m_mechanism.scoreSpeaker(12)
+                    .beforeStarting(new WaitCommand(0.25)));
                     
     }
 

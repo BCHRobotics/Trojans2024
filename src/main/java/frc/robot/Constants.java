@@ -193,7 +193,7 @@ public final class Constants {
     public static final double kTagSlowdownDistance = 0.6;
 
     // Camera names (a and b are TEMPORARY NAMES)
-    public static final String kNoteCameraName = "Note Cam";
+    public static final String kNoteCameraName = "USB_Camera";
     public static final String kTagCameraName = "Tag Cam";
 
     // PID values for aligning to a note

@@ -266,6 +266,7 @@ public class Mechanism extends SubsystemBase{
                 this.setSourceSpeed(-speed);
                 this.setAmpSpeed(-speed);
             })
+            .andThen(lightsOff())
             .andThen(this.m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE));
     }
 
