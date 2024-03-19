@@ -154,11 +154,11 @@ public class Drivetrain extends SubsystemBase {
       ampTargetPose = m_tagCamera.getApriltagPose(getPose(), this.m_odometry.getPoseMeters().getRotation().getDegrees(), desiredTagId);
     }
 
-    // // Update the speaker target pose
-    // desiredTagId = isRedAlliance ? 4 : 7; // Which speaker tag to target (blue or red)
-    // if (m_tagCamera.hasTargetOfId(desiredTagId)) {
-    //   speakerTargetPose = m_tagCamera.getApriltagPose(getPose(), this.m_odometry.getPoseMeters().getRotation().getDegrees(), desiredTagId);
-    // }
+    // Update the speaker target pose
+    desiredTagId = isRedAlliance ? 4 : 7; // Which speaker tag to target (blue or red)
+    if (m_tagCamera.hasTargetOfId(desiredTagId)) {
+      speakerTargetPose = m_tagCamera.getApriltagPose(getPose(), this.m_odometry.getPoseMeters().getRotation().getDegrees(), desiredTagId);
+    }
   }
 
   /**
@@ -295,8 +295,13 @@ public class Drivetrain extends SubsystemBase {
       }
   
       if (cameraMode == CameraModes.AMP && ampTargetPose != null) {
-        // Apriltag alignment code
+        // Apriltag alignment code for amp
         driveToTag(CameraModes.AMP.getOffsets()[0], CameraModes.AMP.getOffsets()[1]);
+      }
+
+      if (cameraMode == CameraModes.SPEAKER && speakerTargetPose != null) {
+        // Apriltag alignment code for speaker
+        driveToTag(CameraModes.SPEAKER.getOffsets()[0], CameraModes.SPEAKER.getOffsets()[1]);
       }
     }
   }

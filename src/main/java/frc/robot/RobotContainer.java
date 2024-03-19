@@ -188,7 +188,7 @@ public class RobotContainer {
         // Align with tag
         this.m_driverController.x().onTrue(new InstantCommand(() -> m_robotDrive.setVisionMode(CameraModes.AMP)));
         // Align with note
-        this.m_driverController.b().onTrue(new InstantCommand(() -> m_robotDrive.setVisionMode(CameraModes.NOTE)));
+        this.m_driverController.b().onTrue(new InstantCommand(() -> m_robotDrive.setVisionMode(CameraModes.SPEAKER)));
         // Align with speaker
         //this.m_driverController.y().onTrue(new InstantCommand(() -> m_robotDrive.alignWithSpeaker()));
         this.m_driverController.y().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
