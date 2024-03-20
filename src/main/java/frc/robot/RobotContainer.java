@@ -150,23 +150,25 @@ public class RobotContainer {
          * -- XBox Controller -- 
          * 
          * Y -- RESET GYRO
-         * RIGHT BUMPER -- BRAKE
+         * LEFT TRIGGER -- BRAKE
          * LEFT BUMPER -- TOGGLE SLOW MODE
-         * X -- ALIGN WITH TAG
-         * B -- ALIGN WITH NOTE
+         * X -- ALIGN WITH AMP
+         * B -- ALIGN WITH SPEAKER
          * A -- CANCEL ALIGN
          * 
          * -- Operator Controller --
          * 
-         * POV UP - ELEVATOR TO SOURCE
-         * POV RIGHT - ELEVATOR TO AMP
-         * POV DOWN - ELEVATOR TO GROUND
-         * LEFT BUMPER - REQUEST GROUND INTAKE
-         * RIGHT BUMPER - REQUEST SOURCE INTAKE
-         * B - SCORE AMP 
-         * Y - SOURCE INTAKE
-         * X - GROUND INTAKE
-         * A - CANCEL INTAKE
+         * POV UP -- ELEVATOR TO AMP
+         * POV RIGHT -- ELEVATOR TO SOURCE
+         * POV DOWN -- ELEVATOR TO GROUND
+         * LEFT BUMPER -- REQUEST GROUND INTAKE
+         * RIGHT BUMPER -- REQUEST SOURCE INTAKE
+         * POV LEFT -- SCORE SPEAKER
+         * B -- SCORE AMP 
+         * Y -- SOURCE INTAKE
+         * X -- GROUND INTAKE
+         * A -- CANCEL INTAKE
+         * LEFT TRIGGER -- RELEASE NOTE
          */ 
 
         configureButtonBindingsDriver();
@@ -177,24 +179,22 @@ public class RobotContainer {
      * Binding for driver xbox controller buttons
      */
     private void configureButtonBindingsDriver() {
-        // Zero heading command (Right Trigger)
-        //this.m_driverController.rightTrigger().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
         // Brake command (Left Trigger)
         this.m_driverController.leftTrigger().whileTrue(new RunCommand(() -> m_robotDrive.setX(),m_robotDrive));
         // Slow mode command (Left Bumper)
         this.m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive));
         this.m_driverController.leftBumper().onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
 
-        // Align with tag
+        // Align with amp
         this.m_driverController.x().onTrue(new InstantCommand(() -> m_robotDrive.setVisionMode(CameraModes.AMP)));
-        // Align with note
-        this.m_driverController.b().onTrue(new InstantCommand(() -> m_robotDrive.setVisionMode(CameraModes.SPEAKER)));
         // Align with speaker
-        //this.m_driverController.y().onTrue(new InstantCommand(() -> m_robotDrive.alignWithSpeaker()));
+        this.m_driverController.b().onTrue(new InstantCommand(() -> m_robotDrive.setVisionMode(CameraModes.SPEAKER)));
+        // Reset Gyro
         this.m_driverController.y().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
         // Cancel Alignment
         this.m_driverController.a().onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign()));
 
+        // Light show?
         this.m_driverController.povLeft().onTrue(this.m_mechanism.lightsOff().andThen(this.m_mechanism.lightShow()));
     }
 
@@ -209,20 +209,20 @@ public class RobotContainer {
         // Request intake (ground and source)
         this.m_operatorController.leftBumper().onTrue(new InstantCommand(() -> m_mechanism.requestIntake(1)));
         this.m_operatorController.rightBumper().onTrue(new InstantCommand(() -> m_mechanism.requestIntake(2)));
-
-        // Scoring
-        this.m_operatorController.b().onTrue(m_mechanism.scoreAmp(6));
-        //this.m_operatorController.povLeft().onTrue(this.m_mechanism.scoreSpeaker(12));
-        // Intaking
-        //this.m_operatorController.y().onTrue(this.m_mechanism.sourceIntake(6));
-        this.m_operatorController.x().onTrue(this.m_mechanism.groundIntake(12));
+       
         // Cancel command
         this.m_operatorController.a().onTrue(this.m_mechanism.stopMechanism());
-
+        // Intaking from source
         this.m_operatorController.y().onTrue(this.m_combinedCommands.pickupFromSource());
-        this.m_operatorController.povLeft().onTrue(this.m_combinedCommands.scoreIntoSpeaker());
+        // Intaking from ground
+        this.m_operatorController.x().onTrue(this.m_mechanism.groundIntake(12));
 
+        // Speaker score
+        this.m_operatorController.povLeft().onTrue(this.m_combinedCommands.scoreIntoSpeaker());
+        // Release note onto floor
         this.m_operatorController.leftTrigger().onTrue(this.m_mechanism.groundReleaseAuto(12));
+        // Scoring into amp
+        this.m_operatorController.b().onTrue(m_mechanism.scoreAmp(6));
     }
 
     /**
