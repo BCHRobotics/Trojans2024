@@ -133,8 +133,8 @@ public class Drivetrain extends SubsystemBase {
     cameraMode = CameraModes.NOTE;
 
     locationLock = false;
-    locationLockPID = new PIDController(10, 0, 0);
-    locationLockPID.enableContinuousInput(0,360);
+    locationLockPID = new PIDController(1, 0, 0);
+    locationLockPID.enableContinuousInput(-180,180);
   }
 
   /**
@@ -144,7 +144,7 @@ public class Drivetrain extends SubsystemBase {
       locationLock = true;
       
       locationLockPID.setSetpoint(angle);
-      locationLockPID.calculate(-m_gyro.getAngle());
+     // locationLockPID.calculate(-m_gyro.getAngle());
   }
 
   public void turnOffLocationLock() {
