@@ -77,6 +77,7 @@ public class Drivetrain extends SubsystemBase {
   private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
   private boolean m_slowMode = false;
+  private boolean m_fastMode = false;
 
   // If you switch the camera you have to change the name property of this
   private final Camera m_noteCamera = new Camera(VisionConstants.kNoteCameraName); // These names might need to be changed
@@ -155,7 +156,7 @@ public class Drivetrain extends SubsystemBase {
     }
 
     // Update the speaker target pose
-    desiredTagId = isRedAlliance ? 4 : 7; // Which speaker tag to target (blue or red)
+    desiredTagId = isRedAlliance ? 4 : 4; // Which speaker tag to target (blue or red)
     if (m_tagCamera.hasTargetOfId(desiredTagId)) {
       speakerTargetPose = m_tagCamera.getApriltagPose(getPose(), this.m_odometry.getPoseMeters().getRotation().getDegrees(), desiredTagId);
     }
@@ -185,10 +186,16 @@ public class Drivetrain extends SubsystemBase {
    * A function for driving to the targeted apriltag, runs periodically 
    */
   public void driveToTag(double offsetX, double offsetY) {
-      Pose2d targetPose = ampTargetPose;
+      Pose2d targetPose = null;
+      if (cameraMode == CameraModes.AMP) {
+        targetPose = ampTargetPose;
+      }
+      if (cameraMode == CameraModes.SPEAKER) {
+        targetPose = speakerTargetPose;
+      }
 
       // Apriltag alignment code
-      if (isAlignmentActive && ampTargetPose != null && cameraMode == CameraModes.AMP) {
+      if (isAlignmentActive && targetPose != null && (cameraMode == CameraModes.SPEAKER || cameraMode == CameraModes.AMP)) {
         Pose2d robotPose = getPose();
 
         Transform2d desiredOffset = m_tagCamera.toFieldTransform(new Transform2d(offsetX, offsetY, new Rotation2d(0)), targetPose.getRotation().getDegrees());
@@ -197,17 +204,10 @@ public class Drivetrain extends SubsystemBase {
         double xCommand = targetPose.getX() + desiredOffset.getX() - robotPose.getX();
         double yCommand = targetPose.getY() + desiredOffset.getY() - robotPose.getY();
 
-        double tagRotation = targetPose.getRotation().getDegrees();
+        Rotation2d tagRotation = Rotation2d.fromDegrees(-90);
+        Rotation2d robotRotation = robotPose.getRotation();
 
-        // Flip the tag rotation
-        if (tagRotation > 0) {
-          tagRotation -= 180;
-        }
-        else {
-          tagRotation += 180;
-        }
-
-        double rotCommand = tagRotation - this.m_odometry.getPoseMeters().getRotation().getDegrees();
+        double rotCommand = tagRotation.minus(robotRotation).getDegrees();
 
         if (xCommand < 0) {
           xCommand = Math.max(xCommand, -VisionConstants.kVisionSpeedLimit);
@@ -248,7 +248,7 @@ public class Drivetrain extends SubsystemBase {
           }
         }
 
-        boolean rotFinished = Math.abs(tagRotation - this.m_odometry.getPoseMeters().getRotation().getDegrees()) < VisionConstants.kTagRotationThreshold;
+        boolean rotFinished = Math.abs(tagRotation.getDegrees() - this.m_odometry.getPoseMeters().getRotation().getDegrees()) < VisionConstants.kTagRotationThreshold;
         boolean xFinished = Math.abs(targetPose.getX() + desiredOffset.getX() - robotPose.getX()) < VisionConstants.kTagDistanceThreshold;
         boolean yFinished = Math.abs(targetPose.getY() + desiredOffset.getY() - robotPose.getY()) < VisionConstants.kTagDistanceThreshold;
 
@@ -298,8 +298,7 @@ public class Drivetrain extends SubsystemBase {
         // Apriltag alignment code for amp
         driveToTag(CameraModes.AMP.getOffsets()[0], CameraModes.AMP.getOffsets()[1]);
       }
-
-      if (cameraMode == CameraModes.SPEAKER && speakerTargetPose != null) {
+      else if (cameraMode == CameraModes.SPEAKER && speakerTargetPose != null) {
         // Apriltag alignment code for speaker
         driveToTag(CameraModes.SPEAKER.getOffsets()[0], CameraModes.SPEAKER.getOffsets()[1]);
       }
@@ -526,6 +525,16 @@ public class Drivetrain extends SubsystemBase {
   }
 
   /**
+   * Enables and disables fast mode.
+   *
+   * @param mode Whether to enable fast mode on or off.
+   */
+  public void setFastMode(boolean mode) {
+    this.m_fastMode = mode;
+    setSpeedPercent();
+  }
+
+  /**
    * Sets the speed of the robot to a desired m/s value
    *
    * @param percent The desired speed in metres per second
@@ -533,8 +542,10 @@ public class Drivetrain extends SubsystemBase {
   public void setSpeedPercent() {
     if (m_slowMode) {
       m_maxSpeed = DriveConstants.kMinSpeedMetersPerSecond;
-    } else {
+    } else if (m_fastMode) {
       m_maxSpeed = DriveConstants.kMaxSpeedMetersPerSecond;
+    } else {
+      m_maxSpeed = DriveConstants.a;
     }
   }
 
@@ -620,10 +631,10 @@ public class Drivetrain extends SubsystemBase {
 
     // Apriltag target location/rotation for speaker (field relative space)
     if (speakerTargetPose != null) {
-      // SmartDashboard.putNumber("Target X", speakerTargetPose.getX());
-      // SmartDashboard.putNumber("Target Y", speakerTargetPose.getY());
+      SmartDashboard.putNumber("Target X", speakerTargetPose.getX());
+      SmartDashboard.putNumber("Target Y", speakerTargetPose.getY());
 
-      // SmartDashboard.putNumber("Target Rotation", speakerTargetPose.getRotation().getDegrees());
+      SmartDashboard.putNumber("Target Rotation", speakerTargetPose.getRotation().getDegrees());
     }
 
     // Do the cameras have targets?

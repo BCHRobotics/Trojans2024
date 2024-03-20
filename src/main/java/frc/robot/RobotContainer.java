@@ -185,6 +185,10 @@ public class RobotContainer {
         this.m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive));
         this.m_driverController.leftBumper().onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
 
+        // Slow mode command (Right Bumper)
+        this.m_driverController.rightBumper().onTrue(new InstantCommand(() -> m_robotDrive.setFastMode(true), m_robotDrive));
+        this.m_driverController.rightBumper().onFalse(new InstantCommand(() -> m_robotDrive.setFastMode(false), m_robotDrive));
+
         // Align with amp
         this.m_driverController.x().onTrue(new InstantCommand(() -> m_robotDrive.setVisionMode(CameraModes.AMP)));
         // Align with speaker
