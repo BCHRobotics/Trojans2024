@@ -144,7 +144,7 @@ public class Drivetrain extends SubsystemBase {
       locationLock = true;
       
       locationLockPID.setSetpoint(angle);
-     // locationLockPID.calculate(-m_gyro.getAngle());
+      locationLockPID.calculate(this.m_odometry.getPoseMeters().getRotation().getDegrees());
   }
 
   public void turnOffLocationLock() {
@@ -159,7 +159,8 @@ public class Drivetrain extends SubsystemBase {
     }
     if (locationLock) {
         //rotation = locationLockPID.calculate(m_gyro.getAngle());
-        rotation = locationLockPID.calculate(-m_gyro.getAngle(), locationLockPID.getSetpoint());
+        rotation = locationLockPID.calculate(this.m_odometry.getPoseMeters().getRotation().getDegrees(), locationLockPID.getSetpoint());
+        SmartDashboard.putNumber("Next rotation: ", rotation);
     }
     drive(xSpeed, ySpeed, rotation, fieldRelative, rateLimit);
   }
