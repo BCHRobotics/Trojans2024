@@ -7,7 +7,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.controller.PIDController;
 import frc.robot.Constants.VisionConstants;
-
+import frc.utils.VisionUtils;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -108,7 +108,7 @@ public class Camera extends PhotonCamera {
             rawOffset.getY(), 
             new Rotation2d(rawOffset.getRotation().getZ()));
 
-            return toFieldTransform(robotRelativeOffset, robotHeading);
+            return VisionUtils.toFieldTransform(robotRelativeOffset, robotHeading);
         }
         else {
             return null;
@@ -121,13 +121,13 @@ public class Camera extends PhotonCamera {
      * @param robotHeading the heading of the robot
      * @return the pose of the apriltag
      */
-    public Pose2d getApriltagPose(Pose2d robotPose, double robotHeading, int tagId) {
+    public Pose2d getApriltagPose(Pose2d robotPose, double robotHeading, int tagId, double tagHeading) {
         Transform2d robotToTag = getTargetTransform(robotHeading, tagId);
 
         // Add the robot to tag offset to the robot pose to get the tag pose in field space
         Pose2d tagPose = new Pose2d(robotPose.getX() + 
         robotToTag.getX(), robotPose.getY() + 
-        robotToTag.getY(), new Rotation2d((robotHeading + robotToTag.getRotation().getDegrees()) * (Math.PI / 180)));
+        robotToTag.getY(), Rotation2d.fromDegrees(tagHeading));
 
         return tagPose;
     }
@@ -146,26 +146,5 @@ public class Camera extends PhotonCamera {
      */
     public int getCameraPipeline() {
         return this.getPipelineIndex();
-    }
-
-    /**
-     * A function that converts the supplied Transform2d in object relative coordinates 
-     * (object as in a tag or robot or something else that points in a direction)
-     * into a Transform2d in field relative coordinates.
-     * @param objectTransform the transform of the object
-     * @param heading the heading of the robot
-     * @return the transform of the object in field coordinates
-     */
-    public Transform2d toFieldTransform(Transform2d objectTransform, double heading) {
-        // Multiply the heading by PI/180 to convert to radians
-        double sinHeading = Math.sin(heading * (Math.PI / 180));
-        double cosHeading = Math.cos(heading * (Math.PI / 180));
-
-        double fieldX = objectTransform.getX() * cosHeading + objectTransform.getY() * -sinHeading;
-        double fieldY = objectTransform.getX() * sinHeading + objectTransform.getY() * cosHeading;
-
-        Transform2d fieldTransform = new Transform2d(-fieldX, -fieldY, objectTransform.getRotation());
-
-        return fieldTransform;
     }
 }

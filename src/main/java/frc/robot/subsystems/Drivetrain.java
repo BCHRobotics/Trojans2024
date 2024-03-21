@@ -35,6 +35,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.VisionConstants.CameraModes;
 import frc.utils.SwerveUtils;
+import frc.utils.VisionUtils;
 import frc.utils.devices.Camera;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -152,13 +153,13 @@ public class Drivetrain extends SubsystemBase {
     // Update the amp target pose
     int desiredTagId = isRedAlliance ? 5 : 6; // Which amp tag to target (blue or red)
     if (m_tagCamera.hasTargetOfId(desiredTagId)) {
-      ampTargetPose = m_tagCamera.getApriltagPose(getPose(), this.m_odometry.getPoseMeters().getRotation().getDegrees(), desiredTagId);
+      ampTargetPose = m_tagCamera.getApriltagPose(getPose(), this.m_odometry.getPoseMeters().getRotation().getDegrees(), desiredTagId, isRedAlliance ? cameraMode.getRedHeading() : cameraMode.getBlueHeading());
     }
 
     // Update the speaker target pose
     desiredTagId = isRedAlliance ? 4 : 4; // Which speaker tag to target (blue or red)
     if (m_tagCamera.hasTargetOfId(desiredTagId)) {
-      speakerTargetPose = m_tagCamera.getApriltagPose(getPose(), this.m_odometry.getPoseMeters().getRotation().getDegrees(), desiredTagId);
+      speakerTargetPose = m_tagCamera.getApriltagPose(getPose(), this.m_odometry.getPoseMeters().getRotation().getDegrees(), desiredTagId, isRedAlliance ? cameraMode.getRedHeading() : cameraMode.getBlueHeading());
     }
   }
 
@@ -198,37 +199,32 @@ public class Drivetrain extends SubsystemBase {
       if (isAlignmentActive && targetPose != null && (cameraMode == CameraModes.SPEAKER || cameraMode == CameraModes.AMP)) {
         Pose2d robotPose = getPose();
 
-        Transform2d desiredOffset = m_tagCamera.toFieldTransform(new Transform2d(offsetX, offsetY, new Rotation2d(0)), targetPose.getRotation().getDegrees());
+        Transform2d desiredOffset = VisionUtils.toFieldTransform(new Transform2d(offsetX, offsetY, new Rotation2d(0)), targetPose.getRotation().getDegrees());
 
         // The desired offset is how far from the tag you want to be (y axis shouldn't realy be used)
         double xCommand = targetPose.getX() + desiredOffset.getX() - robotPose.getX();
         double yCommand = targetPose.getY() + desiredOffset.getY() - robotPose.getY();
 
-        Rotation2d tagRotation = Rotation2d.fromDegrees(-90);
+        // Get the heading of the tag based on the camera mode (red/blue)
+        Rotation2d tagRotation = Rotation2d.fromDegrees(isRedAlliance ? cameraMode.getRedHeading() : cameraMode.getBlueHeading());
         Rotation2d robotRotation = robotPose.getRotation();
 
         double rotCommand = tagRotation.minus(robotRotation).getDegrees();
 
-        if (xCommand < 0) {
-          xCommand = Math.max(xCommand, -VisionConstants.kVisionSpeedLimit);
-        }
-        else {
-          xCommand = Math.min(xCommand, VisionConstants.kVisionSpeedLimit);
-        }
+        // x axis command
+        xCommand = (xCommand < 0) ? 
+        Math.max(xCommand, -VisionConstants.kVisionSpeedLimit) : 
+        Math.min(xCommand, VisionConstants.kVisionSpeedLimit);
 
-        if (yCommand < 0) {
-          yCommand = Math.max(yCommand, -VisionConstants.kVisionSpeedLimit);
-        }
-        else {
-          yCommand = Math.min(yCommand, VisionConstants.kVisionSpeedLimit);
-        }
+        // y axis command
+        yCommand = (yCommand < 0) ? 
+        Math.max(yCommand, -VisionConstants.kVisionSpeedLimit) :
+        Math.min(yCommand, VisionConstants.kVisionSpeedLimit);
         
-        if (rotCommand < 0) {
-          rotCommand = Math.max(rotCommand, -VisionConstants.kVisionTurningLimit);
-        } 
-        else {
-          rotCommand = Math.min(rotCommand, VisionConstants.kVisionTurningLimit);
-        }
+        // Rotational command
+        rotCommand = (rotCommand < 0) ? 
+        Math.max(rotCommand, -VisionConstants.kVisionTurningLimit) :
+        Math.min(rotCommand, VisionConstants.kVisionTurningLimit);
 
         if (Math.abs(xCommand) > VisionConstants.kTagSlowdownDistance) {
           if (xCommand < 0) {
@@ -296,11 +292,22 @@ public class Drivetrain extends SubsystemBase {
   
       if (cameraMode == CameraModes.AMP && ampTargetPose != null) {
         // Apriltag alignment code for amp
-        driveToTag(CameraModes.AMP.getOffsets()[0], CameraModes.AMP.getOffsets()[1]);
+        //driveToTag(CameraModes.AMP.getOffsets()[0], CameraModes.AMP.getOffsets()[1]);
       }
       else if (cameraMode == CameraModes.SPEAKER && speakerTargetPose != null) {
         // Apriltag alignment code for speaker
-        driveToTag(CameraModes.SPEAKER.getOffsets()[0], CameraModes.SPEAKER.getOffsets()[1]);
+        //driveToTag(CameraModes.SPEAKER.getOffsets()[0], CameraModes.SPEAKER.getOffsets()[1]);
+        Transform2d alignCommand = VisionUtils.alignWithTagExact(speakerTargetPose, getPose(), VisionUtils.toFieldTransform(new Transform2d(CameraModes.SPEAKER.getOffsets()[0], CameraModes.SPEAKER.getOffsets()[1], new Rotation2d(0)), speakerTargetPose.getRotation().getDegrees()));
+
+        if (alignCommand == null) {
+          isAlignmentSuccess = true;
+          isAlignmentActive = false;
+          setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
+        }
+        else {
+          isAlignmentSuccess = false;
+          drive(alignCommand.getX(), alignCommand.getY(), alignCommand.getRotation().getDegrees(), true, true);
+        }
       }
     }
   }

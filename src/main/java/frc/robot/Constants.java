@@ -202,7 +202,7 @@ public final class Constants {
     // How close to an apriltag the robot has to be before stopping (meters)
     public static final double kTagDistanceThreshold = 0.05;
     // The amount of rotational error alowed (degrees)
-    public static final double kTagRotationThreshold = 10;
+    public static final double kTagRotationThreshold = 7;
     // How far away the bot is before it starts slowing down (farther than this it goes full speed as defined by kVisionSpeedLimit)
     public static final double kTagSlowdownDistance = 0.3;
 
