@@ -27,24 +27,26 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.VisionConstants.CameraModes;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.utils.SwerveUtils;
+import frc.utils.controllers.BetterProfiledPIDController;
 import frc.utils.devices.Camera;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Drivetrain extends SubsystemBase {
 
   private boolean locationLock;
-  private PIDController locationLockPID;
 
   // Create MAXSwerveModules
   private final MAXSwerveModule m_frontLeft = new MAXSwerveModule(
@@ -101,6 +103,16 @@ public class Drivetrain extends SubsystemBase {
 
   private boolean isRedAlliance;
 
+  private static final TrapezoidProfile.Constraints m_constraints = new TrapezoidProfile.Constraints(
+                DriveConstants.kMaxAngularSpeed,
+                AutoConstants.kMaxAngularSpeedRadiansPerSecondSquared);
+
+    private BetterProfiledPIDController locationLockPID = new BetterProfiledPIDController(
+            1,
+            0,
+            0,
+            m_constraints);
+
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
       DriveConstants.kDriveKinematics,
@@ -133,7 +145,7 @@ public class Drivetrain extends SubsystemBase {
     cameraMode = CameraModes.NOTE;
 
     locationLock = false;
-    locationLockPID = new PIDController(1, 0, 0);
+    locationLockPID.setTolerance(0.005);
     locationLockPID.enableContinuousInput(-180,180);
   }
 
@@ -143,8 +155,7 @@ public class Drivetrain extends SubsystemBase {
   public void turnOnLocationLock(double angle) {
       locationLock = true;
       
-      locationLockPID.setSetpoint(angle);
-      locationLockPID.calculate(this.m_odometry.getPoseMeters().getRotation().getDegrees());
+      locationLockPID.setGoal(angle);
   }
 
   public void turnOffLocationLock() {
@@ -158,8 +169,7 @@ public class Drivetrain extends SubsystemBase {
       turnOffLocationLock();
     }
     if (locationLock) {
-        //rotation = locationLockPID.calculate(m_gyro.getAngle());
-        rotation = locationLockPID.calculate(this.m_odometry.getPoseMeters().getRotation().getDegrees(), locationLockPID.getSetpoint());
+        rotation = locationLockPID.calculate(this.m_odometry.getPoseMeters().getRotation().getDegrees());
         SmartDashboard.putNumber("Next rotation: ", rotation);
     }
     drive(xSpeed, ySpeed, rotation, fieldRelative, rateLimit);
