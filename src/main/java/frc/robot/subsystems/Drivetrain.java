@@ -609,8 +609,8 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Current Speed Percentage", m_maxSpeed); // Commanded speed multiplier [0 --> 1]
 
     // Position
-    // SmartDashboard.putNumber("X Position", this.getPose().getX());
-    // SmartDashboard.putNumber("Y Position", this.getPose().getY());
+    SmartDashboard.putNumber("X Position", this.getPose().getX());
+    SmartDashboard.putNumber("Y Position", this.getPose().getY());
     // SmartDashboard.putNumber("Gyro Heading: ", this.getHeading());
     SmartDashboard.putNumber("Odometry Heading: ", this.m_odometry.getPoseMeters().getRotation().getDegrees());
 

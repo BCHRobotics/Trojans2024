@@ -46,6 +46,8 @@ public class VisionUtils {
         double xCommand = targetPose.getX() + desiredOffset.getX() - robotPose.getX();
         double yCommand = targetPose.getY() + desiredOffset.getY() - robotPose.getY();
 
+        SmartDashboard.putNumber("XC", xCommand);
+
         // Get the heading of the tag based on the camera mode (red/blue)
         Rotation2d tagRotation = Rotation2d.fromDegrees(180);
         // Robot heading
@@ -90,6 +92,10 @@ public class VisionUtils {
         if (rotFinished) { rotCommand = 0; }
         if (xFinished) { xCommand = 0; }
         //if (yFinished) { yCommand = 0; }
+
+        SmartDashboard.putBoolean("X", xFinished);
+        SmartDashboard.putBoolean("Y", yFinished);
+        SmartDashboard.putBoolean("R", rotFinished);
 
         if (rotFinished && xFinished && yFinished) {
           return null;
