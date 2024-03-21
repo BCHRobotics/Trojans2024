@@ -83,11 +83,9 @@ public class VisionUtils {
         }
 
         // Check if robot is within acceptable boundaries
-        boolean rotFinished = Math.abs(tagRotation.minus(robotRotation).getDegrees()) < VisionConstants.kTagRotationThreshold;
+        boolean rotFinished = Math.abs(tagRotation.getDegrees() - robotPose.getRotation().getDegrees()) < VisionConstants.kTagRotationThreshold;
         boolean xFinished = Math.abs(targetPose.getX() + desiredOffset.getX() - robotPose.getX()) < VisionConstants.kTagDistanceThreshold;
         boolean yFinished = Math.abs(targetPose.getY() + desiredOffset.getY() - robotPose.getY()) < VisionConstants.kTagDistanceThreshold;
-
-        SmartDashboard.putNumber("here", desiredOffset.getX());
 
         if (rotFinished) { rotCommand = 0; }
         if (xFinished) { xCommand = 0; }
@@ -122,13 +120,10 @@ public class VisionUtils {
           // Calculate the x and y commands, based on whether the robot should travel away or towards the tag
           double xCommand = (distToTag > desiredRadius) ? (targetPose.getX() - robotPose.getX()) : (targetPose.getX() - robotPose.getX()) * -1;
           double yCommand = (distToTag > desiredRadius) ? (targetPose.getY() - robotPose.getY()) : (targetPose.getY() - robotPose.getY()) * -1;
-  
-          // Get the heading of the tag based on the camera mode (red/blue)
-          Rotation2d tagRotation = targetPose.getRotation();
-          // Robot heading
-          Rotation2d robotRotation = robotPose.getRotation();
-          // Commanded rotation
-          double rotCommand = tagRotation.minus(robotRotation).getDegrees();
+          
+          // TODO: test the rotation here
+          // Commanded rotation based on direction vector
+          double rotCommand = Math.atan((targetPose.getY() - robotPose.getY()) / (targetPose.getX() - robotPose.getX()));
   
           // x axis command
           xCommand = (xCommand < 0) ? 
@@ -160,7 +155,7 @@ public class VisionUtils {
           }
   
           // Check if robot is within acceptable boundaries
-          boolean rotFinished = Math.abs(tagRotation.getDegrees() - robotPose.getRotation().getDegrees()) < VisionConstants.kTagRotationThreshold;
+          boolean rotFinished = Math.abs(Math.atan((targetPose.getY() - robotPose.getY()) / (targetPose.getX() - robotPose.getX()))) < VisionConstants.kTagRotationThreshold;
           boolean posFinished = Math.abs(distToTag - desiredRadius) < VisionConstants.kTagDistanceThreshold;
   
           if (rotFinished && posFinished) {
