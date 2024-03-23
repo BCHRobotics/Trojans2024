@@ -36,9 +36,9 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "ALIGN NOTE"
+            "pathName": "SpeakerAutoNoVision"
           }
         },
         {
@@ -54,9 +54,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "SpeakerAuto_3"
+            "name": "ELEVATOR LOW"
           }
         },
         {
@@ -66,9 +66,9 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "ALIGN NOTE"
+            "pathName": "SpeakerAuto_3"
           }
         },
         {

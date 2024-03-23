@@ -293,11 +293,22 @@ public class Drivetrain extends SubsystemBase {
       if (cameraMode == CameraModes.AMP && ampTargetPose != null) {
         // Apriltag alignment code for amp
         //driveToTag(CameraModes.AMP.getOffsets()[0], CameraModes.AMP.getOffsets()[1]);
+        Transform2d alignCommand = VisionUtils.alignWithTagExact(ampTargetPose, getPose(), VisionUtils.toFieldTransform(new Transform2d(CameraModes.AMP.getOffsets()[0], CameraModes.AMP.getOffsets()[1], new Rotation2d(0)), 90));
+
+        if (alignCommand == null) {
+          isAlignmentSuccess = true;
+          isAlignmentActive = false;
+          setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
+        }
+        else {
+          isAlignmentSuccess = false;
+          drive(alignCommand.getX(), alignCommand.getY(), alignCommand.getRotation().getDegrees(), true, true);
+        }
       }
       else if (cameraMode == CameraModes.SPEAKER && speakerTargetPose != null) {
         // Apriltag alignment code for speaker
         //driveToTag(CameraModes.SPEAKER.getOffsets()[0], CameraModes.SPEAKER.getOffsets()[1]);
-        Transform2d alignCommand = VisionUtils.alignWithTagExact(speakerTargetPose, getPose(), VisionUtils.toFieldTransform(new Transform2d(CameraModes.SPEAKER.getOffsets()[0], CameraModes.SPEAKER.getOffsets()[1], new Rotation2d(0)), speakerTargetPose.getRotation().getDegrees()));
+        Transform2d alignCommand = VisionUtils.alignWithTagExact(speakerTargetPose, getPose(), VisionUtils.toFieldTransform(new Transform2d(CameraModes.SPEAKER.getOffsets()[0], CameraModes.SPEAKER.getOffsets()[1], new Rotation2d(0)), 0));
 
         if (alignCommand == null) {
           isAlignmentSuccess = true;
@@ -609,8 +620,8 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Current Speed Percentage", m_maxSpeed); // Commanded speed multiplier [0 --> 1]
 
     // Position
-    SmartDashboard.putNumber("X Position", this.getPose().getX());
-    SmartDashboard.putNumber("Y Position", this.getPose().getY());
+    // SmartDashboard.putNumber("X Position", this.getPose().getX());
+    // SmartDashboard.putNumber("Y Position", this.getPose().getY());
     // SmartDashboard.putNumber("Gyro Heading: ", this.getHeading());
     SmartDashboard.putNumber("Odometry Heading: ", this.m_odometry.getPoseMeters().getRotation().getDegrees());
 
@@ -620,7 +631,7 @@ public class Drivetrain extends SubsystemBase {
     // SmartDashboard.putNumber("slewCurrentTranslationMagnitude: ", m_currentTranslationMag);
 
     // Encoder values
-    SmartDashboard.putNumber("Front left Encoder", m_frontLeft.getVel());
+    // SmartDashboard.putNumber("Front left Encoder", m_frontLeft.getVel());
     // SmartDashboard.putString("Front right Encoder", m_frontRight.getState().toString());
     // SmartDashboard.putString("Rear left Encoder", m_rearLeft.getState().toString());
     // SmartDashboard.putString("Rear right Encoder", m_rearRight.getState().toString());
@@ -638,10 +649,10 @@ public class Drivetrain extends SubsystemBase {
 
     // Apriltag target location/rotation for speaker (field relative space)
     if (speakerTargetPose != null) {
-      SmartDashboard.putNumber("Target X", speakerTargetPose.getX());
-      SmartDashboard.putNumber("Target Y", speakerTargetPose.getY());
+      // SmartDashboard.putNumber("Target X", speakerTargetPose.getX());
+      // SmartDashboard.putNumber("Target Y", speakerTargetPose.getY());
 
-      SmartDashboard.putNumber("Target Rotation", speakerTargetPose.getRotation().getDegrees());
+      // SmartDashboard.putNumber("Target Rotation", speakerTargetPose.getRotation().getDegrees());
     }
 
     // Do the cameras have targets?

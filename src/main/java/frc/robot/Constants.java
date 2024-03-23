@@ -170,7 +170,7 @@ public final class Constants {
       NONE(new double[]{0, 0}, 0, 0), // Offset is not used here
       NOTE(new double[]{0, 0}, 0, 0), // Offset is not used here
       AMP(new double[]{0.685, 0}, -90, -90),
-      SPEAKER(new double[]{1.88, 0}, 0, 180);
+      SPEAKER(new double[]{1.88, -0.5}, 0, 180);
 
       private final double[] offsets;
       private final double redHeading;
@@ -200,7 +200,7 @@ public final class Constants {
     public static final double kVisionTurningLimit = 0.5;  //0.4
 
     // How close to an apriltag the robot has to be before stopping (meters)
-    public static final double kTagDistanceThreshold = 0.05;
+    public static final double kTagDistanceThreshold = 0.08;
     // The amount of rotational error alowed (degrees)
     public static final double kTagRotationThreshold = 7;
     // How far away the bot is before it starts slowing down (farther than this it goes full speed as defined by kVisionSpeedLimit)

@@ -222,7 +222,7 @@ public class RobotContainer {
         this.m_operatorController.x().onTrue(this.m_mechanism.groundIntake(12));
 
         // Speaker score
-        this.m_operatorController.povLeft().onTrue(this.m_combinedCommands.scoreIntoSpeaker());
+        this.m_operatorController.povLeft().onTrue(this.m_mechanism.scoreSpeaker(12));
         // Release note onto floor
         this.m_operatorController.leftTrigger().onTrue(this.m_mechanism.groundReleaseAuto(12));
         // Scoring into amp

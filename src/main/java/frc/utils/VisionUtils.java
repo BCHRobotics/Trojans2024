@@ -18,6 +18,7 @@ public class VisionUtils {
      * @param heading the heading of the robot
      * @return the transform of the object in field coordinates
      */
+    // TODO: test if inputting a negative heading does the same thing as flipping the result
     public static Transform2d toFieldTransform(Transform2d objectTransform, double heading) {
         // Multiply the heading by PI/180 to convert to radians
         double sinHeading = Math.sin(heading * (Math.PI / 180));
@@ -46,10 +47,8 @@ public class VisionUtils {
         double xCommand = targetPose.getX() + desiredOffset.getX() - robotPose.getX();
         double yCommand = targetPose.getY() + desiredOffset.getY() - robotPose.getY();
 
-        SmartDashboard.putNumber("XC", xCommand);
-
         // Get the heading of the tag based on the camera mode (red/blue)
-        Rotation2d tagRotation = Rotation2d.fromDegrees(180);
+        Rotation2d tagRotation = Rotation2d.fromDegrees(-90);
         // Robot heading
         Rotation2d robotRotation = robotPose.getRotation();
         // Commanded rotation
@@ -92,10 +91,6 @@ public class VisionUtils {
         if (rotFinished) { rotCommand = 0; }
         if (xFinished) { xCommand = 0; }
         //if (yFinished) { yCommand = 0; }
-
-        SmartDashboard.putBoolean("X", xFinished);
-        SmartDashboard.putBoolean("Y", yFinished);
-        SmartDashboard.putBoolean("R", rotFinished);
 
         if (rotFinished && xFinished && yFinished) {
           return null;

@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8349059624960118,
-        "y": 5.898603721197941
+        "x": 2.1659079215594326,
+        "y": 5.952324611201929
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.353014392638472,
-        "y": 6.385008325572207
+        "x": 3.078051968069748,
+        "y": 6.770915422172725
       },
       "prevControl": {
-        "x": 2.1482694700844944,
-        "y": 6.112015095500236
+        "x": 1.4642586550130365,
+        "y": 6.9580218932517655
       },
       "nextControl": null,
       "isLocked": false,
@@ -41,7 +41,7 @@
             {
               "type": "named",
               "data": {
-                "name": "ELEVATOR LOW"
+                "name": "INTAKE"
               }
             }
           ]
@@ -57,7 +57,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 49.76364169072605,
+    "rotation": 0.0,
     "rotateFast": true
   },
   "reversed": false,
