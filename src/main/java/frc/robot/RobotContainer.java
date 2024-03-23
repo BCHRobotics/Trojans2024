@@ -91,24 +91,25 @@ public class RobotContainer {
     }
 
     public void configureNamedCommands() {
+        // Both of these named commands are deprecated
+        
         // Apriltag alignment command for amp
-        NamedCommands.registerCommand("ALIGN TAG", new RunCommand(
-            () -> m_robotDrive.driveToTag(CameraModes.AMP.getOffsets()[0], CameraModes.AMP.getOffsets()[1])).until( // Run the alignwithtag function
-                () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
-                    new InstantCommand(
-                        () -> m_robotDrive.setVisionMode(CameraModes.AMP))).alongWith(
-                            this.m_elevator.moveToPositionCommand(ElevatorPositions.AMP)).andThen(
-                                this.m_mechanism.scoreAmp(6))); // Set alignmode to true before starting
+        // NamedCommands.registerCommand("ALIGN TAG", new RunCommand(
+        //     () -> m_robotDrive.driveToTag(CameraModes.AMP.getOffsets()[0], CameraModes.AMP.getOffsets()[1])).until( // Run the alignwithtag function
+        //         () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
+        //             new InstantCommand(
+        //                 () -> m_robotDrive.setVisionMode(CameraModes.AMP))).alongWith(
+        //                     this.m_elevator.moveToPositionCommand(ElevatorPositions.AMP)).andThen(
+        //                         this.m_mechanism.scoreAmp(6))); // Set alignmode to true before starting
 
         // Apriltag alignment command for speaker
-        // NOT USED
-        NamedCommands.registerCommand("ALIGN SPEAKER", new RunCommand(
-            () -> m_robotDrive.driveToTag(CameraModes.AMP.getOffsets()[0], CameraModes.AMP.getOffsets()[1])).until( // Run the alignwithtag function
-                () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
-                    new InstantCommand(
-                        () -> m_robotDrive.setVisionMode(CameraModes.SPEAKER))).alongWith(
-                            this.m_elevator.moveToPositionCommand(ElevatorPositions.AMP)).andThen(
-                                this.m_mechanism.scoreAmp(6))); // Set alignmode to true before starting
+        // NamedCommands.registerCommand("ALIGN SPEAKER", new RunCommand(
+        //     () -> m_robotDrive.driveToTag(CameraModes.AMP.getOffsets()[0], CameraModes.AMP.getOffsets()[1])).until( // Run the alignwithtag function
+        //         () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
+        //             new InstantCommand(
+        //                 () -> m_robotDrive.setVisionMode(CameraModes.SPEAKER))).alongWith(
+        //                     this.m_elevator.moveToPositionCommand(ElevatorPositions.AMP)).andThen(
+        //                         this.m_mechanism.scoreAmp(6))); // Set alignmode to true before starting
 
         // Note alignment command
         NamedCommands.registerCommand("ALIGN NOTE", new RunCommand(

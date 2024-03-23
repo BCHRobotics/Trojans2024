@@ -184,87 +184,6 @@ public class Drivetrain extends SubsystemBase {
   }
 
   /**
-   * A function for driving to the targeted apriltag, runs periodically 
-   */
-  public void driveToTag(double offsetX, double offsetY) {
-      Pose2d targetPose = null;
-      if (cameraMode == CameraModes.AMP) {
-        targetPose = ampTargetPose;
-      }
-      if (cameraMode == CameraModes.SPEAKER) {
-        targetPose = speakerTargetPose;
-      }
-
-      // Apriltag alignment code
-      if (isAlignmentActive && targetPose != null && (cameraMode == CameraModes.SPEAKER || cameraMode == CameraModes.AMP)) {
-        Pose2d robotPose = getPose();
-
-        Transform2d desiredOffset = VisionUtils.toFieldTransform(new Transform2d(offsetX, offsetY, new Rotation2d(0)), targetPose.getRotation().getDegrees());
-
-        // The desired offset is how far from the tag you want to be (y axis shouldn't realy be used)
-        double xCommand = targetPose.getX() + desiredOffset.getX() - robotPose.getX();
-        double yCommand = targetPose.getY() + desiredOffset.getY() - robotPose.getY();
-
-        // Get the heading of the tag based on the camera mode (red/blue)
-        Rotation2d tagRotation = Rotation2d.fromDegrees(isRedAlliance ? cameraMode.getRedHeading() : cameraMode.getBlueHeading());
-        Rotation2d robotRotation = robotPose.getRotation();
-
-        double rotCommand = tagRotation.minus(robotRotation).getDegrees();
-
-        // x axis command
-        xCommand = (xCommand < 0) ? 
-        Math.max(xCommand, -VisionConstants.kVisionSpeedLimit) : 
-        Math.min(xCommand, VisionConstants.kVisionSpeedLimit);
-
-        // y axis command
-        yCommand = (yCommand < 0) ? 
-        Math.max(yCommand, -VisionConstants.kVisionSpeedLimit) :
-        Math.min(yCommand, VisionConstants.kVisionSpeedLimit);
-        
-        // Rotational command
-        rotCommand = (rotCommand < 0) ? 
-        Math.max(rotCommand, -VisionConstants.kVisionTurningLimit) :
-        Math.min(rotCommand, VisionConstants.kVisionTurningLimit);
-
-        if (Math.abs(xCommand) > VisionConstants.kTagSlowdownDistance) {
-          if (xCommand < 0) {
-            xCommand = -VisionConstants.kVisionSpeedLimit;
-          }
-          else {
-            xCommand = VisionConstants.kVisionSpeedLimit;
-          }
-        }
-
-        if (Math.abs(yCommand) > VisionConstants.kTagSlowdownDistance) {
-          if (yCommand < 0) {
-            yCommand = -VisionConstants.kVisionSpeedLimit;
-          }
-          else {
-            yCommand = VisionConstants.kVisionSpeedLimit;
-          }
-        }
-
-        boolean rotFinished = Math.abs(tagRotation.getDegrees() - this.m_odometry.getPoseMeters().getRotation().getDegrees()) < VisionConstants.kTagRotationThreshold;
-        boolean xFinished = Math.abs(targetPose.getX() + desiredOffset.getX() - robotPose.getX()) < VisionConstants.kTagDistanceThreshold;
-        boolean yFinished = Math.abs(targetPose.getY() + desiredOffset.getY() - robotPose.getY()) < VisionConstants.kTagDistanceThreshold;
-
-        if (rotFinished) { rotCommand = 0; }
-        if (xFinished) { xCommand = 0; }
-        //if (yFinished) { yCommand = 0; }
-
-        if (rotFinished && xFinished && yFinished) {
-          isAlignmentSuccess = true;
-          isAlignmentActive = false; // Stop the alignment when the target is reached
-          setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
-        }
-        else {
-          isAlignmentSuccess = false;
-          drive(xCommand, yCommand, rotCommand * 0.3, true, true);
-        }
-      }
-  }
-
-  /**
    * A function for driving to the targeted note, runs periodically 
    * 
    * (ONLY USED DURING AUTO)
@@ -292,8 +211,7 @@ public class Drivetrain extends SubsystemBase {
   
       if (cameraMode == CameraModes.AMP && ampTargetPose != null) {
         // Apriltag alignment code for amp
-        //driveToTag(CameraModes.AMP.getOffsets()[0], CameraModes.AMP.getOffsets()[1]);
-        Transform2d alignCommand = VisionUtils.alignWithTagExact(ampTargetPose, getPose(), VisionUtils.toFieldTransform(new Transform2d(CameraModes.AMP.getOffsets()[0], CameraModes.AMP.getOffsets()[1], new Rotation2d(0)), 90));
+        Transform2d alignCommand = VisionUtils.alignWithTagExact(ampTargetPose, getPose(), VisionUtils.tagToField(new Transform2d(CameraModes.AMP.getOffsets()[0], CameraModes.AMP.getOffsets()[1], new Rotation2d(0)), isRedAlliance ? CameraModes.SPEAKER.getRedHeading() : CameraModes.SPEAKER.getBlueHeading()));
 
         if (alignCommand == null) {
           isAlignmentSuccess = true;
@@ -307,8 +225,7 @@ public class Drivetrain extends SubsystemBase {
       }
       else if (cameraMode == CameraModes.SPEAKER && speakerTargetPose != null) {
         // Apriltag alignment code for speaker
-        //driveToTag(CameraModes.SPEAKER.getOffsets()[0], CameraModes.SPEAKER.getOffsets()[1]);
-        Transform2d alignCommand = VisionUtils.alignWithTagExact(speakerTargetPose, getPose(), VisionUtils.toFieldTransform(new Transform2d(CameraModes.SPEAKER.getOffsets()[0], CameraModes.SPEAKER.getOffsets()[1], new Rotation2d(0)), 0));
+        Transform2d alignCommand = VisionUtils.alignWithTagExact(speakerTargetPose, getPose(), VisionUtils.tagToField(new Transform2d(CameraModes.SPEAKER.getOffsets()[0], CameraModes.SPEAKER.getOffsets()[1], new Rotation2d(0)), isRedAlliance ? CameraModes.SPEAKER.getRedHeading() : CameraModes.SPEAKER.getBlueHeading()));
 
         if (alignCommand == null) {
           isAlignmentSuccess = true;
