@@ -33,7 +33,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.Constants.VisionConstants.CameraModes;
+import frc.robot.Constants.VisionConstants.CameraMode;
 import frc.utils.SwerveUtils;
 import frc.utils.VisionUtils;
 import frc.utils.devices.Camera;
@@ -88,7 +88,7 @@ public class Drivetrain extends SubsystemBase {
   private boolean isAlignmentActive = false;
   // Is true when the robot has finished a vision command
   private boolean isAlignmentSuccess = false;
-  private CameraModes cameraMode = CameraModes.NOTE;
+  private CameraMode cameraMode = CameraMode.NOTE;
 
   // The stored field position of the target apriltag
   private Pose2d ampTargetPose;
@@ -125,7 +125,7 @@ public class Drivetrain extends SubsystemBase {
   public Drivetrain() {
     this.initializeAuto();
 
-    cameraMode = CameraModes.NOTE;
+    cameraMode = CameraMode.NOTE;
   }
 
   @Override
@@ -151,7 +151,7 @@ public class Drivetrain extends SubsystemBase {
     this.printToDashboard();
 
     // Update the amp target pose
-    int desiredTagId = isRedAlliance ? 5 : 6; // Which amp tag to target (blue or red)
+    int desiredTagId = isRedAlliance ? 5 : 5; // Which amp tag to target (blue or red)
     if (m_tagCamera.hasTargetOfId(desiredTagId)) {
       ampTargetPose = m_tagCamera.getApriltagPose(getPose(), this.m_odometry.getPoseMeters().getRotation().getDegrees(), desiredTagId, isRedAlliance ? cameraMode.getRedHeading() : cameraMode.getBlueHeading());
     }
@@ -190,7 +190,7 @@ public class Drivetrain extends SubsystemBase {
    */
   public void driveToNote() {
     // Note alignment code
-      if (isAlignmentActive && cameraMode == CameraModes.NOTE) {
+      if (isAlignmentActive && cameraMode == CameraMode.NOTE) {
         drive(VisionConstants.kVisionSpeedLimit, 0, m_noteCamera.getRotationSpeed(), false, true);
       }
   }
@@ -200,7 +200,7 @@ public class Drivetrain extends SubsystemBase {
       drive(xSpeed, ySpeed, rotSpeed, fieldRelative, rateLimit);
     }
     else {
-      if (cameraMode == CameraModes.NOTE) {
+      if (cameraMode == CameraMode.NOTE) {
         // Align to the note while driving normally
         drive(xSpeed, ySpeed, rotSpeed + m_noteCamera.getRotationSpeed(), fieldRelative, rateLimit);
   
@@ -209,9 +209,9 @@ public class Drivetrain extends SubsystemBase {
         }
       }
   
-      if (cameraMode == CameraModes.AMP && ampTargetPose != null) {
+      if (cameraMode == CameraMode.AMP && ampTargetPose != null) {
         // Apriltag alignment code for amp
-        Transform2d alignCommand = VisionUtils.alignWithTagExact(ampTargetPose, getPose(), VisionUtils.tagToField(new Transform2d(CameraModes.AMP.getOffsets()[0], CameraModes.AMP.getOffsets()[1], new Rotation2d(0)), isRedAlliance ? CameraModes.SPEAKER.getRedHeading() : CameraModes.SPEAKER.getBlueHeading()));
+        Transform2d alignCommand = VisionUtils.alignWithTagExact(ampTargetPose, getPose(), VisionUtils.tagToField(new Transform2d(CameraMode.AMP.getOffsets()[0], CameraMode.AMP.getOffsets()[1], new Rotation2d(0)), VisionUtils.getTagHeading(CameraMode.AMP, isRedAlliance)));
 
         if (alignCommand == null) {
           isAlignmentSuccess = true;
@@ -223,9 +223,9 @@ public class Drivetrain extends SubsystemBase {
           drive(alignCommand.getX(), alignCommand.getY(), alignCommand.getRotation().getDegrees(), true, true);
         }
       }
-      else if (cameraMode == CameraModes.SPEAKER && speakerTargetPose != null) {
+      else if (cameraMode == CameraMode.SPEAKER && speakerTargetPose != null) {
         // Apriltag alignment code for speaker
-        Transform2d alignCommand = VisionUtils.alignWithTagExact(speakerTargetPose, getPose(), VisionUtils.tagToField(new Transform2d(CameraModes.SPEAKER.getOffsets()[0], CameraModes.SPEAKER.getOffsets()[1], new Rotation2d(0)), isRedAlliance ? CameraModes.SPEAKER.getRedHeading() : CameraModes.SPEAKER.getBlueHeading()));
+        Transform2d alignCommand = VisionUtils.alignWithTagExact(speakerTargetPose, getPose(), VisionUtils.tagToField(new Transform2d(CameraMode.SPEAKER.getOffsets()[0], CameraMode.SPEAKER.getOffsets()[1], new Rotation2d(0)), VisionUtils.getTagHeading(CameraMode.SPEAKER, isRedAlliance)));
 
         if (alignCommand == null) {
           isAlignmentSuccess = true;
@@ -262,7 +262,7 @@ public class Drivetrain extends SubsystemBase {
    * Starts aligning with the specified target
    * @param modeToSet the target (either AMP, SPEAKER, or NOTE)
    */
-  public void setVisionMode(CameraModes modeToSet) {
+  public void setVisionMode(CameraMode modeToSet) {
     isAlignmentSuccess = false; // Set this to false so the alignment doesn't finish instantly
 
     cameraMode = modeToSet; // Set the camera mode

@@ -166,17 +166,17 @@ public final class Constants {
     public static final double kCameraHeight = 0.0;
 
     // Camera modes, with their respective desired offsets
-    public enum CameraModes {
+    public enum CameraMode {
       NONE(new double[]{0, 0}, 0, 0), // Offset is not used here
       NOTE(new double[]{0, 0}, 0, 0), // Offset is not used here
-      AMP(new double[]{0.685, 0}, -90, -90),
+      AMP(new double[]{0.685, 0}, 90, -90),
       SPEAKER(new double[]{1.88, -0.5}, 0, 180);
 
       private final double[] offsets;
       private final double redHeading;
       private final double blueHeading;
 
-      CameraModes(double[] _offsets, double _blueHeading, double _redHeading) {
+      CameraMode(double[] _offsets, double _blueHeading, double _redHeading) {
           this.offsets = _offsets;
           this.blueHeading = _blueHeading;
           this.redHeading = _redHeading;
@@ -196,8 +196,8 @@ public final class Constants {
     }
 
     // Speed and rotation caps for vision
-    public static final double kVisionSpeedLimit = 0.1; //0.4
-    public static final double kVisionTurningLimit = 0.5;  //0.4
+    public static final double kVisionSpeedLimit = 0.7; //0.4
+    public static final double kVisionTurningLimit = 0.8;  //0.4
 
     // How close to an apriltag the robot has to be before stopping (meters)
     public static final double kTagDistanceThreshold = 0.08;

@@ -6,7 +6,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.Constants.VisionConstants.CameraModes;
+import frc.robot.Constants.VisionConstants.CameraMode;
 
 public class VisionUtils {
 
@@ -50,7 +50,11 @@ public class VisionUtils {
       Transform2d fieldTransform = new Transform2d(fieldX, fieldY, objectTransform.getRotation());
 
       return fieldTransform;
-  }
+    }
+
+    public static double getTagHeading(CameraMode mode, boolean isRed) {
+      return isRed ? mode.getRedHeading() : mode.getBlueHeading();
+    }
 
     /**
      * A function for calculating a the movement towards a given apriltag's 

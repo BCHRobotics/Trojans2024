@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorPositions;
 import frc.robot.Constants.LEDConstants.LEDColor;
-import frc.robot.Constants.VisionConstants.CameraModes;
+import frc.robot.Constants.VisionConstants.CameraMode;
 import frc.robot.commands.CombinedCommands;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Drivetrain;
@@ -95,19 +95,19 @@ public class RobotContainer {
         
         // Apriltag alignment command for amp
         // NamedCommands.registerCommand("ALIGN TAG", new RunCommand(
-        //     () -> m_robotDrive.driveToTag(CameraModes.AMP.getOffsets()[0], CameraModes.AMP.getOffsets()[1])).until( // Run the alignwithtag function
+        //     () -> m_robotDrive.driveToTag(CameraMode.AMP.getOffsets()[0], CameraMode.AMP.getOffsets()[1])).until( // Run the alignwithtag function
         //         () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
         //             new InstantCommand(
-        //                 () -> m_robotDrive.setVisionMode(CameraModes.AMP))).alongWith(
+        //                 () -> m_robotDrive.setVisionMode(CameraMode.AMP))).alongWith(
         //                     this.m_elevator.moveToPositionCommand(ElevatorPositions.AMP)).andThen(
         //                         this.m_mechanism.scoreAmp(6))); // Set alignmode to true before starting
 
         // Apriltag alignment command for speaker
         // NamedCommands.registerCommand("ALIGN SPEAKER", new RunCommand(
-        //     () -> m_robotDrive.driveToTag(CameraModes.AMP.getOffsets()[0], CameraModes.AMP.getOffsets()[1])).until( // Run the alignwithtag function
+        //     () -> m_robotDrive.driveToTag(CameraMode.AMP.getOffsets()[0], CameraMode.AMP.getOffsets()[1])).until( // Run the alignwithtag function
         //         () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
         //             new InstantCommand(
-        //                 () -> m_robotDrive.setVisionMode(CameraModes.SPEAKER))).alongWith(
+        //                 () -> m_robotDrive.setVisionMode(CameraMode.SPEAKER))).alongWith(
         //                     this.m_elevator.moveToPositionCommand(ElevatorPositions.AMP)).andThen(
         //                         this.m_mechanism.scoreAmp(6))); // Set alignmode to true before starting
 
@@ -116,7 +116,7 @@ public class RobotContainer {
             () -> m_robotDrive.driveToNote()).until( // Run the 'drive to note' function
                 () -> m_mechanism.checkState(Phase.GROUND_PICKUP)).beforeStarting( // Stop when checkAlignment is true, i.e the robot is done aligning
                     new InstantCommand(
-                        () -> m_robotDrive.setVisionMode(CameraModes.NOTE))).alongWith(
+                        () -> m_robotDrive.setVisionMode(CameraMode.NOTE))).alongWith(
                             this.m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE)).alongWith(
                                 this.m_mechanism.groundIntakeAuto(12)).andThen(new InstantCommand(() -> m_robotDrive.cancelAlign()))); // Set alignmode to true before starting, and set isAligned to false
 
@@ -191,9 +191,9 @@ public class RobotContainer {
         this.m_driverController.rightBumper().onFalse(new InstantCommand(() -> m_robotDrive.setFastMode(false), m_robotDrive));
 
         // Align with amp
-        this.m_driverController.x().onTrue(new InstantCommand(() -> m_robotDrive.setVisionMode(CameraModes.AMP)));
+        this.m_driverController.x().onTrue(new InstantCommand(() -> m_robotDrive.setVisionMode(CameraMode.AMP)));
         // Align with speaker
-        this.m_driverController.b().onTrue(new InstantCommand(() -> m_robotDrive.setVisionMode(CameraModes.SPEAKER)));
+        this.m_driverController.b().onTrue(new InstantCommand(() -> m_robotDrive.setVisionMode(CameraMode.SPEAKER)));
         // Reset Gyro
         this.m_driverController.y().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
         // Cancel Alignment
