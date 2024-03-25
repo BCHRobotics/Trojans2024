@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.26,
-        "y": 5.54
+        "x": 2.3034045117971482,
+        "y": 5.557362183607978
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.2211813497261212,
-        "y": 5.079624030982029
+        "x": 2.3034045117971482,
+        "y": 4.845563057744139
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.1084093474600265,
-        "y": 4.094898451079563
+        "x": 2.7616431479893855,
+        "y": 4.124147725730131
       },
       "prevControl": {
-        "x": 1.5863278826795213,
-        "y": 3.9974008689110025
+        "x": 2.1376586221105955,
+        "y": 4.211895549681835
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,25 +30,7 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [
-    {
-      "name": "New Event Marker",
-      "waypointRelativePos": 0.4,
-      "command": {
-        "type": "sequential",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "ELEVATOR LOW"
-              }
-            }
-          ]
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 1.0,
     "maxAcceleration": 1.0,
@@ -63,7 +45,7 @@
   "reversed": false,
   "folder": "Speaker",
   "previewStartingState": {
-    "rotation": 0.0,
+    "rotation": -1.2730300200566647,
     "velocity": 0.0
   },
   "useDefaultConstraints": true

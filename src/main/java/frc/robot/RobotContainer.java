@@ -190,6 +190,8 @@ public class RobotContainer {
         this.m_driverController.rightBumper().onTrue(new InstantCommand(() -> m_robotDrive.setFastMode(true), m_robotDrive));
         this.m_driverController.rightBumper().onFalse(new InstantCommand(() -> m_robotDrive.setFastMode(false), m_robotDrive));
 
+        this.m_driverController.rightTrigger().onTrue(new InstantCommand(() -> m_robotDrive.setVisionMode(CameraMode.SPEAKER)));
+
         // Align with amp
         this.m_driverController.x().onTrue(new InstantCommand(() -> m_robotDrive.setVisionMode(CameraMode.AMP)));
         // Align with speaker
@@ -199,8 +201,11 @@ public class RobotContainer {
         // Cancel Alignment
         this.m_driverController.a().onTrue(new InstantCommand(() -> m_robotDrive.cancelAlign()));
 
-        // Light show?
-        this.m_driverController.povLeft().onTrue(this.m_mechanism.lightsOff().andThen(this.m_mechanism.lightShow()));
+        // Heading locks
+        this.m_driverController.povLeft().onTrue(new InstantCommand(() -> m_robotDrive.lockHeading(-90)));
+        this.m_driverController.povRight().onTrue(new InstantCommand(() -> m_robotDrive.lockHeading(90)));
+        this.m_driverController.povUp().onTrue(new InstantCommand(() -> m_robotDrive.lockHeading(0)));
+        this.m_driverController.povDown().onTrue(new InstantCommand(() -> m_robotDrive.lockHeading(180)));
     }
 
     /**

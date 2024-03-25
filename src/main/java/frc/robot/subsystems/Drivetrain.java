@@ -14,6 +14,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -96,6 +97,10 @@ public class Drivetrain extends SubsystemBase {
 
   private boolean isRedAlliance;
 
+  private double lockHeadingAngle;
+  private boolean isHeadingLocked;
+  private PIDController headingController;
+
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
       DriveConstants.kDriveKinematics,
@@ -126,6 +131,17 @@ public class Drivetrain extends SubsystemBase {
     this.initializeAuto();
 
     cameraMode = CameraMode.NOTE;
+
+    headingController = new PIDController(0.008, 0, 0);
+  }
+
+  public void lockHeading(double angle) {
+    lockHeadingAngle = angle;
+    isHeadingLocked = true;
+  }
+
+  public void unlockHeading() {
+    isHeadingLocked = false;
   }
 
   @Override
@@ -189,7 +205,16 @@ public class Drivetrain extends SubsystemBase {
 
   public void driveCommand(double xSpeed, double ySpeed, double rotSpeed, boolean fieldRelative, boolean rateLimit, boolean noteLoaded) {
     if (!isAlignmentActive) {
-      drive(xSpeed, ySpeed, rotSpeed, fieldRelative, rateLimit);
+      if (Math.abs(rotSpeed) > 0.04) {
+        isHeadingLocked = false;
+      }
+
+      if (isHeadingLocked) {
+        drive(xSpeed, ySpeed, headingController.calculate(getHeading(), lockHeadingAngle), fieldRelative, rateLimit);
+      }
+      else {
+        drive(xSpeed, ySpeed, rotSpeed, fieldRelative, rateLimit);
+      }
     }
     else {
       if (cameraMode == CameraMode.NOTE) {

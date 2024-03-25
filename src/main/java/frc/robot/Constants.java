@@ -99,7 +99,7 @@ public final class Constants {
       
     public enum ElevatorPositions {
       AMP(0.39),
-      SOURCE(0.18),
+      SOURCE(0.22),
       INTAKE(-0.02);
   
       private final double goal;
@@ -170,7 +170,7 @@ public final class Constants {
       NONE(new double[]{0, 0}, 0, 0), // Offset is not used here
       NOTE(new double[]{0, 0}, 0, 0), // Offset is not used here
       AMP(new double[]{0.685, 0}, -90, -90),
-      SPEAKER(new double[]{1.88, -0.5}, 0, 180);
+      SPEAKER(new double[]{1.88, -0.2}, 0, 180);
 
       private final double[] offsets;
       private final double redHeading;
@@ -196,15 +196,15 @@ public final class Constants {
     }
 
     // Speed and rotation caps for vision
-    public static final double kVisionSpeedLimit = 0.3; //0.4
+    public static final double kVisionSpeedLimit = 0.8; //0.4
     public static final double kVisionTurningLimit = 0.8;  //0.4
 
     // How close to an apriltag the robot has to be before stopping (meters)
-    public static final double kTagDistanceThreshold = 0.08;
+    public static final double kTagDistanceThreshold = 0.02;
     // The amount of rotational error alowed (degrees)
-    public static final double kTagRotationThreshold = 7;
+    public static final double kTagRotationThreshold = 8;
     // How far away the bot is before it starts slowing down (farther than this it goes full speed as defined by kVisionSpeedLimit)
-    public static final double kTagSlowdownDistance = 0.3;
+    public static final double kTagSlowdownDistance = 0.8;
 
     // Camera names (name these a and b to annoy Tim)
     public static final String kNoteCameraName = "Note Cam";

@@ -108,7 +108,7 @@ public class VisionUtils {
         }
 
         // Check if robot is within acceptable boundaries
-        boolean rotFinished = Math.abs(tagRotation.getDegrees() - robotPose.getRotation().getDegrees()) < VisionConstants.kTagRotationThreshold;
+        boolean rotFinished = Math.abs(tagRotation.minus(robotRotation).getDegrees()) < VisionConstants.kTagRotationThreshold;
         boolean xFinished = Math.abs(targetPose.getX() + desiredOffset.getX() - robotPose.getX()) < VisionConstants.kTagDistanceThreshold;
         boolean yFinished = Math.abs(targetPose.getY() + desiredOffset.getY() - robotPose.getY()) < VisionConstants.kTagDistanceThreshold;
 
