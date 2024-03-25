@@ -128,7 +128,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("AMP SCORE", m_mechanism.scoreAmp(6));
         NamedCommands.registerCommand("ELEVATOR LOW", m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE));
         NamedCommands.registerCommand("ELEVATOR HIGH", m_elevator.moveToPositionCommand(ElevatorPositions.AMP));
-        NamedCommands.registerCommand("SPEAKER SCORE", m_combinedCommands.scoreIntoSpeaker());
+        NamedCommands.registerCommand("SPEAKER SCORE", this.m_mechanism.scoreSpeaker(12));
     }
 
     public void setupAuto() {

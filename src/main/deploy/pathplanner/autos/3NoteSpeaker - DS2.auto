@@ -24,18 +24,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "ELEVATOR LOW"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.75
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "SpeakerAutoNoVision"
@@ -51,18 +39,6 @@
           "type": "named",
           "data": {
             "name": "SPEAKER SCORE"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ELEVATOR LOW"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.75
           }
         },
         {

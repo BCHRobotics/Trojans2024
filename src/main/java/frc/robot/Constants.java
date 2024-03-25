@@ -99,7 +99,7 @@ public final class Constants {
       
     public enum ElevatorPositions {
       AMP(0.39),
-      SOURCE(0.32),
+      SOURCE(0.18),
       INTAKE(-0.02);
   
       private final double goal;
