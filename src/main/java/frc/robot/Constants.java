@@ -169,7 +169,7 @@ public final class Constants {
     public enum CameraMode {
       NONE(new double[]{0, 0}, 0, 0), // Offset is not used here
       NOTE(new double[]{0, 0}, 0, 0), // Offset is not used here
-      AMP(new double[]{0.685, 0}, 90, -90),
+      AMP(new double[]{0.685, 0}, -90, -90),
       SPEAKER(new double[]{1.88, -0.5}, 0, 180);
 
       private final double[] offsets;
@@ -196,7 +196,7 @@ public final class Constants {
     }
 
     // Speed and rotation caps for vision
-    public static final double kVisionSpeedLimit = 0.7; //0.4
+    public static final double kVisionSpeedLimit = 0.3; //0.4
     public static final double kVisionTurningLimit = 0.8;  //0.4
 
     // How close to an apriltag the robot has to be before stopping (meters)

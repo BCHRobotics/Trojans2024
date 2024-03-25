@@ -193,7 +193,7 @@ public class RobotContainer {
         // Align with amp
         this.m_driverController.x().onTrue(new InstantCommand(() -> m_robotDrive.setVisionMode(CameraMode.AMP)));
         // Align with speaker
-        this.m_driverController.b().onTrue(new InstantCommand(() -> m_robotDrive.setVisionMode(CameraMode.SPEAKER)));
+        this.m_driverController.b().onTrue(new InstantCommand(() -> m_robotDrive.setVisionMode(CameraMode.NOTE)));
         // Reset Gyro
         this.m_driverController.y().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
         // Cancel Alignment

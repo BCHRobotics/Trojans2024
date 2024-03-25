@@ -151,13 +151,13 @@ public class Drivetrain extends SubsystemBase {
     this.printToDashboard();
 
     // Update the amp target pose
-    int desiredTagId = isRedAlliance ? 5 : 5; // Which amp tag to target (blue or red)
+    int desiredTagId = isRedAlliance ? 5 : 6; // Which amp tag to target (blue or red)
     if (m_tagCamera.hasTargetOfId(desiredTagId)) {
       ampTargetPose = m_tagCamera.getApriltagPose(getPose(), this.m_odometry.getPoseMeters().getRotation().getDegrees(), desiredTagId, isRedAlliance ? cameraMode.getRedHeading() : cameraMode.getBlueHeading());
     }
 
     // Update the speaker target pose
-    desiredTagId = isRedAlliance ? 4 : 4; // Which speaker tag to target (blue or red)
+    desiredTagId = isRedAlliance ? 4 : 7; // Which speaker tag to target (blue or red)
     if (m_tagCamera.hasTargetOfId(desiredTagId)) {
       speakerTargetPose = m_tagCamera.getApriltagPose(getPose(), this.m_odometry.getPoseMeters().getRotation().getDegrees(), desiredTagId, isRedAlliance ? cameraMode.getRedHeading() : cameraMode.getBlueHeading());
     }
@@ -172,14 +172,6 @@ public class Drivetrain extends SubsystemBase {
    * @return whether or not the robot has finished aligning
    */
   public boolean checkAlignment() {
-    // Canceling the vision command if the robot wanders over the middle line
-    // if (Timer.getFPGATimestamp() <= 15) {
-    //   if ((getPose().getX() > 8.75 && !isRedAlliance) || (getPose().getX() < 7.75 && isRedAlliance)) {
-    //     isAlignmentActive = false;
-    //     isAlignmentSuccess = true;
-    //   }
-    // }
-
     return isAlignmentSuccess; // This boolean variable is true when the robot has finished aligning (to either a tag or note)
   }
 
@@ -201,17 +193,21 @@ public class Drivetrain extends SubsystemBase {
     }
     else {
       if (cameraMode == CameraMode.NOTE) {
-        // Align to the note while driving normally
-        drive(xSpeed, ySpeed, rotSpeed + m_noteCamera.getRotationSpeed(), fieldRelative, rateLimit);
+        // Align to the note while driving normally (no field relative)
+        drive(Math.sqrt(Math.pow(ySpeed, 2) + Math.pow(xSpeed, 2)), 0, rotSpeed + m_noteCamera.getRotationSpeed(), false, rateLimit);
   
         if (noteLoaded) {
           cancelAlign();
         }
       }
-  
-      if (cameraMode == CameraMode.AMP && ampTargetPose != null) {
+
+      Pose2d targetPose = cameraMode == CameraMode.AMP ? ampTargetPose : speakerTargetPose;
+      if ((cameraMode == CameraMode.AMP || cameraMode == CameraMode.SPEAKER) && targetPose != null) {
         // Apriltag alignment code for amp
-        Transform2d alignCommand = VisionUtils.alignWithTagExact(ampTargetPose, getPose(), VisionUtils.tagToField(new Transform2d(CameraMode.AMP.getOffsets()[0], CameraMode.AMP.getOffsets()[1], new Rotation2d(0)), VisionUtils.getTagHeading(CameraMode.AMP, isRedAlliance)));
+        Transform2d alignCommand = VisionUtils.alignWithTagExact(targetPose, getPose(), 
+                                  VisionUtils.tagToField(new Transform2d(cameraMode.getOffsets()[0], 
+                                                                        cameraMode.getOffsets()[1], new Rotation2d(0)), 
+                                  VisionUtils.getTagHeading(cameraMode, isRedAlliance)));
 
         if (alignCommand == null) {
           isAlignmentSuccess = true;
@@ -223,20 +219,35 @@ public class Drivetrain extends SubsystemBase {
           drive(alignCommand.getX(), alignCommand.getY(), alignCommand.getRotation().getDegrees(), true, true);
         }
       }
-      else if (cameraMode == CameraMode.SPEAKER && speakerTargetPose != null) {
-        // Apriltag alignment code for speaker
-        Transform2d alignCommand = VisionUtils.alignWithTagExact(speakerTargetPose, getPose(), VisionUtils.tagToField(new Transform2d(CameraMode.SPEAKER.getOffsets()[0], CameraMode.SPEAKER.getOffsets()[1], new Rotation2d(0)), VisionUtils.getTagHeading(CameraMode.SPEAKER, isRedAlliance)));
+  
+      // if (cameraMode == CameraMode.AMP && ampTargetPose != null) {
+      //   // Apriltag alignment code for amp
+      //   Transform2d alignCommand = VisionUtils.alignWithTagExact(ampTargetPose, getPose(), VisionUtils.tagToField(new Transform2d(CameraMode.AMP.getOffsets()[0], CameraMode.AMP.getOffsets()[1], new Rotation2d(0)), VisionUtils.getTagHeading(CameraMode.AMP, isRedAlliance)));
 
-        if (alignCommand == null) {
-          isAlignmentSuccess = true;
-          isAlignmentActive = false;
-          setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
-        }
-        else {
-          isAlignmentSuccess = false;
-          drive(alignCommand.getX(), alignCommand.getY(), alignCommand.getRotation().getDegrees(), true, true);
-        }
-      }
+      //   if (alignCommand == null) {
+      //     isAlignmentSuccess = true;
+      //     isAlignmentActive = false;
+      //     setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
+      //   }
+      //   else {
+      //     isAlignmentSuccess = false;
+      //     drive(alignCommand.getX(), alignCommand.getY(), alignCommand.getRotation().getDegrees(), true, true);
+      //   }
+      // }
+      // else if (cameraMode == CameraMode.SPEAKER && speakerTargetPose != null) {
+      //   // Apriltag alignment code for speaker
+      //   Transform2d alignCommand = VisionUtils.alignWithTagExact(speakerTargetPose, getPose(), VisionUtils.tagToField(new Transform2d(CameraMode.SPEAKER.getOffsets()[0], CameraMode.SPEAKER.getOffsets()[1], new Rotation2d(0)), VisionUtils.getTagHeading(CameraMode.SPEAKER, isRedAlliance)));
+
+      //   if (alignCommand == null) {
+      //     isAlignmentSuccess = true;
+      //     isAlignmentActive = false;
+      //     setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
+      //   }
+      //   else {
+      //     isAlignmentSuccess = false;
+      //     drive(alignCommand.getX(), alignCommand.getY(), alignCommand.getRotation().getDegrees(), true, true);
+      //   }
+      // }
     }
   }
 
