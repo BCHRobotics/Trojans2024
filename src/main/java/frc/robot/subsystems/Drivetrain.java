@@ -132,7 +132,7 @@ public class Drivetrain extends SubsystemBase {
 
     cameraMode = CameraMode.NOTE;
 
-    headingController = new PIDController(0.008, 0, 0);
+    headingController = new PIDController(0.015, 0, 0.00144);
   }
 
   public void lockHeading(double angle) {
