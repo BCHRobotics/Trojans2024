@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.3034045117971482,
-        "y": 5.557362183607978
+        "x": 2.28,
+        "y": 5.54
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3034045117971482,
-        "y": 4.845563057744139
+        "x": 2.28,
+        "y": 4.828200874136161
       },
       "isLocked": false,
       "linkedName": null
@@ -63,7 +63,7 @@
   "reversed": false,
   "folder": "Speaker",
   "previewStartingState": {
-    "rotation": -1.2730300200566647,
+    "rotation": 0.0,
     "velocity": 0.0
   },
   "useDefaultConstraints": true
