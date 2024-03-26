@@ -64,6 +64,18 @@
           "data": {
             "pathName": "SpeakerAuto_5"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Copy of SpeakerAuto_5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SPEAKER SCORE"
+          }
         }
       ]
     }
