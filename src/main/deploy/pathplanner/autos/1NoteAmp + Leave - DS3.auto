@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3966769976295312,
-      "y": 5.537862667174266
+      "x": 1.4356760304969556,
+      "y": 7.30256890442522
     },
-    "rotation": 0
+    "rotation": -90.0
   },
   "command": {
     "type": "sequential",
@@ -14,13 +14,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "SpeakerAuto_1"
+            "pathName": "Start-Amp_DS3"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "SPEAKER SCORE"
+            "name": "ELEVATOR HIGH"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.7
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AMP SCORE"
           }
         },
         {
@@ -28,34 +40,10 @@
           "data": {
             "name": "ELEVATOR LOW"
           }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.75
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "SpeakerAutoNoVision"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "SpeakerAuto_2"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SPEAKER SCORE"
-          }
         }
       ]
     }
   },
-  "folder": "Driver Station 2",
+  "folder": "Driver Station 3",
   "choreoAuto": false
 }

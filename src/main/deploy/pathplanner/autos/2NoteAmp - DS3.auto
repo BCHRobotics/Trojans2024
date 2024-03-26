@@ -76,6 +76,12 @@
           "data": {
             "name": "AMP SCORE"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ELEVATOR LOW"
+          }
         }
       ]
     }

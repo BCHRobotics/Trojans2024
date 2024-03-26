@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.8912450873334795,
-      "y": 6.700750495518085
+      "x": 1.0261861853889993,
+      "y": 6.5518375217273
     },
-    "rotation": 59.88626684901758
+    "rotation": 59.53445508054013
   },
   "command": {
     "type": "sequential",
@@ -14,13 +14,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "SpeakerAuto_1.5"
+            "pathName": "SpeakerAuto_B1"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "SPEAKER SCORE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SpeakerAuto_B2"
           }
         }
       ]

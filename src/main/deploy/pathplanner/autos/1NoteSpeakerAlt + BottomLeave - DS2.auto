@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3966769976295312,
-      "y": 5.537862667174266
+      "x": 0.7531929553170285,
+      "y": 4.397140955802102
     },
-    "rotation": 0
+    "rotation": -59.036243467926475
   },
   "command": {
     "type": "sequential",
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "SpeakerAuto_A1"
+            "pathName": "SpeakerAuto_C1"
           }
         },
         {
@@ -26,19 +26,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "SpeakerAuto_A2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "SpeakerAuto_A3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SPEAKER SCORE"
+            "pathName": "SpeakerAuto_C2"
           }
         }
       ]

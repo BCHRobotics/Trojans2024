@@ -22,24 +22,6 @@
           "data": {
             "name": "SPEAKER SCORE"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "SpeakerAuto_A2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "SpeakerAuto_A3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SPEAKER SCORE"
-          }
         }
       ]
     }

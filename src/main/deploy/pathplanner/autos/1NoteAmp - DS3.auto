@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.386927239412675,
-      "y": 7.263569871557796
+      "x": 1.4356760304969556,
+      "y": 7.30256890442522
     },
     "rotation": -90.0
   },
@@ -20,7 +20,25 @@
         {
           "type": "named",
           "data": {
-            "name": "ALIGN TAG"
+            "name": "ELEVATOR HIGH"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.7
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AMP SCORE"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ELEVATOR LOW"
           }
         }
       ]

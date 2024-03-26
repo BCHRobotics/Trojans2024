@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.38,
-        "y": 3.44
+        "x": 1.4161765140632432,
+        "y": 3.4416646505502047
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.98,
-        "y": 3.44
+        "x": 2.0161765140632433,
+        "y": 3.4416646505502047
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.64,
-        "y": 1.07
+        "x": 3.3368788827838953,
+        "y": 0.7312318662642086
       },
       "prevControl": {
-        "x": 3.04,
-        "y": 1.0700000000000003
+        "x": 2.7368788827838952,
+        "y": 0.7312318662642088
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Go Paths",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0
