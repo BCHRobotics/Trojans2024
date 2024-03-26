@@ -61,7 +61,6 @@ public class VisionUtils {
      * @return
      */
     public static Transform2d alignWithTagExact(Pose2d targetPose, Pose2d robotPose, Transform2d desiredOffset) {
-      // Apriltag alignment code
       if (targetPose != null) {
         // Calculate the x and y commands based on the direction to the tag
         double xCommand = targetPose.getX() + desiredOffset.getX() - robotPose.getX();
@@ -110,7 +109,7 @@ public class VisionUtils {
 
         if (rotFinished) { rotCommand = 0; }
         if (xFinished) { xCommand = 0; }
-        //if (yFinished) { yCommand = 0; }
+        // Do not zero the y command because that should be as exact as possible
 
         if (rotFinished && xFinished && yFinished) {
           return null;

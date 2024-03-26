@@ -148,7 +148,7 @@ public class RobotContainer {
         /* 
          * CURRENT BUTTON LAYOUT (subject to change):
          * 
-         * -- XBox Controller -- 
+         * -- Driver Controller -- 
          * 
          * Y -- RESET GYRO
          * LEFT TRIGGER -- BRAKE
@@ -156,6 +156,7 @@ public class RobotContainer {
          * X -- ALIGN WITH AMP
          * B -- ALIGN WITH SPEAKER
          * A -- CANCEL ALIGN
+         * POV UP, DOWN, LEFT, RIGHT -- HEADING LOCKS
          * 
          * -- Operator Controller --
          * 

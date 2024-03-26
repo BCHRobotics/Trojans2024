@@ -167,8 +167,8 @@ public final class Constants {
 
     // Camera modes, with their respective desired offsets
     public enum CameraMode {
-      NONE(new double[]{0, 0}, 0, 0), // Offset is not used here
-      NOTE(new double[]{0, 0}, 0, 0), // Offset is not used here
+      NONE(new double[]{0, 0}, 0, 0), // values aren't used here
+      NOTE(new double[]{0, 0}, 0, 0), // values aren't used here
       AMP(new double[]{0.685, 0}, -90, -90),
       SPEAKER(new double[]{1.88, -0.2}, 0, 180);
 
@@ -182,6 +182,9 @@ public final class Constants {
           this.redHeading = _redHeading;
       }
       
+      /**
+       * @return the offset from the apriltag
+       */
       public double[] getOffsets() {
           return this.offsets;
       }
