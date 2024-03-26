@@ -169,13 +169,13 @@ public class Drivetrain extends SubsystemBase {
     // Update the amp target pose
     int desiredTagId = isRedAlliance ? 5 : 6; // Which amp tag to target (blue or red)
     if (m_tagCamera.hasTargetOfId(desiredTagId)) {
-      ampTargetPose = m_tagCamera.getApriltagPose(getPose(), this.m_odometry.getPoseMeters().getRotation().getDegrees(), desiredTagId, isRedAlliance ? cameraMode.getRedHeading() : cameraMode.getBlueHeading());
+      ampTargetPose = m_tagCamera.getApriltagPose(getPose(), this.m_odometry.getPoseMeters().getRotation().getDegrees(), desiredTagId, CameraMode.AMP.getHeading(isRedAlliance));
     }
 
     // Update the speaker target pose
     desiredTagId = isRedAlliance ? 4 : 7; // Which speaker tag to target (blue or red)
     if (m_tagCamera.hasTargetOfId(desiredTagId)) {
-      speakerTargetPose = m_tagCamera.getApriltagPose(getPose(), this.m_odometry.getPoseMeters().getRotation().getDegrees(), desiredTagId, isRedAlliance ? cameraMode.getRedHeading() : cameraMode.getBlueHeading());
+      speakerTargetPose = m_tagCamera.getApriltagPose(getPose(), this.m_odometry.getPoseMeters().getRotation().getDegrees(), desiredTagId, CameraMode.SPEAKER.getHeading(isRedAlliance));
     }
   }
 
@@ -232,7 +232,7 @@ public class Drivetrain extends SubsystemBase {
         Transform2d alignCommand = VisionUtils.alignWithTagExact(targetPose, getPose(), 
                                   VisionUtils.tagToField(new Transform2d(cameraMode.getOffsets()[0], 
                                                                         cameraMode.getOffsets()[1], new Rotation2d(0)), 
-                                  VisionUtils.getTagHeading(cameraMode, isRedAlliance)));
+                                                        cameraMode.getHeading(isRedAlliance)));
 
         if (alignCommand == null) {
           isAlignmentSuccess = true;

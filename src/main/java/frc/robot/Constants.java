@@ -181,17 +181,34 @@ public final class Constants {
           this.blueHeading = _blueHeading;
           this.redHeading = _redHeading;
       }
-  
+      
       public double[] getOffsets() {
           return this.offsets;
       }
 
+      /**
+       * Gets the blue heading of the camera mode
+       * @return the blue alliance heading
+       */
       public double getBlueHeading() {
         return this.blueHeading;
       }
 
+      /**
+       * Gets the red heading of the camera mode
+       * @return the red alliance heading
+       */
       public double getRedHeading() {
         return this.redHeading;
+      }
+
+      /**
+       * A function that grabs either the red or blue heading depending on a boolean
+       * @param isRed whether to get the red or blue heading
+       * @return either the red or blue alliance heading
+       */
+      public double getHeading(boolean isRed) {
+        return isRed ? this.redHeading : this.blueHeading;
       }
     }
 

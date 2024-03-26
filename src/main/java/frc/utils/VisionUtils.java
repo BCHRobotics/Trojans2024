@@ -52,10 +52,6 @@ public class VisionUtils {
       return fieldTransform;
     }
 
-    public static double getTagHeading(CameraMode mode, boolean isRed) {
-      return isRed ? mode.getRedHeading() : mode.getBlueHeading();
-    }
-
     /**
      * A function for calculating a the movement towards a given apriltag's 
      * exact position (USED FOR THE AMP)
