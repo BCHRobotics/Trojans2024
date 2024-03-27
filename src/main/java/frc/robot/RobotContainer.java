@@ -71,7 +71,10 @@ public class RobotContainer {
         this.configureDefaultCommands(false);
     }
 
-    // Configures default commands
+    /**
+     * Method for configuring the default command (drive) of the joystick
+     * @param isRedAlliance the alliance color (to determine if things should be reversed)
+     */
     public void configureDefaultCommands(boolean isRedAlliance) {
         final double invert = isRedAlliance ? -1 : 1;
 
@@ -90,27 +93,11 @@ public class RobotContainer {
                     m_robotDrive));
     }
 
+    /**
+     * Method for configuring named commands 
+     * (used during autos)
+     */
     public void configureNamedCommands() {
-        // Both of these named commands are deprecated
-        
-        // Apriltag alignment command for amp
-        // NamedCommands.registerCommand("ALIGN TAG", new RunCommand(
-        //     () -> m_robotDrive.driveToTag(CameraMode.AMP.getOffsets()[0], CameraMode.AMP.getOffsets()[1])).until( // Run the alignwithtag function
-        //         () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
-        //             new InstantCommand(
-        //                 () -> m_robotDrive.setVisionMode(CameraMode.AMP))).alongWith(
-        //                     this.m_elevator.moveToPositionCommand(ElevatorPositions.AMP)).andThen(
-        //                         this.m_mechanism.scoreAmp(6))); // Set alignmode to true before starting
-
-        // Apriltag alignment command for speaker
-        // NamedCommands.registerCommand("ALIGN SPEAKER", new RunCommand(
-        //     () -> m_robotDrive.driveToTag(CameraMode.AMP.getOffsets()[0], CameraMode.AMP.getOffsets()[1])).until( // Run the alignwithtag function
-        //         () -> m_robotDrive.checkAlignment()).beforeStarting( // Stop when checkAlignment is true
-        //             new InstantCommand(
-        //                 () -> m_robotDrive.setVisionMode(CameraMode.SPEAKER))).alongWith(
-        //                     this.m_elevator.moveToPositionCommand(ElevatorPositions.AMP)).andThen(
-        //                         this.m_mechanism.scoreAmp(6))); // Set alignmode to true before starting
-
         // Note alignment command
         NamedCommands.registerCommand("ALIGN NOTE", new RunCommand(
             () -> m_robotDrive.driveToNote()).until( // Run the 'drive to note' function
@@ -131,19 +118,15 @@ public class RobotContainer {
         NamedCommands.registerCommand("SPEAKER SCORE", this.m_mechanism.scoreSpeaker(12));
     }
 
-    public void setupAuto() {
-        m_robotDrive.cancelAlign();
-    }
-
-  /**
-   * Use this method to define your button->command mappings. Buttons can be
-   * created by
-   * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its
-   * subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling
-   * passing it to a
-   * {@link JoystickButton}.
-   */
+    /**
+    * Use this method to define your button->command mappings. Buttons can be
+    * created by
+    * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its
+    * subclasses ({@link
+    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling
+    * passing it to a
+    * {@link JoystickButton}.
+    */
     private void configureButtonBindings() {
         /* 
          * CURRENT BUTTON LAYOUT (subject to change):
@@ -265,5 +248,13 @@ public class RobotContainer {
      */
     public void initLEDs() {
         this.m_mechanism.powerLEDs(LEDColor.OFF);
+    }
+
+    /**
+     * Method to be run at the start of auto
+     * to ensure vision is inactive
+     */
+    public void setupAuto() {
+        m_robotDrive.cancelAlign();
     }
 }

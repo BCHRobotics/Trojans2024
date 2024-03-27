@@ -139,7 +139,7 @@ public class Drivetrain extends SubsystemBase {
     lockHeadingAngle = angle;
     isHeadingLocked = true;
   }
-
+  
   public void unlockHeading() {
     isHeadingLocked = false;
   }
@@ -203,6 +203,16 @@ public class Drivetrain extends SubsystemBase {
       }
   }
 
+  /**
+   * The function to be called periodically in order to drive the robot,
+   * either with vision, heading lock, or manually
+   * @param xSpeed the x axis commanded speed [-1 -> 1]
+   * @param ySpeed the y axis commanded speed [-1 -> 1]
+   * @param rotSpeed the rotation axis commanded speed [-1 -> 1]
+   * @param fieldRelative whether to use robot relative (false) or field relative (true) driving
+   * @param rateLimit whether to use rate limiting
+   * @param noteLoaded whether there is a note loaded in the bot
+   */
   public void driveCommand(double xSpeed, double ySpeed, double rotSpeed, boolean fieldRelative, boolean rateLimit, boolean noteLoaded) {
     if (!isAlignmentActive) {
       if (Math.abs(rotSpeed) > 0.04) {
@@ -244,39 +254,10 @@ public class Drivetrain extends SubsystemBase {
           drive(alignCommand.getX(), alignCommand.getY(), alignCommand.getRotation().getDegrees(), true, true);
         }
       }
-  
-      // if (cameraMode == CameraMode.AMP && ampTargetPose != null) {
-      //   // Apriltag alignment code for amp
-      //   Transform2d alignCommand = VisionUtils.alignWithTagExact(ampTargetPose, getPose(), VisionUtils.tagToField(new Transform2d(CameraMode.AMP.getOffsets()[0], CameraMode.AMP.getOffsets()[1], new Rotation2d(0)), VisionUtils.getTagHeading(CameraMode.AMP, isRedAlliance)));
-
-      //   if (alignCommand == null) {
-      //     isAlignmentSuccess = true;
-      //     isAlignmentActive = false;
-      //     setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
-      //   }
-      //   else {
-      //     isAlignmentSuccess = false;
-      //     drive(alignCommand.getX(), alignCommand.getY(), alignCommand.getRotation().getDegrees(), true, true);
-      //   }
-      // }
-      // else if (cameraMode == CameraMode.SPEAKER && speakerTargetPose != null) {
-      //   // Apriltag alignment code for speaker
-      //   Transform2d alignCommand = VisionUtils.alignWithTagExact(speakerTargetPose, getPose(), VisionUtils.tagToField(new Transform2d(CameraMode.SPEAKER.getOffsets()[0], CameraMode.SPEAKER.getOffsets()[1], new Rotation2d(0)), VisionUtils.getTagHeading(CameraMode.SPEAKER, isRedAlliance)));
-
-      //   if (alignCommand == null) {
-      //     isAlignmentSuccess = true;
-      //     isAlignmentActive = false;
-      //     setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
-      //   }
-      //   else {
-      //     isAlignmentSuccess = false;
-      //     drive(alignCommand.getX(), alignCommand.getY(), alignCommand.getRotation().getDegrees(), true, true);
-      //   }
-      // }
     }
   }
 
-  /*
+  /**
    * A function that cancels the alignment, 
    * if the robot is trying to align to something
    */
@@ -392,7 +373,7 @@ public class Drivetrain extends SubsystemBase {
 
     /*
      * Convert the commanded speeds into the correct units for the drivetrain,
-     * using the interpolated speed.
+     * using the given max speed
      */
     double xSpeedDelivered = xSpeedCommanded * m_maxSpeed;
     double ySpeedDelivered = ySpeedCommanded * m_maxSpeed;
