@@ -1,0 +1,55 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.0261861853889993,
+      "y": 6.5518375217273
+    },
+    "rotation": 59.53445508054013
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SpeakerAuto_B1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SPEAKER SCORE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SpeakerAuto_B3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SpeakerAuto_B4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SPEAKER SCORE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SpeakerAuto_B2"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Driver Station 2",
+  "choreoAuto": false
+}

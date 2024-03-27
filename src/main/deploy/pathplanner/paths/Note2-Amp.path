@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 1.896942369383314,
-        "y": 6.385008325572207
+        "x": 1.83,
+        "y": 7.65
       },
       "prevControl": {
-        "x": 1.8646653920386238,
-        "y": 5.888853962981085
+        "x": 1.7977230226553098,
+        "y": 7.153845637408878
       },
       "nextControl": null,
       "isLocked": false,
@@ -40,12 +40,12 @@
   "goalEndState": {
     "velocity": 0.0,
     "rotation": -90.0,
-    "rotateFast": false
+    "rotateFast": true
   },
   "reversed": false,
   "folder": "Amp",
   "previewStartingState": {
-    "rotation": 90.0,
+    "rotation": -54.87257339901112,
     "velocity": 0
   },
   "useDefaultConstraints": true
