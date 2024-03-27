@@ -170,7 +170,7 @@ public final class Constants {
       NONE(new double[]{0, 0}, 0, 0), // values aren't used here
       NOTE(new double[]{0, 0}, 0, 0), // values aren't used here
       AMP(new double[]{0.685, 0}, -90, -90),
-      SPEAKER(new double[]{1.88, -0.2}, 0, 180);
+      SPEAKER(new double[]{1.98, 0.15}, 0, 180);
 
       private final double[] offsets;
       private final double redHeading;
