@@ -115,7 +115,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("AMP SCORE", m_mechanism.scoreAmp(6));
         NamedCommands.registerCommand("ELEVATOR LOW", m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE));
         NamedCommands.registerCommand("ELEVATOR HIGH", m_elevator.moveToPositionCommand(ElevatorPositions.AMP));
-        NamedCommands.registerCommand("SPEAKER SCORE", new RunCommand(() -> this.m_mechanism.lightsOff()).until(() -> this.m_mechanism.isCharged()).andThen(this.m_mechanism.scoreSpeaker(12)));
+        NamedCommands.registerCommand("SPEAKER SCORE", new RunCommand(() -> this.m_mechanism.spinWheels(12)).until(() -> this.m_mechanism.isCharged()).andThen(this.m_mechanism.scoreSpeaker(12)));
         NamedCommands.registerCommand("SPIN", this.m_mechanism.spinWheels(12));
     }
 
