@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4231793192931117,
-        "y": 3.68365864936858
+        "x": 2.137658622110595,
+        "y": 4.241144824332404
       },
       "isLocked": false,
       "linkedName": null
@@ -20,8 +20,8 @@
         "y": 4.61
       },
       "prevControl": {
-        "x": 2.326777442728675,
-        "y": 4.313823576023221
+        "x": 2.176657654978019,
+        "y": 4.309393131850397
       },
       "nextControl": null,
       "isLocked": false,
@@ -58,7 +58,7 @@
   "goalEndState": {
     "velocity": 0,
     "rotation": -27.0,
-    "rotateFast": true
+    "rotateFast": false
   },
   "reversed": false,
   "folder": "Speaker",

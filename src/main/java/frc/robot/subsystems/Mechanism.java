@@ -313,16 +313,13 @@ public class Mechanism extends SubsystemBase{
      * @return
      */
     public Command scoreSpeaker(double speed) {
-        return this.runOnce(() ->
-            this.startEnd(
-                () -> {
-                    this.setBeltSpeed(-speed);
-                },
-                () -> {
-                    this.setBeltSpeed(0);
-                }
-            )
-            .beforeStarting(new WaitCommand(0.5))
+        return this.startEnd(
+            () -> {
+                this.setBeltSpeed(-speed);
+            },
+            () -> {
+                this.setBeltSpeed(0);
+            }
         )
         .until(() -> this.checkState(Phase.NONE))
         .andThen(this.runOnce(() -> setWheelState(false)))
@@ -350,7 +347,7 @@ public class Mechanism extends SubsystemBase{
                 this.setAmpSpeed(speed);
             }
             )
-            .andThen(new WaitCommand(0.5)).andThen(this.runOnce(() -> setWheelState(true))).andThen(readyToShoot());
+        .andThen(new WaitCommand(0.5)).andThen(this.runOnce(() -> setWheelState(true))).andThen(readyToShoot());
         }
         else {
             return this.runOnce(
@@ -371,9 +368,8 @@ public class Mechanism extends SubsystemBase{
           this.setBeltSpeed(0);
           this.setSourceSpeed(0);
           this.setAmpSpeed(0);
-          setWheelState(false);
-          noteLights();
-        });
+          this.setWheelState(false);
+        }).andThen(noteLights());
     }
 
     /**
@@ -433,7 +429,7 @@ public class Mechanism extends SubsystemBase{
      */
     public void setWheelState(boolean state) {
         areWheelsCharged = state;
-        SmartDashboard.putBoolean("Wheels Charged", state);
+        SmartDashboard.putBoolean("Wheels Charged", isCharged());
     }
 
     /**

@@ -115,7 +115,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("AMP SCORE", m_mechanism.scoreAmp(6));
         NamedCommands.registerCommand("ELEVATOR LOW", m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE));
         NamedCommands.registerCommand("ELEVATOR HIGH", m_elevator.moveToPositionCommand(ElevatorPositions.AMP));
-        NamedCommands.registerCommand("SPEAKER SCORE", new RunCommand(() -> this.m_mechanism.spinWheels(12).until(() -> this.m_mechanism.isCharged()).andThen(this.m_mechanism.scoreSpeaker(12))));
+        NamedCommands.registerCommand("SPEAKER SCORE", new RunCommand(() -> this.m_mechanism.lightsOff()).until(() -> this.m_mechanism.isCharged()).andThen(this.m_mechanism.scoreSpeaker(12)));
         NamedCommands.registerCommand("SPIN", this.m_mechanism.spinWheels(12));
     }
 
@@ -216,7 +216,7 @@ public class RobotContainer {
         this.m_operatorController.b().onTrue(m_mechanism.scoreAmp(6));
 
         // Speaker score
-        this.m_operatorController.povLeft().onTrue(new RunCommand(() -> this.m_mechanism.spinWheels(12).until(() -> this.m_mechanism.isCharged()).andThen(this.m_mechanism.scoreSpeaker(12))));
+        this.m_operatorController.povLeft().onTrue(new RunCommand(() -> this.m_mechanism.spinWheels(12)).until(() -> this.m_mechanism.isCharged()).andThen(this.m_mechanism.scoreSpeaker(12)));
         // Release note onto floor
         this.m_operatorController.leftTrigger().onTrue(this.m_mechanism.groundReleaseAuto(12));
 
@@ -261,5 +261,13 @@ public class RobotContainer {
      */
     public void setupAuto() {
         m_robotDrive.cancelAlign();
+    }
+
+    /**
+     * Method to be run at the start of teleop
+     * to ensure vision is inactive
+     */
+    public void setupTeleop() {
+        m_mechanism.noteLights();
     }
 }
