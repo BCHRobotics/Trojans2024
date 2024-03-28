@@ -145,7 +145,7 @@ public class Mechanism extends SubsystemBase{
         switch (requestIntakeType) {
             case 1 -> this.powerLEDs(LEDColor.PURPLE);
             case 2 -> this.powerLEDs(LEDColor.CYAN);
-            default -> this.powerLEDs(LEDColor.OFF);
+            default -> noteLights();
         }
 
         // Intake request lights
@@ -154,7 +154,7 @@ public class Mechanism extends SubsystemBase{
     }
 
     /**
-     * ground intake command
+     * ground intake command (with lights)
      * @param speed the speed to run the ground intake at in volts [0 --> 12]
      * @return
      */
@@ -186,6 +186,9 @@ public class Mechanism extends SubsystemBase{
         .andThen(confirmIntake()));
     }
 
+    /**
+     * Intake command to be used during auto (no lights)
+     */
     public Command groundIntakeAuto(double speed) {
         return this.startEnd(
             () -> {
@@ -340,13 +343,23 @@ public class Mechanism extends SubsystemBase{
      * @param speed the speed to run the wheels at in volts [0 --> 12]
      */
     public Command spinWheels(double speed) {
-        return this.runOnce(
+        if (!areWheelsCharged) {
+            return this.runOnce(
             () -> {
                 this.setSourceSpeed(speed);
                 this.setAmpSpeed(speed);
             }
-        )
-        .andThen(new WaitCommand(0.5)).andThen(this.runOnce(() -> setWheelState(true))).andThen(readyToShoot());
+            )
+            .andThen(new WaitCommand(0.5)).andThen(this.runOnce(() -> setWheelState(true))).andThen(readyToShoot());
+        }
+        else {
+            return this.runOnce(
+            () -> {
+                this.setSourceSpeed(speed);
+                this.setAmpSpeed(speed);
+            }
+            );
+        }
     }
 
     /**
@@ -414,8 +427,13 @@ public class Mechanism extends SubsystemBase{
         return Commands.runOnce(() -> this.powerLEDs(LEDColor.WHITE));
     }
 
+    /**
+     * Set whether the speaker wheels should be considered ready
+     * @param state the wheel state to be set
+     */
     public void setWheelState(boolean state) {
         areWheelsCharged = state;
+        SmartDashboard.putBoolean("Wheels Charged", state);
     }
 
     /**

@@ -149,12 +149,13 @@ public class RobotContainer {
          * POV DOWN -- ELEVATOR TO GROUND
          * LEFT BUMPER -- REQUEST GROUND INTAKE
          * RIGHT BUMPER -- REQUEST SOURCE INTAKE
-         * POV LEFT -- SCORE SPEAKER
+         * POV LEFT -- SCORE SPEAKER (CHARGE WHEELS IF NOT CHARGED)
          * B -- SCORE AMP 
          * Y -- SOURCE INTAKE
          * X -- GROUND INTAKE
          * A -- CANCEL INTAKE
          * LEFT TRIGGER -- RELEASE NOTE
+         * RIGHT TRIGGER -- CHARGE SPEAKER WHEELS
          */ 
 
         configureButtonBindingsDriver();

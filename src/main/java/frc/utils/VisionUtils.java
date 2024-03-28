@@ -23,9 +23,11 @@ public class VisionUtils {
         double sinHeading = Math.sin(heading * (Math.PI / 180));
         double cosHeading = Math.cos(heading * (Math.PI / 180));
 
+        // Create field-relative coordinates using the heading and robot-relative coords
         double fieldX = objectTransform.getX() * cosHeading + objectTransform.getY() * -sinHeading;
         double fieldY = objectTransform.getX() * sinHeading + objectTransform.getY() * cosHeading;
 
+        // Create the transform2d object
         Transform2d fieldTransform = new Transform2d(-fieldX, -fieldY, objectTransform.getRotation());
 
         return fieldTransform;
@@ -44,9 +46,11 @@ public class VisionUtils {
       double sinHeading = Math.sin(heading * (Math.PI / 180));
       double cosHeading = Math.cos(heading * (Math.PI / 180));
 
+      // Create field-relative coordinates using the heading and tag-relative coords
       double fieldX = objectTransform.getX() * cosHeading + objectTransform.getY() * -sinHeading;
       double fieldY = objectTransform.getX() * sinHeading + objectTransform.getY() * cosHeading;
 
+      // Create the transform2d object
       Transform2d fieldTransform = new Transform2d(fieldX, fieldY, objectTransform.getRotation());
 
       return fieldTransform;
@@ -125,6 +129,7 @@ public class VisionUtils {
     }
 
     /**
+     * UNUSED (AND PROBABLY BROKEN) FUNCTION
      * A function for calculating a the movement towards a circle 
      * defined by a given apriltag (USED FOR THE SPEAKER)
      * @param targetPose the pose of the apriltag
