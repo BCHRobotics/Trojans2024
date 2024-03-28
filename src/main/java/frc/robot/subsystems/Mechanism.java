@@ -32,6 +32,7 @@ public class Mechanism extends SubsystemBase{
     private Phase m_currentPhase = Phase.NONE;
 
     private int requestIntakeType;
+    private boolean areWheelsCharged;
 
     private final CANSparkMax m_bottomBeltMotor = new CANSparkMax(MechanismConstants.kBottomBeltMotorCanId, MotorType.kBrushless);
     private final CANSparkMax m_topBeltMotor = new CANSparkMax(MechanismConstants.kTopBeltMotorCanId, MotorType.kBrushless);
@@ -309,13 +310,7 @@ public class Mechanism extends SubsystemBase{
      * @return
      */
     public Command scoreSpeaker(double speed) {
-        return this.runOnce(
-            () -> {
-                this.setSourceSpeed(speed);
-                this.setAmpSpeed(speed);
-            }
-        )
-        .andThen(
+        return this.runOnce(() ->
             this.startEnd(
                 () -> {
                     this.setBeltSpeed(-speed);
@@ -327,6 +322,7 @@ public class Mechanism extends SubsystemBase{
             .beforeStarting(new WaitCommand(0.5))
         )
         .until(() -> this.checkState(Phase.NONE))
+        .andThen(this.runOnce(() -> setWheelState(false)))
         .andThen(this.m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE))
         .beforeStarting(new WaitCommand(0.1))
         .andThen(
@@ -340,6 +336,20 @@ public class Mechanism extends SubsystemBase{
     }
 
     /**
+     * spin wheels command
+     * @param speed the speed to run the wheels at in volts [0 --> 12]
+     */
+    public Command spinWheels(double speed) {
+        return this.runOnce(
+            () -> {
+                this.setSourceSpeed(speed);
+                this.setAmpSpeed(speed);
+            }
+        )
+        .andThen(new WaitCommand(0.5)).andThen(this.runOnce(() -> setWheelState(true))).andThen(readyToShoot());
+    }
+
+    /**
      * Stop the mechanism from running
      * @return
      */
@@ -348,6 +358,8 @@ public class Mechanism extends SubsystemBase{
           this.setBeltSpeed(0);
           this.setSourceSpeed(0);
           this.setAmpSpeed(0);
+          setWheelState(false);
+          noteLights();
         });
     }
 
@@ -386,6 +398,37 @@ public class Mechanism extends SubsystemBase{
             new WaitCommand(0.1),
             this.runOnce(() -> this.powerLEDs(LEDColor.GREEN))
         );
+    }
+
+    /**
+     * Checks whether the wheels have been spun up
+     */
+    public boolean isCharged() {
+        return areWheelsCharged;
+    }
+
+    /**
+     * A command for confirming that the wheels are charged
+     */
+    public Command readyToShoot() {
+        return Commands.runOnce(() -> this.powerLEDs(LEDColor.WHITE));
+    }
+
+    public void setWheelState(boolean state) {
+        areWheelsCharged = state;
+    }
+
+    /**
+     * A command for either turning the lights
+     * off or green depending on if a note is loaded
+     */
+    public Command noteLights() {
+        if (this.checkState(Phase.NONE)) {
+            return Commands.runOnce(() -> this.powerLEDs(LEDColor.OFF));
+        }
+        else {
+            return Commands.runOnce(() -> this.powerLEDs(LEDColor.GREEN));
+        }
     }
 
     /**
