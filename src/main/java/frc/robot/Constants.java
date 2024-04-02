@@ -32,8 +32,8 @@ public final class Constants {
     public static final double kMinSpeedMetersPerSecond = 1.6;
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
-    public static final double kDirectionSlewRate = 1.2; // radians per second
-    public static final double kMagnitudeSlewRate = 1.8; // percent per second (1 = 100%) // 3.6
+    public static final double kDirectionSlewRate = 2.4; // radians per second
+    public static final double kMagnitudeSlewRate = 2; // percent per second (1 = 100%) // 3.6
     public static final double kRotationalSlewRate = 2.0; // percent per second (1 = 100%) // 3.0
 
     // Chassis configuration
@@ -54,15 +54,25 @@ public final class Constants {
     public static final double kBackRightChassisAngularOffset = Math.PI / 2;
 
     // SPARK MAX CAN IDs
-    public static final int kFrontLeftDrivingCanId = 12; //13
-    public static final int kRearLeftDrivingCanId = 10; //15
-    public static final int kFrontRightDrivingCanId = 14; //17
-    public static final int kRearRightDrivingCanId = 16;  //11
+    public static final int kFrontLeftDrivingCanId = 13; //13
+    public static final int kRearLeftDrivingCanId = 15; //15
+    public static final int kFrontRightDrivingCanId = 17; //17
+    public static final int kRearRightDrivingCanId = 11;  //11
 
-    public static final int kFrontLeftTurningCanId = 13; //12
-    public static final int kRearLeftTurningCanId = 11;  //14
-    public static final int kFrontRightTurningCanId = 15; //16
-    public static final int kRearRightTurningCanId = 17;  //10
+    public static final int kFrontLeftTurningCanId = 12; //12
+    public static final int kRearLeftTurningCanId = 14;  //14
+    public static final int kFrontRightTurningCanId = 16; //16
+    public static final int kRearRightTurningCanId = 10;  //10
+
+    // public static final int kFrontLeftDrivingCanId = 12; //13
+    // public static final int kRearLeftDrivingCanId = 10; //15
+    // public static final int kFrontRightDrivingCanId = 14; //17
+    // public static final int kRearRightDrivingCanId = 16;  //11
+
+    // public static final int kFrontLeftTurningCanId = 13; //12
+    // public static final int kRearLeftTurningCanId = 11;  //14
+    // public static final int kFrontRightTurningCanId = 15; //16
+    // public static final int kRearRightTurningCanId = 17;  //10
 
     public static final boolean kGyroReversed = true;
   }
@@ -170,7 +180,7 @@ public final class Constants {
       NONE(new double[]{0, 0}, 0, 0), // values aren't used here
       NOTE(new double[]{0, 0}, 0, 0), // values aren't used here
       AMP(new double[]{0.77, 0}, -90, -90),
-      SPEAKER(new double[]{2.02, 0}, 0, 180);
+      SPEAKER(new double[]{2.06, 0}, 0, 180);
 
       private final double[] offsets;
       private final double redHeading;

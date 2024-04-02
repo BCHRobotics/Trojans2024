@@ -14,6 +14,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -379,12 +380,19 @@ public class Drivetrain extends SubsystemBase {
     double ySpeedDelivered = ySpeedCommanded * m_maxSpeed;
     double rotDelivered = m_currentRotation * DriveConstants.kMaxAngularSpeed;
 
+    if (Math.abs(xSpeed) < 0.03 && Math.abs(ySpeed) < 0.03 && Math.abs(rot) < 0.03) {
+      this.setTurningLock(true);
+    }
+    else {
+      this.setTurningLock(false);
+    }
+
     SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
-        fieldRelative
-            ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
-                Rotation2d.fromDegrees(-this.m_odometry.getPoseMeters().getRotation().getDegrees() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)))
-            : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
- 
+      fieldRelative
+          ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
+              Rotation2d.fromDegrees(this.m_odometry.getPoseMeters().getRotation().getDegrees()))
+          : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
+
     this.setModuleStates(swerveModuleStates);
   }
 
@@ -397,6 +405,13 @@ public class Drivetrain extends SubsystemBase {
     m_frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
     m_rearLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
     m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
+  }
+
+  public void setTurningLock(boolean isLocked) {
+    m_frontLeft.setTurningLock(isLocked);
+    m_frontRight.setTurningLock(isLocked);
+    m_rearLeft.setTurningLock(isLocked);
+    m_rearRight.setTurningLock(isLocked);
   }
 
   /**
@@ -565,10 +580,10 @@ public class Drivetrain extends SubsystemBase {
     // SmartDashboard.putNumber("slewCurrentTranslationMagnitude: ", m_currentTranslationMag);
 
     // Encoder values
-    // SmartDashboard.putNumber("Front left Encoder", m_frontLeft.getVel());
-    // SmartDashboard.putString("Front right Encoder", m_frontRight.getState().toString());
-    // SmartDashboard.putString("Rear left Encoder", m_rearLeft.getState().toString());
-    // SmartDashboard.putString("Rear right Encoder", m_rearRight.getState().toString());
+    SmartDashboard.putString("Front left Encoder", m_frontLeft.getState().toString());
+    SmartDashboard.putString("Front right Encoder", m_frontRight.getState().toString());
+    SmartDashboard.putString("Rear left Encoder", m_rearLeft.getState().toString());
+    SmartDashboard.putString("Rear right Encoder", m_rearRight.getState().toString());
 
     SmartDashboard.putBoolean("Align", isAlignmentActive);
     SmartDashboard.putBoolean("Alignment Success", isAlignmentSuccess);
