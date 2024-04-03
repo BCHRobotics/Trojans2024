@@ -162,26 +162,18 @@ public class Mechanism extends SubsystemBase{
         return this.startEnd(
             () -> {
                 this.setBeltSpeed(-speed);
-                this.setSourceSpeed(speed);
-                this.setAmpSpeed(speed);
             },
 
             () -> {
                 this.setBeltSpeed(-speed * 0.75);
-                this.setSourceSpeed(speed * 0.75);
-                this.setAmpSpeed(speed * 0.75);
             })
             .until(() -> this.checkState(Phase.GROUND_PICKUP))
             .andThen(startEnd(
                 () -> {
                 this.setBeltSpeed(-speed * 0.75);
-                this.setSourceSpeed(speed * 0.75);
-                this.setAmpSpeed(speed * 0.75);
             },
             () -> {
                 this.setBeltSpeed(0.0);
-                this.setSourceSpeed(0.0);
-                this.setAmpSpeed(0.0);
             }).until(() -> this.checkState(Phase.LOADED))
         .andThen(confirmIntake()));
     }
