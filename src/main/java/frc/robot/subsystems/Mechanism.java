@@ -275,6 +275,33 @@ public class Mechanism extends SubsystemBase{
      * @return
      */
     public Command scoreAmp(double speed) {
+
+        return this.runOnce(
+            () -> {
+                this.setSourceSpeed(speed);
+                this.setAmpSpeed(speed);
+            }
+        )
+        .andThen(
+            this.startEnd(
+                () -> {
+                    this.setBeltSpeed(-speed);
+                },
+                () -> {
+                    this.setBeltSpeed(0);
+                }
+            )
+            .beforeStarting(new WaitCommand(0.5))
+        )
+        .until(() -> this.checkState(Phase.NONE))
+        .andThen(
+            this.runOnce(
+                () -> {
+                    this.setSourceSpeed(0);
+                    this.setAmpSpeed(0);
+                }));
+
+    /*     
         return this.startEnd(
             () -> {
                 this.setBeltSpeed(-speed);
@@ -300,7 +327,11 @@ public class Mechanism extends SubsystemBase{
             .andThen(this.m_elevator.moveToPositionCommand(ElevatorPositions.INTAKE))
             .beforeStarting(new WaitCommand(0.25))
         );
+
+        */
     }
+
+    
 
     /**
      * score speaker command
