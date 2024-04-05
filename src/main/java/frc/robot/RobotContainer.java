@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
+
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -107,10 +108,10 @@ public class RobotContainer {
                 new RunCommand(
                         () -> m_robotDrive.driveCommand(
                                 -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband) * invert,
-                                0,
-                               // -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband) * invert,
-                               // -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kTurnDeadband),
-                               0,
+                               // 0,
+                                -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband) * invert,
+                                -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kTurnDeadband),
+                               //0,
                                 OIConstants.kFieldRelative, OIConstants.kRateLimited, !m_mechanism.checkState(Phase.NONE)),
                         m_robotDrive));
         }
@@ -220,6 +221,8 @@ public class RobotContainer {
         //this.m_driverController.rightTrigger().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
         // Brake command (Left Trigger)
         this.m_driverController.leftTrigger().whileTrue(new RunCommand(() -> m_robotDrive.setX(),m_robotDrive));
+
+        this.m_driverController.povRight().whileTrue(new RunCommand(() -> m_robotDrive.setParallel(m_driverController.getLeftX()),m_robotDrive));
         // Slow mode command (Left Bumper)
         this.m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_robotDrive.setSlowMode(true), m_robotDrive));
         this.m_driverController.leftBumper().onFalse(new InstantCommand(() -> m_robotDrive.setSlowMode(false), m_robotDrive));
