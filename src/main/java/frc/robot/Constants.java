@@ -124,6 +124,10 @@ public final class Constants {
     public static final int kTopSensorChannel = 6;
   }
 
+  public static final class TurretConstants {
+    
+  }
+
   public static final class LEDConstants {
     /*
     * LED Colour Table
