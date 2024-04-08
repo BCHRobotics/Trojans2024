@@ -37,36 +37,32 @@ public class RobotContainer2{
     File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(),"swerve");
 
     // Creating Swerve Drive 
-    SwerveSubsystem m_swerveDrive = new SwerveSubsystem(swerveJsonDirectory);
+    SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(swerveJsonDirectory);
     
-    private void configureDriverXbox(boolean isRedAlliance) {
+    public RobotContainer2() {
+        this.configureDefaultCommands(false);
+    }
+
+    private void configureDefaultCommands(boolean isRedAlliance) {
     
     // Brake command (Left Trigger)
-    this.driverXbox.leftTrigger().whileTrue(new RunCommand(() -> m_swerveDrive.setX(),m_swerveDrive));
+    this.driverXbox.leftTrigger().whileTrue(new RunCommand(() -> m_swerveSubsystem.robotBrake(), m_swerveSubsystem));
    
     final double invert = isRedAlliance ? -1 : 1;
 
-    m_swerveDrive.setDefaultCommand(
+    
+
+    m_swerveSubsystem.setDefaultCommand(
                 // The left stick controls translation of the robot.
                 // Turning is controlled by the X axis of the right stick.
                 new RunCommand(
-                        () -> m_swerveDrive.driveCommand(
+                        () -> m_swerveSubsystem.driveCommand(
                                 -MathUtil.applyDeadband(driverXbox.getLeftY(), OIConstants.kDriveDeadband) * invert,
                                 -MathUtil.applyDeadband(driverXbox.getLeftX(), OIConstants.kDriveDeadband) * invert,
                                 -MathUtil.applyDeadband(driverXbox.getRightX(), OIConstants.kTurnDeadband)),
-                        m_swerveDrive));
+                                m_swerveSubsystem));
 
     }
 
-     /**
-   * Sets the wheels into an X formation to prevent movement.
-   * This does not set the brake mode of the motors.
-   */
-  public void setX() {
-    m_frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
-    m_frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
-    m_rearLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
-    m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
-  }
 
 }

@@ -19,7 +19,7 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 public class SwerveSubsystem extends SubsystemBase {
 
 // Intializing Swerve Object
-SwerveDrive swerveDrive;
+public SwerveDrive m_swerveDrive;
 
 // Max Speed
 double maximumSpeed = Units.feetToMeters(4.5);
@@ -32,13 +32,13 @@ double maximumSpeed = Units.feetToMeters(4.5);
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
 
         try{
-          swerveDrive = new SwerveParser(m_directory).createSwerveDrive(maximumSpeed);
+          this.m_swerveDrive = new SwerveParser(m_directory).createSwerveDrive(maximumSpeed);
 
         } catch (Exception error){
           throw new RuntimeException(error);
         }
-        swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via angle.
-        swerveDrive.setCosineCompensator(!SwerveDriveTelemetry.isSimulation); // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
+        this.m_swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via angle.
+        this.m_swerveDrive.setCosineCompensator(!SwerveDriveTelemetry.isSimulation); // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
         //setupPathPlanner();
       }
 
@@ -55,13 +55,20 @@ double maximumSpeed = Units.feetToMeters(4.5);
   {
     return run(() -> {
       // Make the robot move
-      swerveDrive.drive(new Translation2d(translationX * swerveDrive.getMaximumVelocity(),
-                                          translationY * swerveDrive.getMaximumVelocity()),
-                        angularRotationX * swerveDrive.getMaximumAngularVelocity(),
+      this.m_swerveDrive.drive(new Translation2d(translationX * this.m_swerveDrive.getMaximumVelocity(),
+                                          translationY * this.m_swerveDrive.getMaximumVelocity()),
+                        angularRotationX * this.m_swerveDrive.getMaximumAngularVelocity(),
                         false,
                         false);
     });
   }
+
+
+      public void robotBrake() {
+        this.m_swerveDrive.lockPose();
+      }
+
+  
 
     
   
