@@ -33,8 +33,9 @@ public class RobotContainer{
     // The robot's subsystems and commands are defined here...
     final CommandXboxController driverXbox = new CommandXboxController(0);
 
-    // File Directory With Swerve JSON Files (src/main/deploy/swerve)
-    File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(),"swerve");
+    // File Directory With Swerve JSON Files (src/main/deploy/YAGSL Config/swerve)
+    //File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(),"swerve");
+    File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(), "swerve");
 
     // Creating Swerve Drive 
     SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(swerveJsonDirectory);
@@ -43,7 +44,7 @@ public class RobotContainer{
         this.configureDefaultCommands(false);
     }
 
-    private void configureDefaultCommands(boolean isRedAlliance) {
+    public void configureDefaultCommands(boolean isRedAlliance) {
     
     // Brake command (Left Trigger)
     this.driverXbox.leftTrigger().whileTrue(new RunCommand(() -> m_swerveSubsystem.setX(), m_swerveSubsystem));
@@ -64,5 +65,7 @@ public class RobotContainer{
 
     }
 
-
+    public void setX(){
+        m_swerveSubsystem.setX();
+    }
 }
