@@ -31,8 +31,8 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    m_robotContainer.enablePCMChannels();
-    m_robotContainer.initLEDs();
+    //m_robotContainer.enablePCMChannels();
+    //m_robotContainer.initLEDs();
   }
 
   /**
@@ -64,14 +64,14 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    //m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
 
-    m_robotContainer.setupAuto();
+    //m_robotContainer.setupAuto();
   }
 
   /** This function is called periodically during autonomous. */

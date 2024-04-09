@@ -64,7 +64,7 @@ double maximumSpeed = Units.feetToMeters(4.5);
   }
 
 
-      public void robotBrake() {
+      public void setX() {
         this.m_swerveDrive.lockPose();
       }
 
