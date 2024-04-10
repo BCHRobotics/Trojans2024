@@ -24,10 +24,9 @@ import frc.utils.devices.BeamBreak.Phase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -229,6 +228,11 @@ public class RobotContainer {
 
         this.m_driverController.rightBumper().onTrue(new InstantCommand(() -> m_robotDrive.setFastMode(true), m_robotDrive));
         this.m_driverController.rightBumper().onFalse(new InstantCommand(() -> m_robotDrive.setFastMode(false), m_robotDrive));
+
+        this.m_driverController
+        .a()
+        .and(m_driverController.rightBumper())
+        .whileTrue(m_robotDrive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
 
         // Align with tag
         this.m_driverController.x().onTrue(new InstantCommand(() -> m_robotDrive.alignWithTag()));
