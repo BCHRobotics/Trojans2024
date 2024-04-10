@@ -75,6 +75,8 @@ public final class Constants {
 
     public static final double VISION_SPEED_LIMIT = 0.5;
     public static final double APRILTAG_DISTANCE_THRESHOLD = 0.08;
+
+    
   }
 
   public static final class ModuleConstants {
