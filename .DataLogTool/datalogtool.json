@@ -1,0 +1,9 @@
+{
+  "download": {
+    "remoteDir": "/home",
+    "serverTeam": "roborio-2386-frc.local"
+  },
+  "output": {
+    "outputFolder": "C:\\Users\\Lead Programmer\\Downloads"
+  }
+}
