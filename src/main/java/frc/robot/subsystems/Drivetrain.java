@@ -158,10 +158,10 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void runVolts(Measure<Voltage> volts) {
-    m_frontLeftMotor.setVoltage(-volts.in(Volts));
-    m_frontRightMotor.setVoltage(volts.in(Volts));
-    m_rearLeftMotor.setVoltage(volts.in(Volts));
-    m_rearRightMotor.setVoltage(volts.in(Volts));
+    m_frontLeftMotor.setVoltage(-volts.in(Volts)); // Originally negative
+    m_frontRightMotor.setVoltage(-volts.in(Volts)); // originally positive
+    m_rearLeftMotor.setVoltage(volts.in(Volts)); // Originally positive
+    m_rearRightMotor.setVoltage(-volts.in(Volts)); // Originally Positive
   }
 
   /**
