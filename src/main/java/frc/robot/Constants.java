@@ -165,6 +165,11 @@ public final class Constants {
     // Height of the camera (not used anywhere right now)
     public static final double kCameraHeight = 0.0;
 
+    public static final double tagCamX = 0.0;
+    public static final double tagCamY = 0.0;
+    
+
+
     // Camera modes
     public enum CameraModes {
       NONE(new double[]{0, 0}), // Offset is not used here

@@ -81,6 +81,10 @@ public class RobotContainer {
     }
 
     // Configures default commands
+
+     /**
+      * Sets the default commands for the robot
+      */
     public void configureDefaultCommands(boolean isRedAlliance) {
         final double invert = isRedAlliance ? -1 : 1;
 

@@ -128,6 +128,8 @@ public class Elevator extends SubsystemBase {
 
     /**
      * Stops the elevator and sets the goal to the current setpoint
+     * @param forcedGoal is the boolean that checks if we have met our limit
+     * True if limit reached, false if limit is not reached
      */
     private void limitReached() {
         cancelAllElevatorCommands();

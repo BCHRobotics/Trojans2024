@@ -6,6 +6,11 @@ package frc.robot.subsystems;
 
 import java.util.Optional;
 
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonPipelineResult;
+
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -14,12 +19,15 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -28,8 +36,10 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.VisionConstants;
@@ -82,6 +92,7 @@ public class Drivetrain extends SubsystemBase {
   // If you switch the camera you have to change the name property of this
   private final Camera m_noteCamera = new Camera(VisionConstants.kNoteCameraName); // These names might need to be changed
   private final Camera m_tagCamera = new Camera(VisionConstants.kTagCameraName); // this too
+  public final Rotation2d tagCamTheta = new Rotation2d(0);
 
   // Whether or not to try and align with a target
   private boolean isAlignmentActive = false;
@@ -94,6 +105,16 @@ public class Drivetrain extends SubsystemBase {
   private Pose2d speakerTargetPose;
 
   private boolean isRedAlliance;
+
+  // Pose estimation class for tracking robot pose - this is better than odometry since we can actually add Pose2D vision measurements to it
+  private final SwerveDrivePoseEstimator m_PoseEstimator = new SwerveDrivePoseEstimator(
+    DriveConstants.kDriveKinematics, 
+    m_gyro.getRotation2d(), 
+    new SwerveModulePosition[]{
+      m_frontLeft.getPosition(),
+      m_frontRight.getPosition(),
+      m_rearLeft.getPosition(),
+      m_rearRight.getPosition()}, ampTargetPose);
 
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
@@ -111,14 +132,16 @@ public class Drivetrain extends SubsystemBase {
   Transform3d robotToCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
 
   // Construct PhotonPoseEstimator
-  //PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, m_tagCamera.getInstance(), robotToCam); // I'm using getInstance here as a temporary solution
+  PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, m_tagCamera, robotToCam);
 
-  /*
+  
   public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
         photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
         return photonPoseEstimator.update();
   }
-  */
+  
+  // EstimatedRobotPose pose = getPose();
+  //Pose2d newPose = pose.estimatedPose.toPose2d();
 
   /** Creates a new DriveSubsystem. */
   public Drivetrain() {
@@ -135,6 +158,18 @@ public class Drivetrain extends SubsystemBase {
 
     // Set the max speed of the bot
     setSpeedPercent();
+
+    // Update the pose estimator in the periodic block
+    m_PoseEstimator.update(m_gyro.getRotation2d(),
+      new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_rearLeft.getPosition(),
+            m_rearRight.getPosition()
+      });
+
+    m_PoseEstimator.addVisionMeasurement(getEstimatedGlobalPose(m_PoseEstimator.getEstimatedPosition()).toPose2d(),Timer.getFPGATimestamp());
+    
 
     // Update the odometry in the periodic block
     m_odometry.update(
