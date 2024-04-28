@@ -164,7 +164,7 @@ public class Drivetrain extends SubsystemBase {
             m_rearRight.getPosition()
       });
 
-    m_PoseEstimator.addVisionMeasurement(getEstimatedGlobalPose(m_PoseEstimator.getEstimatedPosition()).get().estimatedPose.toPose2d(),Timer.getFPGATimestamp());
+    m_PoseEstimator.addVisionMeasurement(getEstimatedGlobalPose(m_PoseEstimator.getEstimatedPosition()).get().estimatedPose.toPose2d(),Timer.getFPGATimestamp()); // Gets the measurement from the camera and passes a reference pose with its respective time stamp
     
 
     // Update the odometry in the periodic block
@@ -183,7 +183,7 @@ public class Drivetrain extends SubsystemBase {
     // Update the amp target pose
     int desiredTagId = isRedAlliance ? 5 : 6; // Which amp tag to target (blue or red)
     if (m_tagCamera.hasTargetOfId(desiredTagId)) {
-      ampTargetPose = m_tagCamera.getApriltagPose(getPose(), this.m_odometry.getPoseMeters().getRotation().getDegrees(), desiredTagId);
+      ampTargetPose = m_tagCamera.getApriltagPose(getPose(), this.m_PoseEstimator.getEstimatedPosition().getRotation().getDegrees(), desiredTagId);
     }
 
     // // Update the speaker target pose
@@ -239,7 +239,7 @@ public class Drivetrain extends SubsystemBase {
           tagRotation += 180;
         }
 
-        double rotCommand = tagRotation - this.m_odometry.getPoseMeters().getRotation().getDegrees();
+        double rotCommand = tagRotation - this.m_PoseEstimator.getEstimatedPosition().getRotation().getDegrees();
 
         if (xCommand < 0) {
           xCommand = Math.max(xCommand, -VisionConstants.kVisionSpeedLimit);
@@ -280,7 +280,7 @@ public class Drivetrain extends SubsystemBase {
           }
         }
 
-        boolean rotFinished = Math.abs(tagRotation - this.m_odometry.getPoseMeters().getRotation().getDegrees()) < VisionConstants.kTagRotationThreshold;
+        boolean rotFinished = Math.abs(tagRotation - this.m_PoseEstimator.getEstimatedPosition().getRotation().getDegrees()) < VisionConstants.kTagRotationThreshold;
         boolean xFinished = Math.abs(targetPose.getX() + desiredOffset.getX() - robotPose.getX()) < VisionConstants.kTagDistanceThreshold;
         boolean yFinished = Math.abs(targetPose.getY() + desiredOffset.getY() - robotPose.getY()) < VisionConstants.kTagDistanceThreshold;
 
@@ -349,7 +349,8 @@ public class Drivetrain extends SubsystemBase {
    * @return The pose.
    */
   public Pose2d getPose() {
-    return m_odometry.getPoseMeters();
+    return m_PoseEstimator.getEstimatedPosition(); // gets the estimated position in meters
+    // return m_odometry.getPoseMeters();
   }
 
   /*
@@ -478,7 +479,7 @@ public class Drivetrain extends SubsystemBase {
     SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
         fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
-                Rotation2d.fromDegrees(-this.m_odometry.getPoseMeters().getRotation().getDegrees() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)))
+                Rotation2d.fromDegrees(-this.m_PoseEstimator.getEstimatedPosition().getRotation().getDegrees() * (DriveConstants.kGyroReversed ? -1.0 : 1.0))) // originally, the parameter was -this.m_odometry.getPoseMeters();
             : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
  
     this.setModuleStates(swerveModuleStates);
@@ -653,7 +654,7 @@ public class Drivetrain extends SubsystemBase {
     // SmartDashboard.putNumber("X Position", this.getPose().getX());
     // SmartDashboard.putNumber("Y Position", this.getPose().getY());
     // SmartDashboard.putNumber("Gyro Heading: ", this.getHeading());
-    SmartDashboard.putNumber("Odometry Heading: ", this.m_odometry.getPoseMeters().getRotation().getDegrees());
+    SmartDashboard.putNumber("Odometry Heading: ", this.m_PoseEstimator.getEstimatedPosition().getRotation().getDegrees()); // originally this.m_Odometry.getPoseMeters()
 
     // Slew rate filter variables
     // SmartDashboard.putNumber("slewCurrentRotation: ", m_currentRotation);
